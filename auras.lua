@@ -240,110 +240,110 @@ bdCore.auras.raid = {
 	--	Antorus the Burning Throne
 	----------------------------------
 	-- Garothi
-	["Fel Bombardment"] = true
-	["Haywire Decimation"] = true
-	["Decimation"] = true
+	["Fel Bombardment"] = true,
+	["Haywire Decimation"] = true,
+	["Decimation"] = true,
 
 	-- Felhounds
-	["Smouldering"] = true
-	["Siphoned"] = true
-	["Enflamed"] = true
-	["Singed"] = true
-	["Weight of Darkness"] = true
-	["Desolate Gaze"] = true
-	["Burning Remnant"] = true
-	["Molten Touch"] = true
-	["Consuming Sphere"] = true
+	["Smouldering"] = true,
+	["Siphoned"] = true,
+	["Enflamed"] = true,
+	["Singed"] = true,
+	["Weight of Darkness"] = true,
+	["Desolate Gaze"] = true,
+	["Burning Remnant"] = true,
+	["Molten Touch"] = true,
+	["Consuming Sphere"] = true,
 
 	-- High Command
-	["Exploit Weakness"] = true
-	["Psychic Scarring"] = true
-	["Psychic Assault"] = true
-	["Shocked"] = true
-	["Shock Grenade"] = true
+	["Exploit Weakness"] = true,
+	["Psychic Scarring"] = true,
+	["Psychic Assault"] = true,
+	["Shocked"] = true,
+	["Shock Grenade"] = true,
 
 	-- Portal Keeper
-	["Reality Tear"] = true
-	["Cloying Shadows"] = true
-	["Caustic Slime"] = true
-	["Everburning Flames"] = true
-	["Fiery Detonation"] = true
-	["Mind Fog"] = true
-	["Flames of Xoroth"] = true
-	["Acidic Web"] = true
-	["Delusions"] = true
-	["Hungering Gloom"] = true
-	["Felsilk Wrap"] = true
+	["Reality Tear"] = true,
+	["Cloying Shadows"] = true,
+	["Caustic Slime"] = true,
+	["Everburning Flames"] = true,
+	["Fiery Detonation"] = true,
+	["Mind Fog"] = true,
+	["Flames of Xoroth"] = true,
+	["Acidic Web"] = true,
+	["Delusions"] = true,
+	["Hungering Gloom"] = true,
+	["Felsilk Wrap"] = true,
 
 	-- Eonar
-	["Feedback - Arcane Singularity"] = true
-	["Feedback - Targeted"] = true
-	["Feedback - Burning Embers"] = true
-	["Feedback - Foul Steps"] = true
-	["Fel Wake"] = true
-	["Rain of Fel"] = true
+	["Feedback - Arcane Singularity"] = true,
+	["Feedback - Targeted"] = true,
+	["Feedback - Burning Embers"] = true,
+	["Feedback - Foul Steps"] = true,
+	["Fel Wake"] = true,
+	["Rain of Fel"] = true,
 
 	-- Imonar
-	["Sever"] = true
-	["Charged Blasts"] = true
-	["Empowered Pulse Grenade"] = true
-	["Shrapnel Blast"] = true
-	["Shock Lance"] = true
-	["Empowered Shock Lance"] = true
-	["Shocked"] = true
-	["Conflagration"] = true
-	["Slumber Gas"] = true
-	["Sleep Canister"] = true
-	["Seared Skin"] = true
-	["Infernal Rockets"] = true
+	["Sever"] = true,
+	["Charged Blasts"] = true,
+	["Empowered Pulse Grenade"] = true,
+	["Shrapnel Blast"] = true,
+	["Shock Lance"] = true,
+	["Empowered Shock Lance"] = true,
+	["Shocked"] = true,
+	["Conflagration"] = true,
+	["Slumber Gas"] = true,
+	["Sleep Canister"] = true,
+	["Seared Skin"] = true,
+	["Infernal Rockets"] = true,
 
 	-- Kin'gorath
-	["Forging Strike"] = true
-	["Ruiner"] = true
-	["Purging Protocol"] = true
+	["Forging Strike"] = true,
+	["Ruiner"] = true,
+	["Purging Protocol"] = true,
 
 	-- Varimathras
-	["Misery"] = true
-	["Echoes of Doom"] = true
-	["Necrotic Embrace"] = true
-	["Dark Fissure"] = true
-	["Marked Prey"] = true
+	["Misery"] = true,
+	["Echoes of Doom"] = true,
+	["Necrotic Embrace"] = true,
+	["Dark Fissure"] = true,
+	["Marked Prey"] = true,
 
 	-- Coven
-	["Fiery Strike"] = true
-	["Flashfreeze"] = true
-	["Fury of Golganneth"] = true
-	["Fulminating Pulse"] = true
-	["Chilled Blood"] = true
-	["Cosmic Glare"] = true
-	["Spectral Army of Norgannon"] = true
-	["Whirling Saber"] = true
+	["Fiery Strike"] = true,
+	["Flashfreeze"] = true,
+	["Fury of Golganneth"] = true,
+	["Fulminating Pulse"] = true,
+	["Chilled Blood"] = true,
+	["Cosmic Glare"] = true,
+	["Spectral Army of Norgannon"] = true,
+	["Whirling Saber"] = true,
 
 	-- Aggramar
-	["Taeshalach's Reach"] = true
-	["Empowered Flame Rend"] = true
-	["Foe Breaker"] = true
-	["Ravenous Blaze"] = true
-	["Wake of Flame"] = true
-	["Blazing Eruption"] = true
-	["Scorching Blaze"] = true
-	["Molten Remnants"] = true
+	["Taeshalach's Reach"] = true,
+	["Empowered Flame Rend"] = true,
+	["Foe Breaker"] = true,
+	["Ravenous Blaze"] = true,
+	["Wake of Flame"] = true,
+	["Blazing Eruption"] = true,
+	["Scorching Blaze"] = true,
+	["Molten Remnants"] = true,
 
 	-- Argus
-	["Sweeping Scythe"] = true
-	["Avatar of Aggramar"] = true
-	["Soulburst"] = true
-	["Soulbomb"] = true
-	["Death Fog"] = true
-	["Soulblight"] = true
-	["Cosmic Ray"] = true
-	["Edge of Obliteration"] = true
-	["Gift of the Sea"] = true
-	["Gift of the Sky"] = true
-	["Cosmic Beacon"] = true
-	["Cosmic Smash"] = true
-	["Ember of Rage"] = true
-	["Deadly Scythe"] = true
+	["Sweeping Scythe"] = true,
+	["Avatar of Aggramar"] = true,
+	["Soulburst"] = true,
+	["Soulbomb"] = true,
+	["Death Fog"] = true,
+	["Soulblight"] = true,
+	["Cosmic Ray"] = true,
+	["Edge of Obliteration"] = true,
+	["Gift of the Sea"] = true,
+	["Gift of the Sky"] = true,
+	["Cosmic Beacon"] = true,
+	["Cosmic Smash"] = true,
+	["Ember of Rage"] = true,
+	["Deadly Scythe"] = true,
 	["Soul Detonation"] = true
 }
 
