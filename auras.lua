@@ -569,9 +569,11 @@ bdCore.auras.mine = {
 	["Rejuvenation (Germination)"] = true,
 	
 	-- Paladin
+	["Bestow Faith"] = true,
 	["Beacon of Virtue"] = true,
 	["Beacon of Light"] = true,
 	["Beacon of Faith"] = true,
+	["Tyr's Deliverance"] = true,
 	
 	-- Priest
 	["Weakened Soul"] = true,
