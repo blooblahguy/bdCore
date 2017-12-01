@@ -9,5 +9,5 @@ ObjectiveTrackerFrame:SetPoint()
 bdCore:hookEvent("loaded_bdcore", function()
 	local config = c.persistent.General
 
-	
+	setglobal("MAX_EQUIPMENT_SETS_PER_PLAYER", 100)
 end)
