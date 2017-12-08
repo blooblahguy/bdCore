@@ -154,8 +154,8 @@ for i = 1, x do
 	if (i == (x/2)) then
 		tex:SetVertexColor(unpack(bdCore.media.blue))
 	end
-	tex:SetPoint("TOPLEFT", UIParent, "TOPLEFT", i*gridsize, 0)
-	tex:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", i*gridsize, 0)
+	tex:SetPoint("TOPLEFT", UIParent, "TOPLEFT", i*grid_size, 0)
+	tex:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", i*grid_size, 0)
 end
 
 for i = 1, y do
@@ -165,8 +165,8 @@ for i = 1, y do
 	if (i == (x/2)) then
 		tex:SetVertexColor(unpack(bdCore.media.blue))
 	end
-	tex:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 0, i*gridsize)
-	tex:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", 0, i*gridsize)
+	tex:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 0, i*grid_size)
+	tex:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", 0, i*grid_size)
 end
 
 
