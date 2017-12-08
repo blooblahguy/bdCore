@@ -135,6 +135,7 @@ cfg.lastitem = false
 
 
 -- align grid
+--[[
 aligngrid = CreateFrame("frame", "bd_align", UIParent)
 local ag = aligngrid
 ag:SetFrameStrata("BACKGROUND")
@@ -168,17 +169,17 @@ for i = 1, y do
 	tex:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 0, i*grid_size)
 	tex:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", 0, i*grid_size)
 end
-
+--]]
 
 
 function bdCore:toggleConfig()
 	if (cfg:IsShown()) then
 		cfg:Hide()
-		aligngrid:Hide()
+		--aligngrid:Hide()
 	else
 		cfg:Show()
 		cfg.first.select()
-		aligngrid:Show()
+		--aligngrid:Show()
 		if (bdCore.moving) then
 			cfg.header.lock.x:SetText("Lock")
 		else
