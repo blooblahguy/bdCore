@@ -274,7 +274,7 @@ local function initObject(unit, style, styleFunc, header, ...)
 
 			-- No need to enable this for *target frames.
 			if(not (unit:match('target') or suffix == 'target')) then
-				object:SetAttribute('toggleForVehicle', true)
+				object:SetAttribute('toggleForVehicle', false)
 			end
 
 			-- Other boss and target units are handled by :HandleUnit().
@@ -550,7 +550,7 @@ do
 
 				frame:SetAttribute('*type1', 'target')
 				frame:SetAttribute('*type2', 'togglemenu')
-				frame:SetAttribute('toggleForVehicle', true)
+				frame:SetAttribute('toggleForVehicle', false)
 				frame:SetAttribute('oUF-guessUnit', unit)
 			end
 
