@@ -135,8 +135,8 @@ cfg.lastitem = false
 
 
 -- align grid
-bdGrid.aligngrid = CreateFrame("frame", "bd_align", UIParent)
-local ag = bdGrid.aligngrid
+aligngrid = CreateFrame("frame", "bd_align", UIParent)
+local ag = aligngrid
 ag:SetFrameStrata("BACKGROUND")
 ag:SetAllPoints(UIParent)
 local s_width = GetScreenWidth() * UIParent:GetEffectiveScale()
@@ -174,11 +174,11 @@ end
 function bdCore:toggleConfig()
 	if (cfg:IsShown()) then
 		cfg:Hide()
-		bd.aligngrid:Hide()
+		aligngrid:Hide()
 	else
 		cfg:Show()
 		cfg.first.select()
-		bd.aligngrid:Show()
+		aligngrid:Show()
 		if (bdCore.moving) then
 			cfg.header.lock.x:SetText("Lock")
 		else
