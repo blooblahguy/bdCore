@@ -174,11 +174,11 @@ end
 function bdCore:toggleConfig()
 	if (cfg:IsShown()) then
 		cfg:Hide()
-		bdGrid.aligngrid:Hide()
+		bd.aligngrid:Hide()
 	else
 		cfg:Show()
 		cfg.first.select()
-		bdGrid.aligngrid:Show()
+		bd.aligngrid:Show()
 		if (bdCore.moving) then
 			cfg.header.lock.x:SetText("Lock")
 		else
