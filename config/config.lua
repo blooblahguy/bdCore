@@ -133,12 +133,52 @@ cfg.panels = {}
 cfg.config = {}
 cfg.lastitem = false
 
+
+-- align grid
+bdGrid.aligngrid = CreateFrame("frame", "bd_align", UIParent)
+local ag = bdGrid.aligngrid
+ag:SetFrameStrata("BACKGROUND")
+ag:SetAllPoints(UIParent)
+local s_width = GetScreenWidth() * UIParent:GetEffectiveScale()
+local s_height = GetScreenHeight() * UIParent:GetEffectiveScale()
+
+local grid_size = 20
+
+local x = math.floor(s_width / grid_size)
+local y = math.floor(s_width / grid_size)
+
+for i = 1, x do
+	local tex = ag:CreateTexture(nil,'overlay')
+	tex:SetTexture(bdCore.media.flat)
+	tex:SetVertexColor(0,0,0)
+	if (i == (x/2)) then
+		tex:SetVertexColor(unpack(bdCore.media.blue))
+	end
+	tex:SetPoint("TOPLEFT", UIParent, "TOPLEFT", i*gridsize, 0)
+	tex:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", i*gridsize, 0)
+end
+
+for i = 1, y do
+	local tex = ag:CreateTexture(nil,'overlay')
+	tex:SetTexture(bdCore.media.flat)
+	tex:SetVertexColor(0,0,0)
+	if (i == (x/2)) then
+		tex:SetVertexColor(unpack(bdCore.media.blue))
+	end
+	tex:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 0, i*gridsize)
+	tex:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", 0, i*gridsize)
+end
+
+
+
 function bdCore:toggleConfig()
 	if (cfg:IsShown()) then
 		cfg:Hide()
+		bdGrid.aligngrid:Hide()
 	else
 		cfg:Show()
 		cfg.first.select()
+		bdGrid.aligngrid:Show()
 		if (bdCore.moving) then
 			cfg.header.lock.x:SetText("Lock")
 		else
