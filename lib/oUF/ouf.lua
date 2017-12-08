@@ -550,7 +550,7 @@ do
 
 				frame:SetAttribute('*type1', 'target')
 				frame:SetAttribute('*type2', 'togglemenu')
-				frame:SetAttribute('toggleForVehicle', true)
+				frame:SetAttribute('toggleForVehicle', false)
 				frame:SetAttribute('oUF-guessUnit', unit)
 			end
 
