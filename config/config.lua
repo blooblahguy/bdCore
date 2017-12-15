@@ -164,8 +164,6 @@ for i = 1, x do
 	tex:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", i*grid_size, 0)
 end
 
-print(y)
-
 for i = 1, y do
 	local tex = ag:CreateTexture(nil,'overlay')
 	tex:SetTexture(bdCore.media.flat)
