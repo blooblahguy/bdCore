@@ -29,28 +29,28 @@ gmotd.button:SetScript("OnClick",function(self)
 	gmotd:Hide()
 end)
 
-gmotd:RegisterEvent("GUILD_MOTD")
-gmotd:RegisterEvent("GUILD_ROSTER_UPDATE")
-gmotd:SetScript("OnEvent", function(self, event, message)
-	
-	local guild
-	local msg
-	if (event == "GUILD_MOTD") then
-		msg = message
-		guild = select(1, GetGuildInfo("player"))
-	else
-		msg = GetGuildRosterMOTD()
-		guild = select(1, GetGuildInfo("player"))
-	end
-	
-	if (string.len(msg) > 0 and not c.persistent.gmotd[msg] and guild) then
-		gmotd.msg = msg
-		gmotd.text:SetText(msg)
-		gmotd.header:SetText(guild.." - Message of the Day")
-		gmotd:Show()
-		local numlines = gmotd.text:GetNumLines()
-		gmotd:SetHeight(20+(12.2*numlines))
+bdCore:hookEvent('loaded_bdcore', function()
+	gmotd:RegisterEvent("GUILD_MOTD")
+	gmotd:RegisterEvent("GUILD_ROSTER_UPDATE")
+	gmotd:SetScript("OnEvent", function(self, event, message)
 		
+		local guild
+		local msg
+		if (event == "GUILD_MOTD") then
+			msg = message
+			guild = select(1, GetGuildInfo("player"))
+		else
+			msg = GetGuildRosterMOTD()
+			guild = select(1, GetGuildInfo("player"))
+		end
 		
-	end
+		if (string.len(msg) > 0 and not c.persistent.gmotd[msg] and guild) then
+			gmotd.msg = msg
+			gmotd.text:SetText(msg)
+			gmotd.header:SetText(guild.." - Message of the Day")
+			gmotd:Show()
+			local numlines = gmotd.text:GetNumLines()
+			gmotd:SetHeight(20+(12.2*numlines))
+		end
+	end)
 end)

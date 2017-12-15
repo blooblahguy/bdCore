@@ -13,7 +13,7 @@ interrupt:RegisterEvent('COMBAT_LOG_EVENT_UNFILTERED')
 local function OnEvent(self, event, ...)
 	if (not BD_persistent.General.interrupt) then return end
 	if (select(2,...) ~= 'SPELL_INTERRUPT') then return end
-	if (not UnitIsUnit(select(5,...), 'player') ) then return end
+	if (not UnitExists(select(5, ...)) or not UnitIsUnit(select(5,...), 'player') ) then return end
 	--local class, classFileName = UnitClass("player")
 	--local colors = RAID_CLASS_COLORS[classFileName]
 	--local hex = RGBPercToHex(colors.r,colors.g,colors.b)
