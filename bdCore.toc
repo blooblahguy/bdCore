@@ -10,11 +10,18 @@
 
 core.lua
 
+#ouf
 lib\oUF\oUF.xml
 lib\absorbs.lua
 lib\aurabars.lua
 lib\predict.lua
 
+# Libs
+libs\LibStub.lua
+libs\CallbackHandler-1.0.lua
+libs\LibSharedMedia-3.0.lua
+
+#core
 functions.lua
 api.lua
 auras.lua
@@ -22,6 +29,8 @@ config\defaults.lua
 config\config.lua
 profiles.lua
 loading.lua
+
+#quality of life
 scripts\bigwigsskin.lua
 scripts\gmotd.lua
 scripts\errorblock.lua
