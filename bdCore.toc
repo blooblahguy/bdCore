@@ -10,6 +10,7 @@
 
 core.lua
 
+#ouf
 lib\oUF\oUF.xml
 lib\absorbs.lua
 lib\aurabars.lua
@@ -27,6 +28,8 @@ config\defaults.lua
 config\config.lua
 profiles.lua
 loading.lua
+
+#quality of life
 scripts\bigwigsskin.lua
 scripts\gmotd.lua
 scripts\errorblock.lua

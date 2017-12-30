@@ -344,6 +344,12 @@ bdCore.auras.raid = {
 	["Cosmic Smash"] = true,
 	["Ember of Rage"] = true,
 	["Deadly Scythe"] = true,
+	["Sargeras' Rage"] = true,
+	["Sargeras' Fear"] = true,
+	["Unleashed Rage"] = true,
+	["Crushing Fear"] = true,
+	["Sentence of Sargeras"] = true,
+	["Shattered Bonds"] = true,
 	["Soul Detonation"] = true
 }
 
