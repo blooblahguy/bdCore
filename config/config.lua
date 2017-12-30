@@ -169,7 +169,6 @@ for i = 1, y do
 	tex:SetTexture(bdCore.media.flat)
 	tex:SetVertexColor(0,0,0)
 	if (i == (y/2)) then
-		print(i)
 		tex:SetVertexColor(unpack(bdCore.media.blue))
 	end
 	tex:SetHeight(1)

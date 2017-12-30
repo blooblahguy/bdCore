@@ -15,6 +15,11 @@ lib\absorbs.lua
 lib\aurabars.lua
 lib\predict.lua
 
+#ace libs
+lib\ace\LibStub.lua
+lib\ace\LibSharedMedia-3.0.lua
+lib\ace\LibButtonGlow-1.0.lua
+
 functions.lua
 api.lua
 auras.lua
