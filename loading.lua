@@ -16,6 +16,31 @@ bdCore:SetScript("OnEvent", function(self, event, arg1, arg2, ...)
 
 	if (event == "ADDON_LOADED" and (arg1 == "bdCore" or arg1 == "bdcore")) then
 
+		-- shared media first
+		local shared = LibStub:GetLibrary("LibSharedMedia-3.0")
+		local fonts = shared:List('font')
+		local backgrounds = shared:List('statusbar')
+
+		local font_table = {}
+		local bg_table = {}
+		for k, font in pairs(fonts) do
+			local path = shared:Fetch("font", font)
+			if (font) then
+				bdCore.media.fonts[font] = path
+				table.insert(font_table, font)
+			end
+		end
+		for k, background in pairs(backgrounds) do
+			local path = shared:Fetch("statusbar", background)
+			if (background) then
+				bdCore.media.backgrounds[background] = path
+				table.insert(bg_table, background)
+			end
+		end
+
+		bdCore.general[2].font.options = font_table
+		bdCore.general[3].background.options = bg_table
+
 		local first = false
 		-- create default profile
 		if (not BD_profiles) then
@@ -90,15 +115,11 @@ bdCore:SetScript("OnEvent", function(self, event, arg1, arg2, ...)
 				end
 			end
 		end--]]
-
-		if (first) then
-			bdCore:triggerEvent('bd_first_run')
-			print("The latest bdCore update completely revamps the way it saves your configurations, and now supports profiles! Unfortuantely this means that most of your configurations have been reset. If you experience big issues, make sure that all your bd addons are updated, and then type /bd reset to start fresh. Type /bd config or click the minimap button to open the profiles page and start making changes.")
-		end
 		
 		bdCore:addModule("General", bdCore.general, true)
 		
 		bdCore:triggerEvent('loaded_bdcore')
+		bdCore:triggerEvent('bdcore_redraw')
 		
 	elseif (event == "LOADING_SCREEN_DISABLED") then
 		--bdCore:triggerEvent("bdcore_redraw")

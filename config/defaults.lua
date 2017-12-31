@@ -10,6 +10,8 @@ bdCore.media = {
 	arrowup = "Interface\\Addons\\bdCore\\media\\arrowup.blp",
 	arrowdown = "Interface\\Addons\\bdCore\\media\\arrowdown.blp",
 	shadow = "Interface\\Addons\\bdCore\\media\\shadow.blp",
+	fonts = {},
+	backgrounds = {},
 	border = {.06, .08, .09, 1},
 	backdrop = {.11,.15,.18, 1},
 	red = {.62,.17,.18,1},
@@ -17,18 +19,51 @@ bdCore.media = {
 	green = {.1, .7, 0.3, 1},
 }
 
-bdCore.general = {}
-bdCore.general[#bdCore.general+1] = {border = {
-	type = "slider",
-	value = 2,
-	min = 0,
-	max = 2,
-	step = 1,
-	label = "Border Width",
-	callback = function() bdCore:triggerEvent("bdcore_redraw") end
-}}
+-- register everything with shared media
+local shared = LibStub:GetLibrary("LibSharedMedia-3.0")
+shared:Register("font", "bdFont", bdCore.media.font)
+shared:Register("statusbar", "bdSmooth", bdCore.media.smooth)
+shared:Register("background", "bdSmooth", bdCore.media.smooth)
+shared:Register("statusbar", "Flat", bdCore.media.flat)
+shared:Register("background", "Flat", bdCore.media.flat)
+shared:Register("border", "bdShadow", bdCore.media.shadow)
 
 -- general
+	bdCore.general = {}
+	bdCore.general[#bdCore.general+1] = {warning = {
+		type = "text",
+		value = "Changing font and background are still a work in progress."
+	}}
+	bdCore.general[#bdCore.general+1] = {font = {
+		type = "dropdown",
+		value = "bdFont",
+		options = {},
+		label = "Font",
+		persistent = true,
+		tooltip = "The font which all bdAddons use as their font.",
+		callback = function() bdCore:triggerEvent("bdcore_redraw") end
+	}}
+
+	bdCore.general[#bdCore.general+1] = {background = {
+		type = "dropdown",
+		value = "bdSmooth",
+		options = {},
+		label = "Backgrounds Texture",
+		persistent = true,
+		tooltip = "The texture which all bdAddons use as their background.",
+		callback = function() bdCore:triggerEvent("bdcore_redraw") end
+	}}
+
+	bdCore.general[#bdCore.general+1] = {border = {
+		type = "slider",
+		value = 2,
+		min = 0,
+		max = 2,
+		step = 1,
+		label = "Border Width",
+		callback = function() bdCore:triggerEvent("bdcore_redraw") end
+	}}
+
 	bdCore.general[#bdCore.general+1] = {errorblock = {
 		type = "checkbox",
 		value = true,

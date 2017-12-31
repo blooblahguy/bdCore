@@ -1,5 +1,15 @@
 local bdCore, c, f = select(2, ...):unpack()
 
+-- get media
+function bdCore:getMedia(type, name)
+	if (type == "font") then
+		return bdCore.media.fonts[name]
+	end
+	if (type == "background") then
+		return bdCore.media.backgrounds[name]
+	end
+end
+
 bdCore.moving = false
 bdCore.moveFrames = {}
 -- add to our movable list
@@ -228,7 +238,8 @@ end
 
 -- make it purdy
 function bdCore:setBackdrop(frame,resize)
-	if (frame.background) then return false end
+	if (frame.background) then return end
+
 	
 	frame.background = frame:CreateTexture(nil, "BACKGROUND", nil, -7)
 	frame.background:SetTexture(bdCore.media.flat)
@@ -243,8 +254,11 @@ function bdCore:setBackdrop(frame,resize)
 	
 	if (resize ~= false) then
 		bdCore:hookEvent("bdcore_redraw",function()
+			local background = bdCore:getMedia("background", c.persistent['General'].background)
+			local font = bdCore:getMedia("font", c.persistent['General'].font)
+
 			local border = c.persistent['General'].border or bdCore.general.border
-			
+			frame.background:SetTexture(background)			
 			frame.border:SetPoint("TOPLEFT", frame, "TOPLEFT", -border, border)
 			frame.border:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", border, -border)
 		end)

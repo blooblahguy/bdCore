@@ -24,18 +24,21 @@ end
 --local COMBAT = C.Medias.DamageFont
 --local NUMBER = C.Medias.Font
 
-local NORMAL = bdCore.media.font
-local COMBAT = bdCore.media.font
-local NUMBER = bdCore.media.font
+
 -- local COMBAT = [[Interface\AddOns\bUI\core\font.ttf]]
 -- local NUMBER = [[Interface\AddOns\bUI\core\font.ttf]]
 
 UIDROPDOWNMENU_DEFAULT_TEXT_HEIGHT = 12
 CHAT_FONT_HEIGHTS = {12, 13, 14, 15, 16, 17, 18, 19, 20}
 
--- Base fonts
-bdCore:hookEvent("loaded_bdcore", function()
+local function changeFonts()
 	if (not c.persistent.General.changefonts) then return end
+
+	local font = bdCore:getMedia("font", c.persistent.General.font )
+
+	local NORMAL = font
+	local COMBAT = font
+	local NUMBER = font
 	
 	UNIT_NAME_FONT = NORMAL
 	DAMAGE_TEXT_FONT = COMBAT
@@ -74,6 +77,9 @@ bdCore:hookEvent("loaded_bdcore", function()
 	SetFont(FriendsFont_Small, NORMAL, 13)
 	SetFont(FriendsFont_Large, NORMAL, 14)
 	SetFont(FriendsFont_UserText, NORMAL, 13)
+end
 
-end)
+-- Base fonts
+bdCore:hookEvent("loaded_bdcore", changeFonts)
+bdCore:hookEvent("bdcore_redraw", changeFonts)
 

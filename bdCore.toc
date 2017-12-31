@@ -18,6 +18,7 @@ lib\predict.lua
 
 #ace libs
 lib\ace\LibStub.lua
+lib\ace\CallbackHandler-1.0.lua
 lib\ace\LibSharedMedia-3.0.lua
 lib\ace\LibButtonGlow-1.0.lua
 
