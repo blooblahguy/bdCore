@@ -23,6 +23,7 @@ lib\ace\LibSharedMedia-3.0.lua
 lib\ace\LibButtonGlow-1.0.lua
 
 functions.lua
+media.lua
 api.lua
 auras.lua
 config\defaults.lua
