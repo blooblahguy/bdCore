@@ -357,7 +357,7 @@ function bdCore:addModule(name, configs, persistent)
 		end)
 		
 		--scrollframe 
-		--[[local scrollframe = CreateFrame("ScrollFrame", nil, panel) 
+		local scrollframe = CreateFrame("ScrollFrame", nil, panel) 
 		scrollframe:SetPoint("TOPRIGHT", panel, "TOPRIGHT", 0, 0) 
 		scrollframe:SetSize(panel:GetWidth(), panel:GetHeight()) 
 		--scrollframe:SetAllPoints(panel) 
@@ -386,7 +386,7 @@ function bdCore:addModule(name, configs, persistent)
 		
 		panel:SetScript("OnMouseWheel", function(self, delta)
 			self.scrollbar:SetValue(self.scrollbar:GetValue() - (delta*20))
-		end)--]]
+		end)
 		
 		--panels.lastcontent = panel.content
 		--panel.scrollheight = panel.scrollheight or 0
@@ -395,7 +395,9 @@ function bdCore:addModule(name, configs, persistent)
 		panels.tabstarted = true
 		table.insert(panels.tabs.children, panel)
 		panel.lastFrame = nil
-		return panel
+
+
+		return panel.content
 	end
 	
 	cfg.options[name] = navitem
