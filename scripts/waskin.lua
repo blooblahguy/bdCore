@@ -9,11 +9,11 @@ wa_skin:SetScript("OnEvent", function(self, event,addon)
 	local font = bdCore.media.font --"fonts\\ARIALN.ttf"
 
 	local function Skin_WeakAuras(frame)
-		if (frame.SetBackdropColor) then
+		--[[if (frame.SetBackdropColor) then
 			frame:SetBackdrop({bgFile = flat, edgeFile = flat, edgeSize = 2})
 			frame:SetBackdropColor(0,0,0,0.1)
 			frame:SetBackdropBorderColor(0,0,0,1)
-		end
+		end--]]
 
 		if frame.icon then
 			frame.icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
