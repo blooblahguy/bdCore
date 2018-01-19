@@ -147,34 +147,37 @@ local s_height = GetScreenHeight() --* UIParent:GetEffectiveScale()
 
 if (GetCurrentResolution()) then
 	local resolution = ({GetScreenResolutions()})[GetCurrentResolution()]
-	s_width, s_height = strsplit("x", resolution);
-	local grid_size = 40
+	if (resolution) then
+		
+		s_width, s_height = strsplit("x", resolution);
+		local grid_size = 40
 
-	local x = math.floor(s_width / grid_size)
-	local y = math.floor(s_height / grid_size)
+		local x = math.floor(s_width / grid_size)
+		local y = math.floor(s_height / grid_size)
 
-	for i = 1, x do
-		local tex = ag:CreateTexture(nil,'overlay')
-		tex:SetTexture(bdCore.media.flat)
-		tex:SetVertexColor(0,0,0)
-		if (i == (x/2)) then
-			tex:SetVertexColor(unpack(bdCore.media.blue))
+		for i = 1, x do
+			local tex = ag:CreateTexture(nil,'overlay')
+			tex:SetTexture(bdCore.media.flat)
+			tex:SetVertexColor(0,0,0)
+			if (i == (x/2)) then
+				tex:SetVertexColor(unpack(bdCore.media.blue))
+			end
+			tex:SetWidth(1)
+			tex:SetPoint("TOPLEFT", UIParent, "TOPLEFT", i*grid_size, 0)
+			tex:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", i*grid_size, 0)
 		end
-		tex:SetWidth(1)
-		tex:SetPoint("TOPLEFT", UIParent, "TOPLEFT", i*grid_size, 0)
-		tex:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", i*grid_size, 0)
-	end
 
-	for i = 1, y do
-		local tex = ag:CreateTexture(nil,'overlay')
-		tex:SetTexture(bdCore.media.flat)
-		tex:SetVertexColor(0,0,0)
-		if (i == (y/2)) then
-			tex:SetVertexColor(unpack(bdCore.media.blue))
+		for i = 1, y do
+			local tex = ag:CreateTexture(nil,'overlay')
+			tex:SetTexture(bdCore.media.flat)
+			tex:SetVertexColor(0,0,0)
+			if (i == (y/2)) then
+				tex:SetVertexColor(unpack(bdCore.media.blue))
+			end
+			tex:SetHeight(1)
+			tex:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 0, -i*grid_size)
+			tex:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", 0, -i*grid_size)
 		end
-		tex:SetHeight(1)
-		tex:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 0, -i*grid_size)
-		tex:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", 0, -i*grid_size)
 	end
 end
 
