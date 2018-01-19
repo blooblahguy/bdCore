@@ -103,6 +103,11 @@ shared:Register("border", "bdShadow", bdCore.media.shadow)
 		type = "tab",
 		value = "Skinning"
 	}}
+	bdCore.general[#bdCore.general+1] = {skingmotd = {
+		type = "checkbox",
+		value = true,
+		label = "Show popup GMOTD",
+	}}
 	bdCore.general[#bdCore.general+1] = {skinwas = {
 		type = "checkbox",
 		value = false,
