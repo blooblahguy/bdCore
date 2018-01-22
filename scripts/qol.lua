@@ -6,6 +6,17 @@ ObjectiveTrackerFrame:ClearAllPoints()
 ObjectiveTrackerFrame:SetPoint()
 --]]
 
+function bdCore:pixelPerfection() 
+	local scale
+	local uiParentWidth, uiParentHeight
+
+	local s_width, s_height = GetPhysicalScreenSize()
+
+	bdCore.scale = 768/s_height
+
+	UIParent:SetScale(bdCore.scale)
+end
+
 -- Load all quality of life modules in one place
 bdCore:hookEvent("loaded_bdcore", function()
 	local config = c.persistent.General

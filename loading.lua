@@ -9,11 +9,8 @@ bdCore:SetScript("OnEvent", function(self, event, arg1, arg2, ...)
 	-- set UIScale manually, since the CVAR won't let you go beneath 0.64 (why blizz??)
 	if (not InCombatLockdown()) then
 		if (BD_persistent and BD_persistent['General'] and BD_persistent['General'].forcescale) then
-			local resolution = ({GetScreenResolutions()})[GetCurrentResolution()]
-			if (resolution) then
-				bdCore.scale = 768/string.match(({GetScreenResolutions()})[GetCurrentResolution()], "%d+x(%d+)")
-				UIParent:SetScale(bdCore.scale)
-			end
+
+			bdCore:pixelPerfection() 
 		end
 	end
 
