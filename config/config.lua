@@ -103,10 +103,10 @@ cfg.header.lock:SetScript("OnClick", function(self)
 	bdCore.toggleLock()
 	if (self.x:GetText() == "Lock") then
 		self.x:SetText("Unlock")
-		aligngrid:Hide()
+	--	bdCore.aligngrid:Hide()
 	else
 		self.x:SetText("Lock")
-		aligngrid:Show()
+		--bdCore.aligngrid:Show()
 	end
 end)
 
@@ -144,8 +144,8 @@ ag:SetFrameStrata("BACKGROUND")
 ag:SetAllPoints(UIParent)
 local s_width, s_height = GetPhysicalScreenSize()
 		
-local grid_size_x =math.floor( s_width / 38)
-local grid_size_y = math.floor(s_height / 24)
+local grid_size_x = math.floor( s_width / 40)
+local grid_size_y = math.floor(s_height / 32)
 
 local x = math.floor(s_width / grid_size_x)
 local y = math.floor(s_height / grid_size_y)
