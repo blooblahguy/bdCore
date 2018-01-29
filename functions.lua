@@ -284,6 +284,8 @@ function bdCore:makeMovable(frame,resize,name)
 
 	cont:position()
 
+	moveContainer:EnableMouse(false)
+
 	return moveContainer
 end
 
