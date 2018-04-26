@@ -323,6 +323,9 @@ local function UNIT_SPELLCAST_CHANNEL_START(self, event, unit, _, _, _, spellID)
 
 	local element = self.Castbar
 	local name, _, _, texture, startTime, endTime, _, notInterruptible = UnitChannelInfo(unit)
+	if (bdCore.isBFA) then
+		name, _, texture, startTime, endTime, _, notInterruptible = UnitChannelInfo(unit)
+	end
 	if(not name) then
 		return
 	end
@@ -387,6 +390,9 @@ local function UNIT_SPELLCAST_CHANNEL_UPDATE(self, event, unit, _, _, _, spellID
 
 	local element = self.Castbar
 	local name, _, _, _, startTime, endTime = UnitChannelInfo(unit)
+	if (bdCore.isBFA) then
+		name, _, _, startTime, endTime = UnitChannelInfo(unit)
+	end
 	if(not name or not element:IsShown()) then
 		return
 	end
