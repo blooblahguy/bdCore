@@ -142,6 +142,10 @@ local function updateIcon(element, unit, index, offset, filter, isDebuff, visibl
 		nameplateShowSelf, spellID, canApply, isBossDebuff, casterIsPlayer, nameplateShowAll,
 		timeMod, effect1, effect2, effect3 = UnitAura(unit, index, filter)
 
+		if (bdCore.isBFA) then
+			name, spellID, duration, s1, s2, s3, caster, isStealable, nameplateShowSelf, expiration, canApply, isBossDebuff, casterIsPlayer, nameplateShowAll, count = UnitAura(unit, index, filter)
+		end
+
 	if(name) then
 		local position = visible + offset + 1
 		local button = element[position]

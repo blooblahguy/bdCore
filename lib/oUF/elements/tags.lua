@@ -481,6 +481,10 @@ local tagEvents = {
 	['powercolor']          = 'UNIT_DISPLAYPOWER',
 }
 
+if (bdCore.isBFA) then
+	tagEvents['curpp'] = "UNIT_POWER_UPDATE"
+end
+
 local unitlessEvents = {
 	PLAYER_LEVEL_UP = true,
 	PLAYER_UPDATE_RESTING = true,

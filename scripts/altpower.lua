@@ -18,12 +18,17 @@ bdCore:hookEvent("loaded_bdcore", function()
 	powerbar.text:SetJustifyH("CENTER")
 
 	--Event handling
-	powerbar:RegisterEvent("UNIT_POWER")
-	powerbar:RegisterEvent("UNIT_POWER_BAR_SHOW")
-	powerbar:RegisterEvent("UNIT_POWER_BAR_HIDE")
+	if (bdCore.isBFA) then
+		powerbar:RegisterEvent("UNIT_POWER_UPDATE")
+	else
+		powerbar:RegisterEvent("UNIT_POWER")
+	end
+	-- powerbar:RegisterEvent("UNIT_POWER_BAR_SHOW")
+	-- powerbar:RegisterEvent("UNIT_POWER_BAR_HIDE")
 	powerbar:RegisterEvent("PLAYER_ENTERING_WORLD")
 	powerbar:EnableMouse(false)
 	powerbar:SetScript("OnEvent", function(self, event, arg1)
+		-- print(CombatLogGetCurrentEventInfo())
 		if (not c.persistent.General.alteratepowerbar) then 
 			PlayerPowerBarAlt:RegisterEvent("UNIT_POWER_BAR_SHOW")
 			PlayerPowerBarAlt:RegisterEvent("UNIT_POWER_BAR_HIDE")

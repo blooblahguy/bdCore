@@ -258,7 +258,11 @@ local function Enable(self, unit)
 		if(element.frequentUpdates and (unit == 'player' or unit == 'pet')) then
 			self:RegisterEvent('UNIT_POWER_FREQUENT', Path)
 		else
-			self:RegisterEvent('UNIT_POWER', Path)
+			if (bdCore.isBFA) then
+				self:RegisterEvent('UNIT_POWER_UPDATE', Path)
+			else
+				self:RegisterEvent('UNIT_POWER', Path)
+			end
 		end
 
 		self:RegisterEvent('UNIT_POWER_BAR_SHOW', Path)

@@ -13,8 +13,14 @@ function bdCore:pixelPerfection()
 	local s_width, s_height = GetPhysicalScreenSize()
 
 	bdCore.scale = 768/s_height
-
+	bdCore.forceScale = true
+	hooksecurefunc(UIParent, "SetScale", function()
+		if (not bdCore.forceScale) then
+			bdCore:pixelPerfection()
+		end
+	end)
 	UIParent:SetScale(bdCore.scale)
+	bdCore.forceScale = false
 end
 
 -- Load all quality of life modules in one place
