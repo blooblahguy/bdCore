@@ -143,6 +143,7 @@ local function updateIcon(element, unit, index, offset, filter, isDebuff, visibl
 		timeMod, effect1, effect2, effect3 = UnitAura(unit, index, filter)
 
 		if (bdCore.isBFA) then
+			rank = nil
 			name, texture, count, dispelType, duration, expiration, caster, isStealable, nameplateShowSelf, spellID, canApply, isBossDebuff, casterIsPlayer, nameplateShowAll, timeMod, effect1, effect2, effect3 = UnitAura(unit, index, filter)
 		end
 
