@@ -23,8 +23,8 @@ bdCore:hookEvent("loaded_bdcore", function()
 	else
 		powerbar:RegisterEvent("UNIT_POWER")
 	end
-	-- powerbar:RegisterEvent("UNIT_POWER_BAR_SHOW")
-	-- powerbar:RegisterEvent("UNIT_POWER_BAR_HIDE")
+	powerbar:RegisterEvent("UNIT_POWER_BAR_SHOW")
+	powerbar:RegisterEvent("UNIT_POWER_BAR_HIDE")
 	powerbar:RegisterEvent("PLAYER_ENTERING_WORLD")
 	powerbar:EnableMouse(false)
 	powerbar:SetScript("OnEvent", function(self, event, arg1)

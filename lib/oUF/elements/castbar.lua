@@ -100,7 +100,10 @@ local function UNIT_SPELLCAST_START(self, event, unit)
 	if(self.unit ~= unit and self.realUnit ~= unit) then return end
 
 	local element = self.Castbar
-	local name, text, texture, startTime, endTime, _, castID, notInterruptible, spellID = UnitCastingInfo(unit)
+	local name, _, text, texture, startTime, endTime, _, castID, notInterruptible, spellID = UnitCastingInfo(unit)
+	if (bdCore.isBFA) then
+		name, text, texture, startTime, endTime, _, castID, notInterruptible, spellID = UnitCastingInfo(unit)
+	end
 	if(not name) then
 		return element:Hide()
 	end
