@@ -37,7 +37,7 @@ bdCore.config = engine[2]
 bdCore.frames = engine[3]
 local explevel = GetExpansionLevel()
 bdCore.isLegion = explevel == 6 or false
-bdCore.isBFA = explevel == 7 or false
+bdCore.isBFA = true
 bdCore.explevel = explevel
 
 bdCore.font = CreateFont("bdCore.font")
