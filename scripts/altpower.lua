@@ -18,11 +18,7 @@ bdCore:hookEvent("loaded_bdcore", function()
 	powerbar.text:SetJustifyH("CENTER")
 
 	--Event handling
-	if (bdCore.isBFA) then
-		powerbar:RegisterEvent("UNIT_POWER_UPDATE")
-	else
-		powerbar:RegisterEvent("UNIT_POWER")
-	end
+	powerbar:RegisterEvent("UNIT_POWER_UPDATE")
 	powerbar:RegisterEvent("UNIT_POWER_BAR_SHOW")
 	powerbar:RegisterEvent("UNIT_POWER_BAR_HIDE")
 	powerbar:RegisterEvent("PLAYER_ENTERING_WORLD")
