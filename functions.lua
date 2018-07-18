@@ -552,7 +552,7 @@ function bdCore:isBlacklisted(name,caster)
 end
 
 -- filter debuffs/buffs
-function bdCore:filterAura(name,caster,invert)
+function bdCore:filterAura(name, caster, invert)
 	--local name = string.lower(name)
 	local blacklist = BD_persistent["Auras"]["blacklist"]
 	local whitelist = BD_persistent["Auras"]["whitelist"]
