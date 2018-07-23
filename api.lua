@@ -90,13 +90,17 @@ end--]]
 function bdCore:StripTextures(Object, Text)
 	for i = 1, Object:GetNumRegions() do
 		local region = select(i, Object:GetRegions())
-		
-		if region:GetObjectType() == "Texture" then
-			region:SetTexture(nil)
-		elseif (Text) then
-			region:Hide(0)
-			region.Show = function() end
-			region:SetAlpha(0)
+
+		if (not region.protected) then
+			if region:GetObjectType() == "Texture" then
+				region:SetTexture(nil)
+				region.Show = function() end
+				region:SetAlpha(0)
+			elseif (Text) then
+				region:Hide(0)
+				region.Show = function() end
+				region:SetAlpha(0)
+			end
 		end
 	end	
 end

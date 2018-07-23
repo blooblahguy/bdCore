@@ -453,12 +453,14 @@ function bdCore:setBackdrop(frame,resize)
 	frame.background:SetTexture(bdCore.media.flat)
 	frame.background:SetAllPoints(frame)
 	frame.background:SetVertexColor(unpack(bdCore.media.backdrop))
+	frame.background.protected = true
 	
 	frame.border = frame:CreateTexture(nil, "BACKGROUND", nil, -8)
 	frame.border:SetTexture(bdCore.media.flat)
 	frame.border:SetPoint("TOPLEFT", frame, "TOPLEFT", -2, 2)
 	frame.border:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", 2, -2)
 	frame.border:SetVertexColor(unpack(bdCore.media.border))
+	frame.border.protected = true
 	
 	if (resize ~= false) then
 		bdCore:hookEvent("bdcore_redraw",function()
