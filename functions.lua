@@ -1,5 +1,8 @@
 local bdCore, c, f = select(2, ...):unpack()
 
+-- better to kill things with one func ref
+function bdCore:noop() return end
+
 -- get media
 function bdCore:getMedia(type, name)
 	if (type == "font") then

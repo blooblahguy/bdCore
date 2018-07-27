@@ -24,8 +24,8 @@ local shared = LibStub:GetLibrary("LibSharedMedia-3.0")
 shared:Register("font", "bdFont", bdCore.media.font)
 shared:Register("statusbar", "bdSmooth", bdCore.media.smooth)
 shared:Register("background", "bdSmooth", bdCore.media.smooth)
-shared:Register("statusbar", "Flat", bdCore.media.flat)
-shared:Register("background", "Flat", bdCore.media.flat)
+shared:Register("statusbar", "bdFlat", bdCore.media.flat)
+shared:Register("background", "bdFlat", bdCore.media.flat)
 shared:Register("border", "bdShadow", bdCore.media.shadow)
 
 -- general

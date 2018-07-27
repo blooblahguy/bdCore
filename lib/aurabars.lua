@@ -191,7 +191,7 @@ end
 --[[
 		Default filter
 ]]--
-local function DefaultFilter(name, rank, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable)
+local function DefaultFilter(name, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable)
 	if unitCaster == 'player' then
 		return true
 	end
@@ -214,14 +214,13 @@ local function Update(self, event, unit)
 	local auras = {}
 	local lastAuraIndex = 0
 	for index = 1, 40 do
-		local name, rank, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable = UnitAura(unit, index, helpOrHarm)
+		local name, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable = UnitAura(unit, index, helpOrHarm)
 		if not name then break end
 		
-		if (self.AuraBars.filter or DefaultFilter)(name, rank, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable) then
+		if (self.AuraBars.filter or DefaultFilter)(name, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable) then
 			lastAuraIndex = lastAuraIndex + 1
 			auras[lastAuraIndex] = {}
 			auras[lastAuraIndex].name = name
-			auras[lastAuraIndex].rank = rank
 			auras[lastAuraIndex].icon = icon
 			auras[lastAuraIndex].count = count
 			auras[lastAuraIndex].debuffType = debuffType
