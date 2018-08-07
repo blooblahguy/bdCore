@@ -12,7 +12,7 @@ end
 interrupt:RegisterEvent('COMBAT_LOG_EVENT_UNFILTERED')
 local function OnEvent(self, event)
 	
-	if (not BD_persistent.General.interrupt() ) then return end
+	if (not BD_persistent.General.interrupt ) then return end
 	if (select(2, CombatLogGetCurrentEventInfo() ) ~= 'SPELL_INTERRUPT') then return end
 	if (not UnitExists(select(5, CombatLogGetCurrentEventInfo() )) or not UnitIsUnit(select(5, CombatLogGetCurrentEventInfo() ), 'player') ) then return end
 	--local class, classFileName = UnitClass("player")
