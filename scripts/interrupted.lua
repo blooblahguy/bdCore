@@ -10,14 +10,15 @@ local function RGBPercToHex(r, g, b)
 end
 
 interrupt:RegisterEvent('COMBAT_LOG_EVENT_UNFILTERED')
-local function OnEvent(self, event, ...)
-	if (not BD_persistent.General.interrupt) then return end
-	if (select(2,...) ~= 'SPELL_INTERRUPT') then return end
-	if (not UnitExists(select(5, ...)) or not UnitIsUnit(select(5,...), 'player') ) then return end
+local function OnEvent(self, event)
+	
+	if (not BD_persistent.General.interrupt() ) then return end
+	if (select(2, CombatLogGetCurrentEventInfo() ) ~= 'SPELL_INTERRUPT') then return end
+	if (not UnitExists(select(5, CombatLogGetCurrentEventInfo() )) or not UnitIsUnit(select(5, CombatLogGetCurrentEventInfo() ), 'player') ) then return end
 	--local class, classFileName = UnitClass("player")
 	--local colors = RAID_CLASS_COLORS[classFileName]
 	--local hex = RGBPercToHex(colors.r,colors.g,colors.b)
-	local arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15 = ...
+	local arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15 = CombatLogGetCurrentEventInfo ()
 	
 	SendChatMessage(UnitName("player")..' interrupted ' .. GetSpellLink(arg15), channel)
 end
