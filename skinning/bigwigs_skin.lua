@@ -1,6 +1,4 @@
 local bdCore, c, f = select(2, ...):unpack()
-local interrupt = CreateFrame('frame')
-local channel = 'SAY'
 
 local f = CreateFrame("Frame")
 

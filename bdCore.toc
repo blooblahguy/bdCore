@@ -1,46 +1,11 @@
 ## Interface: 80000
 ## Title: |cffA02C2Fbd|rCore
-## Version: 0
+## Version: 1
 ## DefaultState: Enabled
 ## LoadOnDemand: 0
-## SavedVariables: bdCoreData
 ## SavedVariables: BD_persistent
 ## SavedVariables: BD_profiles
 ## SavedVariablesPerCharacter: BD_user
 
-core.lua
-
-#ouf
-lib\oUF\oUF.xml
-lib\absorbs.lua
-lib\aurabars.lua
-lib\predict.lua
-
-#ace libs
-lib\ace\LibStub.lua
-lib\ace\CallbackHandler-1.0.lua
-
-lib\ace\LibSharedMedia-3.0.lua
-lib\ace\LibButtonGlow-1.0.lua
-
-functions.lua
-media.lua
-api.lua
-auras.lua
-config\defaults.lua
-config\config.lua
-profiles.lua
-loading.lua
-
-#quality of life
-scripts\bigwigsskin.lua
-scripts\gmotd.lua
-scripts\errorblock.lua
-scripts\interrupted.lua
-scripts\doubleclickbo.lua
-scripts\fontchange.lua
-scripts\altpower.lua
-scripts\autohide.lua
-scripts\qol.lua
-scripts\waskin.lua
-scripts\fancymenu.lua
+init.lua
+bdcore.xml

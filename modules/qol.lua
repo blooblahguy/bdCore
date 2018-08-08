@@ -1,11 +1,5 @@
 local bdCore, c, s = select(2, ...):unpack()
 
---[[
-local oh = CreateFrame("frame","bd Quest Holder", )
-ObjectiveTrackerFrame:ClearAllPoints()
-ObjectiveTrackerFrame:SetPoint()
---]]
-
 function bdCore:pixelPerfection() 
 	local scale
 	local uiParentWidth, uiParentHeight
@@ -29,6 +23,4 @@ bdCore:hookEvent("loaded_bdcore", function()
 
 	-- increase equipment sets per player
 	setglobal("MAX_EQUIPMENT_SETS_PER_PLAYER", 100)
-
-
 end)
