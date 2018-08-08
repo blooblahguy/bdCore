@@ -6,13 +6,6 @@ bdCore:RegisterEvent("PLAYER_REGEN_DISABLED")
 bdCore:RegisterEvent("LOADING_SCREEN_DISABLED")
 bdCore:RegisterEvent("PLAYER_ENTERING_WORLD")
 bdCore:SetScript("OnEvent", function(self, event, arg1, arg2, ...)
-	-- set UIScale manually, since the CVAR won't let you go beneath 0.64 (why blizz??)
-	if (not InCombatLockdown()) then
-		if (BD_persistent and BD_persistent['General'] and BD_persistent['General'].forcescale) then
-			bdCore:pixelPerfection() 
-		end
-	end
-
 
 	if (event == "ADDON_LOADED" and (arg1 == "bdCore" or arg1 == "bdcore")) then
 
@@ -123,7 +116,6 @@ bdCore:SetScript("OnEvent", function(self, event, arg1, arg2, ...)
 		
 	elseif (event == "LOADING_SCREEN_DISABLED") then
 		--bdCore:triggerEvent("bdcore_redraw")
-		
 	elseif (event == "PLAYER_REGEN_DISABLED") then
 		bdCore:triggerEvent('combat_enter')
 	elseif (event == "PLAYER_REGEN_ENABLED") then
