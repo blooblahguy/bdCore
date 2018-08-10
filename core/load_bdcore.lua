@@ -110,6 +110,8 @@ bdCore:SetScript("OnEvent", function(self, event, arg1, arg2, ...)
 		end--]]
 		
 		bdCore:addModule("General", bdCore.general, true)
+
+		print(bdCore.colorString.." loaded. Type /bd for configuration. We're on Discord! https://discord.gg/2SK3bEw")
 		
 		bdCore:triggerEvent('loaded_bdcore')
 		bdCore:triggerEvent('bdcore_redraw')

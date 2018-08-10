@@ -1,70 +1,119 @@
 local bdCore, c, f = select(2, ...):unpack()
 
+-- some javascript i'm going to use to create snap functionality
+--[[
+	window.canvas = new fabric.Canvas('fabriccanvas');
+	window.counter = 0;
+	var newleft = 0,
+		edgedetection = 20, //pixels to snap
+		canvasWidth = document.getElementById('fabriccanvas').width,
+		canvasHeight = document.getElementById('fabriccanvas').height;
 
+	canvas.selection = false;
+	plusrect();
+	plusrect();
+	plusrect();
+
+	function plusrect(top, left, width, height, fill) {
+		window.canvas.add(new fabric.Rect({
+			top: 300,
+			name: 'rectangle ' + window.counter,
+			left: 0 + newleft,
+			width: 100,
+			height: 100,
+			fill: 'rgba(' + (Math.floor(Math.random() * 256)) + ',' + (Math.floor(Math.random() * 256)) + ',' + (Math.floor(Math.random() * 256)) + ', 0.75)',
+			lockRotation: true,
+			originX: 'left',
+			originY: 'top',
+			cornerSize: 15,
+			hasRotatingPoint: false,
+			perPixelTargetFind: true,
+			minScaleLimit: 1,
+			maxHeight: document.getElementById("fabriccanvas").height,
+			maxWidth: document.getElementById("fabriccanvas").width,
+		}));
+		window.counter++;
+		newleft += 200;
+	}
+	this.canvas.on('object:moving', function (e) {
+		var obj = e.target;
+		obj.setCoords(); //Sets corner position coordinates based on current angle, width and height
+
+		if(obj.getLeft() < edgedetection) {
+			obj.setLeft(0);
+		}
+
+		if(obj.getTop() < edgedetection) {
+			obj.setTop(0);
+		}
+
+		if((obj.getWidth() + obj.getLeft()) > (canvasWidth - edgedetection)) {
+			obj.setLeft(canvasWidth - obj.getWidth());
+		}
+
+		if((obj.getHeight() + obj.getTop()) > (canvasHeight - edgedetection)) {
+			obj.setTop(canvasHeight - obj.getHeight());
+		}
+
+		canvas.forEachObject(function (targ) {
+			activeObject = canvas.getActiveObject();
+
+			if (targ === activeObject) return;
+
+
+			if (Math.abs(activeObject.oCoords.tr.x - targ.oCoords.tl.x) < edgedetection) {
+				activeObject.left = targ.left - activeObject.currentWidth;
+			}
+			if (Math.abs(activeObject.oCoords.tl.x - targ.oCoords.tr.x) < edgedetection) {
+				activeObject.left = targ.left + targ.currentWidth;
+			}
+			if (Math.abs(activeObject.oCoords.br.y - targ.oCoords.tr.y) < edgedetection) {
+				activeObject.top = targ.top - activeObject.currentHeight;
+			}
+			if (Math.abs(targ.oCoords.br.y - activeObject.oCoords.tr.y) < edgedetection) {
+				activeObject.top = targ.top + targ.currentHeight;
+			}
+			if (activeObject.intersectsWithObject(targ) && targ.intersectsWithObject(activeObject)) {
+				targ.strokeWidth = 10;
+				targ.stroke = 'red';
+			} else {
+				targ.strokeWidth = 0;
+				targ.stroke = false;
+			}
+			if (!activeObject.intersectsWithObject(targ)) {
+				activeObject.strokeWidth = 0;
+				activeObject.stroke = false;
+			}
+		});
+	});
+ ]]
 bdCore.moving = false
 bdCore.moveFrames = {}
 
+bdCore.MoverSettings = {
+	snapToEdges: true -- snap to t/r/b/l of objects
+	, snapToCorners: true -- snap to corner of objects
+	, snapToGrid: true -- snap to the alignment grid
+	, snapThreshold: 20 -- pixels to snap
+}
+
 -- add to our movable list
-function bdCore:makeMovable(frame, resize, name)
-	if not resize then resize = true end
-	local border = c.persistent['General'].border
-	if (not name) then
-		name = frame:GetName();
-	end
-	local height = frame:GetHeight()
-	local width = frame:GetWidth()
-	local point, relativeTo, relativePoint, xOfs, yOfs = frame:GetPoint()
-	relativeTo = relativeTo:GetName()
+function bdCore:makeMovable(frame, resize, rename)
+	-- setting default variables
+	if resize == nil then resize = true end
+	if rename == nil then rename = frame:GetName() end
 
-	local moveContainer = CreateFrame("frame", "bdCore_"..name, UIParent)
-	moveContainer.text = moveContainer:CreateFontString(moveContainer:GetName().."_Text")
-	moveContainer.frame = frame
-	frame.moveContainer = moveContainer
-	if (resize) then
-		hooksecurefunc(frame,"SetSize",function() 
-			local height = frame:GetHeight()
-			local width = frame:GetWidth()
-			moveContainer:SetSize(width+2+border, height+2+border)
-		end)
-	end
-	moveContainer:SetSize(width+4, height+4)
-	moveContainer:SetBackdrop({bgFile = bdCore.media.flat, edgeFile = bdCore.media.flat, edgeSize = 1})
-	moveContainer:SetBackdropColor(0,0,0,.8)
-	moveContainer:SetBackdropBorderColor(unpack(bdCore.media.blue))
-	moveContainer:SetFrameStrata("BACKGROUND")
-	moveContainer:SetClampedToScreen(true)
-	moveContainer:SetAlpha(0)
+	local Mover = CreateFrame("frame", "bdCore_"..rename, UIParent)
+	function Mover:startMoving() {
+		local x, y = GetCursorPosition();
+	}
+	function Mover:stopMoving() {
+		local x, y = GetCursorPosition();
+	}
 
-	moveContainer.controls = CreateFrame("frame", nil, moveContainer)
-	local cont = moveContainer.controls
-	cont:SetSize(150, 25)
-	cont:Hide()
-
-	cont.position = function(self)
-		local point, relativeTo, relativePoint, xOfs, yOfs = moveContainer:GetPoint()
-
-		local x, y = "RIGHT", "TOP"
-		self:ClearAllPoints()
-		if (relativePoint == "RIGHT" or relativePoint == "TOPRIGHT" or relativePoint == "BOTTOMRIGHT") then
-			x = "RIGHT"
-		elseif (relativePoint == "LEFT" or relativePoint == "TOPLEFT" or relativePoint == "BOTTOMLEFT") then
-			x = "LEFT"
-		end
-
-		if (relativePoint == "TOPLEFT" or relativePoint == "TOP" or relativePoint == "TOPRIGHT") then
-			y = "BOTTOM"
-		elseif (relativePoint == "BOTTOMLEFT" or relativePoint == "BOTTOM" or relativePoint == "BOTTOMRIGHT") then
-			y = "TOP"
-		end
-
-		sy = "TOP"
-		if (y == "TOP") then
-			sy = "BOTTOM"
-		end
-
-		self:SetPoint(sy..x, moveContainer, y..x, 0, 0)
-	end
-	local function makeButton()
+	-- This builds the majority of our control buttons
+	Mover.lastController = nil
+	function Mover:controllerButton(moveX, moveY) {
 		local button = CreateFrame("button", nil, cont)
 		button:SetSize(25,25)
 		button:SetBackdrop({bgFile = bdCore.media.flat, edgeFile = bdCore.media.flat, edgeSize = 1})
@@ -85,73 +134,103 @@ function bdCore:makeMovable(frame, resize, name)
 			cont:Hide()
 		end)
 
+		button:SetScript("OnClick", function()
+			local point, relativeTo, relativePoint, xOfs, yOfs = self:GetPoint()
+			if (IsShiftKeyDown()) and IsControlKeyDown() then
+				self:SetPoint(point, relativeTo, relativePoint, xOfs+(moveX*20), yOfs+(moveY*20))
+			elseif (IsShiftKeyDown()) then
+				self:SetPoint(point, relativeTo, relativePoint, xOfs+(moveX*5), yOfs+(moveY*5))
+			else
+				self:SetPoint(point, relativeTo, relativePoint, xOfs+(moveX*1), yOfs+(moveY*1))
+			end
+			self:dragStop()
+		end)
+
+		if (self.lastController) then
+			button:SetPoint("LEFT", self.lastController, "RIGHT", 0, 0)
+		else
+			button:SetPoint("LEFT", cont, "LEFT", 0, 0)
+		end
+
+		self.lastController = button
 		return button
-	end
+	}
 
-	cont.left = makeButton()
-	cont.left:SetPoint("LEFT", cont, "LEFT", 0, 0)
-	cont.left.tex:SetRotation(-1.5708)
-	cont.left:SetScript("OnClick", function()
-		local point, relativeTo, relativePoint, xOfs, yOfs = moveContainer:GetPoint()
-		if (IsShiftKeyDown()) and IsControlKeyDown() then
-			moveContainer:SetPoint(point, relativeTo, relativePoint, xOfs-20, yOfs)
-		elseif (IsShiftKeyDown()) then
-			moveContainer:SetPoint(point, relativeTo, relativePoint, xOfs-5, yOfs)
-		else
-			moveContainer:SetPoint(point, relativeTo, relativePoint, xOfs-1, yOfs)
-		end
-		moveContainer:dragStop()
-	end)
-
-	cont.up = makeButton()
-	cont.up:SetPoint("LEFT", cont.left, "RIGHT", 0, 0)
-	cont.up.tex:SetRotation(3.14159)
-	cont.up:SetScript("OnClick", function()
-		local point, relativeTo, relativePoint, xOfs, yOfs = moveContainer:GetPoint()
-		if (IsShiftKeyDown() and IsControlKeyDown()) then
-			moveContainer:SetPoint(point, relativeTo, relativePoint, xOfs, yOfs+20)
-		elseif (IsShiftKeyDown()) then
-			moveContainer:SetPoint(point, relativeTo, relativePoint, xOfs, yOfs+5)
-		else
-			moveContainer:SetPoint(point, relativeTo, relativePoint, xOfs, yOfs+1)
-		end
-		moveContainer:dragStop()
-	end)
-
-	cont.down = makeButton()
-	cont.down:SetPoint("LEFT", cont.up, "RIGHT", 0, 0)
-	cont.down.tex:SetRotation(0)
-	cont.down:SetScript("OnClick", function()
-		local point, relativeTo, relativePoint, xOfs, yOfs = moveContainer:GetPoint()
-		if (IsShiftKeyDown() and IsControlKeyDown()) then
-			moveContainer:SetPoint(point, relativeTo, relativePoint, xOfs, yOfs-20)
-		elseif (IsShiftKeyDown()) then
-			moveContainer:SetPoint(point, relativeTo, relativePoint, xOfs, yOfs-5)
-		else
-			moveContainer:SetPoint(point, relativeTo, relativePoint, xOfs, yOfs-1)
-		end
-		moveContainer:dragStop()
-	end)
+	local border = c.persistent['General'].border
+	local height = frame:GetHeight()
+	local width = frame:GetWidth()
+	local point, relativeTo, relativePoint, xOfs, yOfs = frame:GetPoint()
+	relativeTo = relativeTo:GetName()
 
 	
+	Mover.text = Mover:CreateFontString(Mover:GetName().."_Text")
+	Mover.frame = frame
+	frame.Mover = Mover
+	if (resize) then
+		hooksecurefunc(frame,"SetSize",function() 
+			local height = frame:GetHeight()
+			local width = frame:GetWidth()
+			Mover:SetSize(width+2+border, height+2+border)
+		end)
+	end
+	Mover:SetSize(width+4, height+4)
+	Mover:SetBackdrop({bgFile = bdCore.media.flat, edgeFile = bdCore.media.flat, edgeSize = 1})
+	Mover:SetBackdropColor(0,0,0,.6)
+	Mover:SetBackdropBorderColor(unpack(bdCore.media.blue))
+	Mover:SetFrameStrata("BACKGROUND")
+	Mover:SetClampedToScreen(true)
+	Mover:SetAlpha(0)
 
-	cont.right = makeButton()
-	cont.right:SetPoint("LEFT", cont.down, "RIGHT", 0, 0)
-	cont.right.tex:SetRotation(1.5708)
-	cont.right:SetScript("OnClick", function()
-		local point, relativeTo, relativePoint, xOfs, yOfs = moveContainer:GetPoint()
-		if (IsShiftKeyDown() and IsControlKeyDown()) then
-			moveContainer:SetPoint(point, relativeTo, relativePoint, xOfs+20, yOfs)
-		elseif (IsShiftKeyDown()) then
-			moveContainer:SetPoint(point, relativeTo, relativePoint, xOfs+5, yOfs)
-		else
-			moveContainer:SetPoint(point, relativeTo, relativePoint, xOfs+1, yOfs)
+	Mover.controls = CreateFrame("frame", nil, Mover)
+	local cont = Mover.controls
+	cont:SetSize(150, 25)
+	cont:Hide()
+
+	cont.position = function(self)
+		local point, relativeTo, relativePoint, xOfs, yOfs = Mover:GetPoint()
+
+		local x, y = "RIGHT", "TOP"
+		self:ClearAllPoints()
+		if (relativePoint == "RIGHT" or relativePoint == "TOPRIGHT" or relativePoint == "BOTTOMRIGHT") then
+			x = "RIGHT"
+		elseif (relativePoint == "LEFT" or relativePoint == "TOPLEFT" or relativePoint == "BOTTOMLEFT") then
+			x = "LEFT"
 		end
-		moveContainer:dragStop()
-	end)
 
-	cont.center_h = makeButton()
-	cont.center_h:SetPoint("LEFT", cont.right, "RIGHT", 0, 0)
+		if (relativePoint == "TOPLEFT" or relativePoint == "TOP" or relativePoint == "TOPRIGHT") then
+			y = "BOTTOM"
+		elseif (relativePoint == "BOTTOMLEFT" or relativePoint == "BOTTOM" or relativePoint == "BOTTOMRIGHT") then
+			y = "TOP"
+		end
+
+		sy = "TOP"
+		if (y == "TOP") then
+			sy = "BOTTOM"
+		end
+
+		self:SetPoint(sy..x, Mover, y..x, 0, 0)
+	end
+	local function makeButton()
+		
+	end
+
+	-- push left
+	cont.left = Mover:ControllerButton(-1, 0)
+	cont.left.tex:SetRotation(-1.5708)
+	
+	-- push up
+	cont.up = Mover:ControllerButton(0, 1)
+	cont.up.tex:SetRotation(3.14159)
+
+	-- push down
+	cont.down = Mover:ControllerButton(0, -1)
+	cont.down.tex:SetRotation(0)
+
+	-- push right
+	cont.right = Mover:ControllerButton(1, 0)
+	cont.right.tex:SetRotation(1.5708)
+
+	cont.center_h = Mover:ControllerButton()
 	cont.center_h.tex2 = cont.center_h:CreateTexture(nil, "OVERLAY")
 	cont.center_h.tex2:SetTexture(bdCore.media.arrowdown)
 	cont.center_h.tex2:SetPoint("RIGHT", -4, 0)
@@ -162,25 +241,24 @@ function bdCore:makeMovable(frame, resize, name)
 	cont.center_h.tex:SetPoint("LEFT", 4, 0)
 	cont.center_h.tex:SetRotation(1.5708)
 	cont.center_h:SetScript("OnClick", function()
-		local point, relativeTo, relativePoint, xOfs, yOfs = moveContainer:GetPoint()
-		local width, height = moveContainer:GetSize()
+		local point, relativeTo, relativePoint, xOfs, yOfs = Mover:GetPoint()
+		local width, height = Mover:GetSize()
 		local s_width, s_height = GetPhysicalScreenSize()
 
-		moveContainer:ClearAllPoints()
+		Mover:ClearAllPoints()
 		if (point == "LEFT" or point == "TOPLEFT" or point == "BOTTOMLEFT") then
-			moveContainer:SetPoint(point, UIParent, point, ((s_width / 2) - (width / 2)), yOfs)
+			Mover:SetPoint(point, UIParent, point, ((s_width / 2) - (width / 2)), yOfs)
 		elseif (point == "CENTER" or point == "TOP" or point == "BOTTOM") then
-			moveContainer:SetPoint(point, UIParent, point, 0, yOfs)
+			Mover:SetPoint(point, UIParent, point, 0, yOfs)
 		elseif (point == "RIGHT" or point == "TOPRIGHT" or point == "BOTTOMRIGHT") then
-			moveContainer:SetPoint(point, UIParent, point, -((s_width / 2) - (width / 2)), yOfs)
+			Mover:SetPoint(point, UIParent, point, -((s_width / 2) - (width / 2)), yOfs)
 		end
 
-		moveContainer:dragStop()
+		Mover:dragStop()
 	end)
 
 
-	cont.center_v = makeButton()
-	cont.center_v:SetPoint("LEFT", cont.center_h, "RIGHT", 0, 0)
+	cont.center_v = Mover:ControllerButton()
 	cont.center_v.tex2 = cont.center_v:CreateTexture(nil, "OVERLAY")
 	cont.center_v.tex2:SetTexture(bdCore.media.arrowdown)
 	cont.center_v.tex2:SetPoint("BOTTOM", 0, 4)
@@ -192,36 +270,34 @@ function bdCore:makeMovable(frame, resize, name)
 	cont.center_v.tex:SetRotation(0)
 
 	cont.center_v:SetScript("OnClick", function()
-		local point, relativeTo, relativePoint, xOfs, yOfs = moveContainer:GetPoint()
-		local width, height = moveContainer:GetSize()
+		local point, relativeTo, relativePoint, xOfs, yOfs = Mover:GetPoint()
+		local width, height = Mover:GetSize()
 		local s_width, s_height = GetPhysicalScreenSize()
 
 		yOfs = ((s_height / 2) - (height / 2))
 
-		moveContainer:ClearAllPoints()
+		Mover:ClearAllPoints()
 		if (point == "TOPLEFT" or point == "TOP" or point == "TOPRIGHT") then
-			moveContainer:SetPoint(point, UIParent, point, xOfs, -yOfs)
+			Mover:SetPoint(point, UIParent, point, xOfs, -yOfs)
 		elseif (point == "LEFT" or point == "CENTER" or point == "RIGHT") then
-			moveContainer:SetPoint(point, UIParent, point, xOfs, 0)
+			Mover:SetPoint(point, UIParent, point, xOfs, 0)
 		elseif (point == "BOTTOMLEFT" or point == "BOTTOM" or point == "BOTTOMRIGHT") then
-			moveContainer:SetPoint(point, UIParent, point, xOfs, yOfs)
+			Mover:SetPoint(point, UIParent, point, xOfs, yOfs)
 		end
 		
-		moveContainer:dragStop()
+		Mover:dragStop()
 	end)
 
-
-
-	bdCore:hookEvent("frames_resized,bdcore_redraw", function()
+	bdCore:hookEvent("frames_resized, bdcore_redraw", function()
 		local border = c.persistent['General'].border
 		local height = frame:GetHeight()
 		local width = frame:GetWidth()
-		moveContainer:SetSize(width+border, height+border)
+		Mover:SetSize(width+border, height+border)
 	end)
 	 
-	function moveContainer.dragStop(self)
+	function Mover.dragStop(self)
 		self:StopMovingOrSizing()
-		local point, relativeTo, relativePoint, xOfs, yOfs = moveContainer:GetPoint()
+		local point, relativeTo, relativePoint, xOfs, yOfs = Mover:GetPoint()
 		if (not relativeTo) then relativeTo = UIParent end
 		relativeTo = relativeTo:GetName()
 		self.controls:Show()
@@ -231,51 +307,47 @@ function bdCore:makeMovable(frame, resize, name)
 		c.profile.positions[self.frame:GetName()] = {point, relativeTo, relativePoint, xOfs, yOfs}
 	end
 	
-	moveContainer.text:SetFont(bdCore.media.font, 16)
-	moveContainer.text:SetPoint("CENTER", moveContainer, "CENTER", 0, 0)
-	moveContainer.text:SetText(name)
-	moveContainer.text:SetJustifyH("CENTER")
-	moveContainer.text:SetAlpha(0.8)
-	moveContainer.text:Hide()
+	Mover.text:SetFont(bdCore.media.font, 16)
+	Mover.text:SetPoint("CENTER", Mover, "CENTER", 0, 0)
+	Mover.text:SetText(name)
+	Mover.text:SetJustifyH("CENTER")
+	Mover.text:SetAlpha(0.8)
+	Mover.text:Hide()
 
 	-- show controller bars
-	moveContainer:SetScript("OnEnter", function(self)
-		self.controls:Show()
-	end)
-	moveContainer:SetScript("OnLeave", function(self)
-		self.controls:Hide()
-	end)
+	Mover:SetScript("OnEnter", function(self) self.controls:Show() end)
+	Mover:SetScript("OnLeave", function(self) self.controls:Hide() end)
 	
 	-- on profile swaps
-	moveContainer.position = function(self)
-		moveContainer:ClearAllPoints()
+	Mover.position = function(self)
+		Mover:ClearAllPoints()
 		if (c.profile.positions[name]) then
 			local point, relativeTo, relativePoint, xOfs, yOfs = unpack(c.profile.positions[name])
 			relativeTo = _G[relativeTo]
 
 			if (not point or not relativeTo or not relativePoint or not xOfs or not yOfs) then
 				c.profile.positions[name] = nil
-				moveContainer:position()
+				Mover:position()
 			else
-				moveContainer:SetPoint(point, relativeTo, relativePoint, xOfs, yOfs)
+				Mover:SetPoint(point, relativeTo, relativePoint, xOfs, yOfs)
 			end
 		else
-			moveContainer:SetPoint(point, relativeTo, relativePoint, xOfs, yOfs)
+			Mover:SetPoint(point, relativeTo, relativePoint, xOfs, yOfs)
 		end
 	end
-	moveContainer:position()
-	bdCore:hookEvent("bd_reconfig", moveContainer.position)
+	Mover:position()
+	bdCore:hookEvent("bd_reconfig", Mover.position)
 
 	frame:ClearAllPoints()
-	frame:SetPoint("TOPRIGHT", moveContainer, "TOPRIGHT", -2, -2)
+	frame:SetPoint("TOPRIGHT", Mover, "TOPRIGHT", -2, -2)
 	
-	bdCore.moveFrames[#bdCore.moveFrames+1] = moveContainer
+	bdCore.moveFrames[#bdCore.moveFrames+1] = Mover
 
 	cont:position()
 
-	moveContainer:EnableMouse(false)
+	Mover:EnableMouse(false)
 
-	return moveContainer
+	return Mover
 end
 
 function bdCore:toggleLock()
