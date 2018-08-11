@@ -6,6 +6,7 @@
 ## SavedVariables: BD_persistent
 ## SavedVariables: BD_profiles
 ## SavedVariablesPerCharacter: BD_user
+## X-oUF: bdAddons
 
 init.lua
 bdcore.xml

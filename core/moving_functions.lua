@@ -91,10 +91,10 @@ bdCore.moving = false
 bdCore.moveFrames = {}
 
 bdCore.MoverSettings = {
-	snapToEdges: true -- snap to t/r/b/l of objects
-	, snapToCorners: true -- snap to corner of objects
-	, snapToGrid: true -- snap to the alignment grid
-	, snapThreshold: 20 -- pixels to snap
+	snapToEdges = true -- snap to t/r/b/l of objects
+	, snapToCorners = true -- snap to corner of objects
+	, snapToGrid = true -- snap to the alignment grid
+	, snapThreshold = 20 -- pixels to snap
 }
 
 -- add to our movable list
@@ -104,16 +104,17 @@ function bdCore:makeMovable(frame, resize, rename)
 	if rename == nil then rename = frame:GetName() end
 
 	local Mover = CreateFrame("frame", "bdCore_"..rename, UIParent)
-	function Mover:startMoving() {
+	function Mover:startMoving()
 		local x, y = GetCursorPosition();
-	}
-	function Mover:stopMoving() {
+	end
+	function Mover:stopMoving()
 		local x, y = GetCursorPosition();
-	}
+	end
 
 	-- This builds the majority of our control buttons
 	Mover.lastController = nil
-	function Mover:controllerButton(moveX, moveY) {
+	function Mover:controllerButton(moveX, moveY)
+		local cont = self.controls
 		local button = CreateFrame("button", nil, cont)
 		button:SetSize(25,25)
 		button:SetBackdrop({bgFile = bdCore.media.flat, edgeFile = bdCore.media.flat, edgeSize = 1})
@@ -154,7 +155,7 @@ function bdCore:makeMovable(frame, resize, rename)
 
 		self.lastController = button
 		return button
-	}
+	end
 
 	local border = c.persistent['General'].border
 	local height = frame:GetHeight()
@@ -215,22 +216,22 @@ function bdCore:makeMovable(frame, resize, rename)
 	end
 
 	-- push left
-	cont.left = Mover:ControllerButton(-1, 0)
+	cont.left = Mover:controllerButton(-1, 0)
 	cont.left.tex:SetRotation(-1.5708)
 	
 	-- push up
-	cont.up = Mover:ControllerButton(0, 1)
+	cont.up = Mover:controllerButton(0, 1)
 	cont.up.tex:SetRotation(3.14159)
 
 	-- push down
-	cont.down = Mover:ControllerButton(0, -1)
+	cont.down = Mover:controllerButton(0, -1)
 	cont.down.tex:SetRotation(0)
 
 	-- push right
-	cont.right = Mover:ControllerButton(1, 0)
+	cont.right = Mover:controllerButton(1, 0)
 	cont.right.tex:SetRotation(1.5708)
 
-	cont.center_h = Mover:ControllerButton()
+	cont.center_h = Mover:controllerButton()
 	cont.center_h.tex2 = cont.center_h:CreateTexture(nil, "OVERLAY")
 	cont.center_h.tex2:SetTexture(bdCore.media.arrowdown)
 	cont.center_h.tex2:SetPoint("RIGHT", -4, 0)
@@ -258,7 +259,7 @@ function bdCore:makeMovable(frame, resize, rename)
 	end)
 
 
-	cont.center_v = Mover:ControllerButton()
+	cont.center_v = Mover:controllerButton()
 	cont.center_v.tex2 = cont.center_v:CreateTexture(nil, "OVERLAY")
 	cont.center_v.tex2:SetTexture(bdCore.media.arrowdown)
 	cont.center_v.tex2:SetPoint("BOTTOM", 0, 4)
@@ -309,7 +310,7 @@ function bdCore:makeMovable(frame, resize, rename)
 	
 	Mover.text:SetFont(bdCore.media.font, 16)
 	Mover.text:SetPoint("CENTER", Mover, "CENTER", 0, 0)
-	Mover.text:SetText(name)
+	Mover.text:SetText(rename)
 	Mover.text:SetJustifyH("CENTER")
 	Mover.text:SetAlpha(0.8)
 	Mover.text:Hide()
@@ -321,12 +322,12 @@ function bdCore:makeMovable(frame, resize, rename)
 	-- on profile swaps
 	Mover.position = function(self)
 		Mover:ClearAllPoints()
-		if (c.profile.positions[name]) then
-			local point, relativeTo, relativePoint, xOfs, yOfs = unpack(c.profile.positions[name])
+		if (c.profile.positions[rename]) then
+			local point, relativeTo, relativePoint, xOfs, yOfs = unpack(c.profile.positions[rename])
 			relativeTo = _G[relativeTo]
 
 			if (not point or not relativeTo or not relativePoint or not xOfs or not yOfs) then
-				c.profile.positions[name] = nil
+				c.profile.positions[rename] = nil
 				Mover:position()
 			else
 				Mover:SetPoint(point, relativeTo, relativePoint, xOfs, yOfs)

@@ -12,14 +12,15 @@
 	<Include file="lib\ace\LibButtonGlow-1.0.lua"/>
 
 	<!-- Core -->
+	<Include file="core\core_functions.lua"></Include>
+	<Include file="core\actions_functions.lua"></Include>
+	<Include file="core\media_functions.lua"></Include>
+	<Include file="core\moving_functions.lua"></Include>
 	<Include file="core\config_lib.lua"></Include>
 	<Include file="core\config_profiles.lua"></Include>
 	<Include file="core\config_defaults.lua"></Include>
-	<Include file="core\actions_functions.lua"></Include>
-	<Include file="core\aura_functions.lua"></Include>
-	<Include file="core\media_functions.lua"></Include>
-	<Include file="core\moving_functions.lua"></Include>
-	<Include file="core\pixel_perfection.lua"></Include>
+	<Include file="core\auras_functions.lua"></Include>
+	<Include file="core\pixel_perfect.lua"></Include>
 	<Include file="core\load_bdcore.lua"></Include>
 
 	<!-- Modules -->

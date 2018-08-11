@@ -29,7 +29,24 @@ roleupdate:SetScript("OnEvent", function(self, event, arg)
 end)
 
 
-
+bdCore.media = {
+	flat = "Interface\\Buttons\\WHITE8x8",
+	smooth = "Interface\\Addons\\bdCore\\media\\smooth.tga",
+	arial = "fonts\\ARIALN.ttf",
+	font = "Interface\\Addons\\bdCore\\media\\font.ttf",
+	bold = "Interface\\Addons\\bdCore\\media\\homizio_bold.ttf",
+	arrow = "Interface\\Addons\\bdCore\\media\\arrow.blp",
+	arrowup = "Interface\\Addons\\bdCore\\media\\arrowup.blp",
+	arrowdown = "Interface\\Addons\\bdCore\\media\\arrowdown.blp",
+	shadow = "Interface\\Addons\\bdCore\\media\\shadow.blp",
+	fonts = {},
+	backgrounds = {},
+	border = {.06, .08, .09, 1},
+	backdrop = {.11,.15,.18, 1},
+	red = {.62,.17,.18,1},
+	blue = {.2, .4, 0.8, 1},
+	green = {.1, .7, 0.3, 1},
+}
 
 bdCore.colorString = '|cffA02C2Fbd|r'
 bdCore.config = engine[2]

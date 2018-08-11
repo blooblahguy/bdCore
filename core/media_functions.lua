@@ -1,5 +1,9 @@
 local bdCore, c, f = select(2, ...):unpack()
 
+-- load oUF
+local engine = select(2, ...)
+bdCore.oUF = engine.oUF
+
 -- get media
 function bdCore:getMedia(type, name)
 	if (type == "font") then

@@ -32,7 +32,7 @@ bdCore:SetScript("OnEvent", function(self, event, arg1, arg2, ...)
 		end
 
 		bdCore.general[2].font.options = font_table
-		bdCore.general[3].background.options = bg_table
+		bdCore.general[4].background.options = bg_table
 
 		local first = false
 		-- create default profile

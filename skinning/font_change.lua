@@ -42,15 +42,16 @@ local function changeFonts()
 	local NORMAL = font
 	local COMBAT = font
 	local NUMBER = font
+	local MONOCHROME = "THIN"
 
-	local fontScale = c.presistent.General.fontScale;
+	local fontScale = c.persistent.General.fontScale;
 	
 	UNIT_NAME_FONT = NORMAL
 	DAMAGE_TEXT_FONT = COMBAT
 	STANDARD_TEXT_FONT = NORMAL
 
 	---
-	SetFont(ChatBubbleFont,						BUBBLE, 15 * fontScale, "OUTLINE")
+	SetFont(ChatBubbleFont,						NORMAL, 15 * fontScale, "OUTLINE")
 	SetFont(SystemFont_Shadow_Large_Outline,	NUMBER, 20 * fontScale, "OUTLINE")
 	SetFont(GameTooltipHeader, 					NORMAL, 14 * fontScale)
 	SetFont(NumberFont_OutlineThick_Mono_Small, NUMBER, 14 * fontScale, "OUTLINE");

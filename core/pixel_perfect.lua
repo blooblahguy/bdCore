@@ -14,7 +14,7 @@ function bdCore:pixelPerfection(self, event, arg1)
 	local scale = min(1.15, 768/screenHeight)
 	local multiplier = 768/screenHeight/scale
 
-	if (if InCombatLockdown() then
+	if ( InCombatLockdown()) then
 		local width, height = UIParent:GetSize()
 		uiParentWidth, uiParentHeight, uiParentScale = width, height, scale
 		bdCore.pixeler:RegisterEvent("PLAYER_REGEN_ENABLED")
@@ -56,4 +56,4 @@ end
 
 bdCore.pixeler = CreateFrame("frame", nil, UIParent)
 bdCore.pixeler:RegisterEvent("PLAYER_LOGIN")
-bdCore.pixeler:SetScript("OnEvent", bdCore.pixelPerfection end)
+bdCore.pixeler:SetScript("OnEvent", bdCore.pixelPerfection)

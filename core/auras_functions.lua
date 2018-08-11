@@ -1,5 +1,14 @@
 local bdCore, c, f = select(2, ...):unpack()
 
+function bdCore:isBlacklisted(name,caster)	
+	local blacklist = c.persistent["Auras"]["blacklist"]	
+		
+	if (blacklist[name]) then	
+		return true	
+	end	
+	return false	
+end
+
 -- filter debuffs/buffs
 function bdCore:filterAura(name, caster, invert)
 	--local name = string.lower(name)
