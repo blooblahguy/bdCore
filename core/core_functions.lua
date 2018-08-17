@@ -58,7 +58,7 @@ end
 -- index, it takes the string, the starting character, and the number of
 -- characters to select from the string.
 
-local function utf8sub(str, startChar, numChars)
+function bdCore:utf8sub(str, startChar, numChars)
   local startIndex = 1
   while startChar > 1 do
       local char = string.byte(str, startIndex)
