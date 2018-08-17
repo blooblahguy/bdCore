@@ -142,7 +142,7 @@ bdCore.aligngrid = CreateFrame("frame", "bd_align", UIParent)
 local ag = bdCore.aligngrid
 ag:SetFrameStrata("BACKGROUND")
 ag:SetAllPoints(UIParent)
-local s_width, s_height = GetPhysicalScreenSize()
+local s_width, s_height = UIParent:GetSize()
 		
 local grid_size_x = math.floor( s_width / 40)
 local grid_size_y = math.floor(s_height / 32)
