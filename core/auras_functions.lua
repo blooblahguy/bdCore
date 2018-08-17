@@ -10,7 +10,9 @@ function bdCore:isBlacklisted(name,caster)
 end
 
 -- filter debuffs/buffs
-function bdCore:filterAura(name, caster, invert)
+function bdCore:filterAura(name, caster, isRaidDebuff, nameplateShowAll, invert)
+
+
 	--local name = string.lower(name)
 	local blacklist = BD_persistent["Auras"]["blacklist"]
 	local whitelist = BD_persistent["Auras"]["whitelist"]
@@ -22,7 +24,9 @@ function bdCore:filterAura(name, caster, invert)
 
 	-- everything is blacklisted by default
 	local allow = false
-	if (invert) then
+
+	-- but let's let things through that are obvious
+	if (isRaidDebuff or nameplateShowAll or invert) then
 		allow = true
 	end
 	

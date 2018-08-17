@@ -349,7 +349,90 @@ bdCore.auras.raid = {
 	["Crushing Fear"] = true,
 	["Sentence of Sargeras"] = true,
 	["Shattered Bonds"] = true,
-	["Soul Detonation"] = true
+	["Soul Detonation"] = true,
+
+
+
+	------------------------------------------
+	-- Uldir
+	------------------------------------------
+	-- Taloc
+	["Plasma Dischard"] = true
+	["Blood Storm"] = true,
+	["Hardened Arteries"] = true,
+	["Enlarged Heart"] = true,
+	["Uldir Defense Beam"] = true,
+
+	-- Mother
+	['Clinging Corruption'] = true,
+	['Bacterial Outbreak'] = true,
+	['Endemic Virus'] = true,
+	['Spreading Epidemic'] = true,
+	['Cleansing Purge'] = true,
+	['Sanitizing Strike'] = true,
+	['Purifying Flames'] = true,
+
+	-- Fetic Devourer
+	['Maldorous Miasma'] true,
+	['Putrid Paroxysm'] true,
+
+	-- Zek'voz
+	['Titan Spark'] true,
+	['Void Lash'] true,
+	['Shatter'] true,
+	['Jagged Mandible'] true,
+	['Roiling Deceit'] true,
+	["Corruptor's Pact"] true,
+	['Will of the Corruptor'] true,
+	['Void Wail'] true,
+	['Psionic Blast'] true,
+
+	-- Vectis
+	['Omega Vector'] = true,
+	['Lingering Infection'] = true,
+	['Bursting Legions'] = true,
+	['Evolving Affliction'] = true,
+	['Gestate'] = true,
+	['Immunosuppression'] = true,
+	['Plague Bomb'] = true,
+
+	-- Zul
+	['Absorbed in Darkness'] = true,
+	['Corrupted Blood'] = true,
+	['Unleashed Shadow'] = true,
+	['Bound by Shadow'] = true,
+	['Pit of Despair'] = true,
+	['Engorged Burst'] = true,
+	['Rupturing Blood'] = true,
+	['Corrupted Blood'] = true,
+	['Death Wish'] = true,
+
+	-- Mythrax
+	["Annihilation"] = true,
+	["Essence Shear"] = true,
+	["Obilivion Sphere"] = true,
+	["Imminent Ruin"] = true,
+	["Oblivion Veil"] = true,
+	["Obliteration Beam"] = true,
+	["Mind Flay"] = true,
+
+	-- Ghuun
+	["Blood Host"] = true,
+	["Explosive Corruption"] = true,
+	["Blighted Ground"] = true,
+	["Torment"] = true,
+	["Decaying Eruption"] = true,
+	["Power Matrix"] = true,
+	["Imperfect Physiology"] = true,
+	["Matrix Surge"] = true,
+	["Reorigination Blast"] = true,
+	["Undulating Mass"] = true,
+	["Tendrils of Corruption"] = true,
+	["Unclean Contagion"] = true,
+	["Growing Corruption"] = true,
+	["Putrid Blood"] = true,
+	["Blood Feast"] = true,
+	["Gaze of G'Huun"] = true,
 }
 
 bdCore.auras.whitelist = {
