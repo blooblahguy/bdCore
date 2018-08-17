@@ -357,7 +357,7 @@ bdCore.auras.raid = {
 	-- Uldir
 	------------------------------------------
 	-- Taloc
-	["Plasma Dischard"] = true
+	["Plasma Dischard"] = true,
 	["Blood Storm"] = true,
 	["Hardened Arteries"] = true,
 	["Enlarged Heart"] = true,
@@ -373,19 +373,19 @@ bdCore.auras.raid = {
 	['Purifying Flames'] = true,
 
 	-- Fetic Devourer
-	['Maldorous Miasma'] true,
-	['Putrid Paroxysm'] true,
+	['Maldorous Miasma'] = true,
+	['Putrid Paroxysm'] = true,
 
 	-- Zek'voz
-	['Titan Spark'] true,
-	['Void Lash'] true,
-	['Shatter'] true,
-	['Jagged Mandible'] true,
-	['Roiling Deceit'] true,
-	["Corruptor's Pact"] true,
-	['Will of the Corruptor'] true,
-	['Void Wail'] true,
-	['Psionic Blast'] true,
+	['Titan Spark'] = true,
+	['Void Lash'] = true,
+	['Shatter'] = true,
+	['Jagged Mandible'] = true,
+	['Roiling Deceit'] = true,
+	["Corruptor's Pact"] = true,
+	['Will of the Corruptor'] = true,
+	['Void Wail'] = true,
+	['Psionic Blast'] = true,
 
 	-- Vectis
 	['Omega Vector'] = true,
