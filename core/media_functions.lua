@@ -34,8 +34,9 @@ function bdCore:skinButton(f,small,color)
     f:SetNormalFontObject("bdCore.font")
 	f:SetHighlightFontObject("bdCore.font")
 	f:SetPushedTextOffset(0,-1)
+	f:SetScale(1)
 	
-	f:SetSize(f:GetTextWidth()+16,24)
+	f:SetWidth(f:GetTextWidth()+22)
 	
 	--if (f:GetWidth() < 24) then
 	if (small and f:GetWidth() <= 24 ) then
@@ -44,6 +45,8 @@ function bdCore:skinButton(f,small,color)
 	
 	if (small) then
 		f:SetHeight(18)
+	else
+		f:SetHeight(28)
 	end
 	
 	f:HookScript("OnEnter", function(f) 

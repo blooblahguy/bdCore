@@ -1,5 +1,49 @@
 local bdCore, c, f = select(2, ...):unpack()
 
+-----------------------------------------------
+-- align grid
+-- only do this if its not on windowed mode
+-----------------------------------------------
+bdCore.aligngrid = CreateFrame("frame", "bd_align", UIParent)
+local ag = bdCore.aligngrid
+
+ag:SetFrameStrata("BACKGROUND")
+ag:SetAllPoints(UIParent)
+
+local s_width, s_height = GetPhysicalScreenSize()
+		
+local grid_size_x = math.floor( s_width / 40)
+local grid_size_y = math.floor(s_height / 32)
+
+local x = math.floor(s_width / grid_size_x)
+local y = math.floor(s_height / grid_size_y)
+
+for i = 1, x do
+	local tex = ag:CreateTexture(nil,'overlay')
+	tex:SetTexture(bdCore.media.flat)
+	tex:SetVertexColor(0,0,0)
+	if (i == (x/2)) then
+		tex:SetVertexColor(unpack(bdCore.media.blue))
+	end
+	tex:SetWidth(1)
+	tex:SetPoint("TOPLEFT", UIParent, "TOPLEFT", i*grid_size_x, 0)
+	tex:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", i*grid_size_x, 0)
+end
+
+for i = 1, y do
+	local tex = ag:CreateTexture(nil,'overlay')
+	tex:SetTexture(bdCore.media.flat)
+	tex:SetVertexColor(0,0,0)
+	if (i == (y/2)) then
+		tex:SetVertexColor(unpack(bdCore.media.blue))
+	end
+	tex:SetHeight(1)
+	tex:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 0, -i*grid_size_y)
+	tex:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", 0, -i*grid_size_y)
+end
+
+ag:Hide()
+
 -- some javascript i'm going to use to create snap functionality
 --[[
 	window.canvas = new fabric.Canvas('fabriccanvas');
