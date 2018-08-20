@@ -467,33 +467,53 @@ function bdConfig:createContainer(contentParent, size)
 	-- container.test:SetVertexColor(1,1,1,1)
 	-- container.test:SetAlpha(0.1)
 
-	contentParent.row = contentParent.row or {}
+	contentParent.row = contentParent.row or 0
 
 	local row = contentParent.row
 	local lastFrame = contentParent.lastFrame
+	local position
 
-	-- if (size == "half") then
-	-- 	container:SetSize(contentParent:GetWidth() / 2)
-	-- elseif (size == "full") then
-	-- 	container:SetSize(contentParent:GetWidth())
-	-- end
+	-- allow for 2 column layout
+	if (size == "half") then
+		if (row <= 1) then
+			position = "aside"
+			contentParent.row = contentParent.row + 1
+		else
+			position = "newline"
+			contentParent.row = 1
+		end
+	else
+		positoin = "newline"
+		contentParent.row = 2
+	end
+	
 
-	-- if (#row == 0) then
-		
-	-- elseif (#row == 1 and size == "half") then
+	if (position = "aside") then
+		container:SetWidth(contentParent:GetWidth() / 2)
 
-	-- else
-	-- 	if (
-	-- 	container:SetPoint("TOP", contentParent, "TOP")
-	-- end
+		if (not lastFrame) then
+			container:SetPoint("TOPLEFT", contentParent, "TOPLEFT", 4, 0)
+		else
+			container:SetPoint("TOPLEFT", lastFrame, "TOPRIGHT", 0, 0)
+		end
+	elseif (position == "newline" then
+		container:SetWidth(contentParent:GetWidth())
 
-	container:SetWidth(contentParent:GetWidth())
+		if (not lastFrame) then
+			container:SetPoint("TOPLEFT", contentParent, "TOPLEFT", 4, 0)
+		else
+			container:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 0, -5)
+		end
+	end
 
+	
+	--[[
 	if (not lastFrame) then
 		container:SetPoint("TOPLEFT", contentParent, "TOPLEFT", 4, 0)
 	else
 		container:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 0, -5)
 	end
+	--]]
 
 	contentParent.lastFrame = container
 
