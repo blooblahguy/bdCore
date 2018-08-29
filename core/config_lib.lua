@@ -486,9 +486,10 @@ function bdConfig:createContainer(contentParent, size)
 		positoin = "newline"
 		contentParent.row = 2
 	end
+	container:SetWidth(contentParent:GetWidth())
 	
-
-	if (position = "aside") then
+--[[
+	if (position == "aside") then
 		container:SetWidth(contentParent:GetWidth() / 2)
 
 		if (not lastFrame) then
@@ -496,7 +497,7 @@ function bdConfig:createContainer(contentParent, size)
 		else
 			container:SetPoint("TOPLEFT", lastFrame, "TOPRIGHT", 0, 0)
 		end
-	elseif (position == "newline" then
+	elseif (position == "newline") then
 		container:SetWidth(contentParent:GetWidth())
 
 		if (not lastFrame) then
@@ -504,16 +505,16 @@ function bdConfig:createContainer(contentParent, size)
 		else
 			container:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 0, -5)
 		end
-	end
+	end--]]
 
 	
-	--[[
+	
 	if (not lastFrame) then
 		container:SetPoint("TOPLEFT", contentParent, "TOPLEFT", 4, 0)
 	else
 		container:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 0, -5)
 	end
-	--]]
+	
 
 	contentParent.lastFrame = container
 
@@ -583,7 +584,7 @@ end
 function bdCore:colorPicker(group, option, info, persistent)
 	local panel = bdConfig.modules[group].lastFrame
 	
-	local container = bdConfig:createContainer(panel)
+	local container = bdConfig:createContainer(panel, "half")
 	
 	local picker = CreateFrame("button",nil,container)
 	picker:SetSize(20, 20)
@@ -1056,7 +1057,7 @@ end
 
 function bdCore:createCheckButton(group, option, info, persistent)
 	local panel = bdConfig.modules[group].lastFrame
-	local container = bdConfig:createContainer(panel)
+	local container = bdConfig:createContainer(panel, "half")
 
 	local check = CreateFrame("CheckButton", "bdCore_"..group..":"..option, container, "ChatConfigCheckButtonTemplate")
 
