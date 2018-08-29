@@ -994,7 +994,7 @@ function bdCore:createSlider(group, option, info, persistent)
 	slider:SetPoint("TOPLEFT", container ,"TOPLEFT", 0, -20)
 	
 	slider:SetOrientation('HORIZONTAL')
-	slider:SetMinMaxValues(info.min,info.max)
+	slider:SetMinMaxValues(info.min, info.max)
 	slider:SetObeyStepOnDrag(true)
 	slider:SetValueStep(info.step)
 	slider.tooltipText = info.tooltip
@@ -1013,6 +1013,7 @@ function bdCore:createSlider(group, option, info, persistent)
 	_G[slider:GetName() .. 'Text']:SetText(info.label);
 	_G[slider:GetName() .. 'Text']:SetTextColor(1,1,1);
 	_G[slider:GetName() .. 'Text']:SetFont(media.font, 14)
+	
 	slider.value = slider:CreateFontString(nil)
 	slider.value:SetFont(media.font, 12)
 
