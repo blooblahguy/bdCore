@@ -96,8 +96,12 @@ local function createAuraIcon(element, index)
 	local icon = button:CreateTexture(nil, 'BORDER')
 	icon:SetAllPoints()
 
-	local count = button:CreateFontString(nil, 'OVERLAY', 'NumberFontNormal')
-	count:SetPoint('BOTTOMRIGHT', button, 'BOTTOMRIGHT', -1, 0)
+	local countFrame = CreateFrame('Frame', nil, button)
+	countFrame:SetAllPoints(button)
+	countFrame:SetFrameLevel(cd:GetFrameLevel() + 1)
+
+	local count = countFrame:CreateFontString(nil, 'OVERLAY', 'NumberFontNormal')
+	count:SetPoint('BOTTOMRIGHT', countFrame, 'BOTTOMRIGHT', -1, 0)
 
 	local overlay = button:CreateTexture(nil, 'OVERLAY')
 	overlay:SetTexture([[Interface\Buttons\UI-Debuff-Overlays]])
@@ -138,7 +142,9 @@ local function customFilter(element, unit, button, name)
 end
 
 local function updateIcon(element, unit, index, offset, filter, isDebuff, visible)
-	local name, texture, count, debuffType, duration, expiration, caster, isStealable, nameplateShowSelf, spellID, canApply, isBossDebuff, casterIsPlayer, nameplateShowAll, timeMod, effect1, effect2, effect3 = UnitAura(unit, index, filter)
+	local name, texture, count, debuffType, duration, expiration, caster, isStealable,
+		nameplateShowSelf, spellID, canApply, isBossDebuff, casterIsPlayer, nameplateShowAll,
+		timeMod, effect1, effect2, effect3 = UnitAura(unit, index, filter)
 
 	if(name) then
 		local position = visible + offset + 1
@@ -177,7 +183,9 @@ local function updateIcon(element, unit, index, offset, filter, isDebuff, visibl
 
 		* show - indicates whether the aura button should be shown (boolean)
 		--]]
-		local show = (element.CustomFilter or customFilter) (element, unit, button, name, texture, count, debuffType, duration, expiration, caster, isStealable, nameplateShowSelf, spellID, canApply, isBossDebuff, casterIsPlayer, nameplateShowAll,timeMod, effect1, effect2, effect3)
+		local show = (element.CustomFilter or customFilter) (element, unit, button, name, texture,
+			count, debuffType, duration, expiration, caster, isStealable, nameplateShowSelf, spellID,
+			canApply, isBossDebuff, casterIsPlayer, nameplateShowAll,timeMod, effect1, effect2, effect3)
 
 		if(show) then
 			-- We might want to consider delaying the creation of an actual cooldown

@@ -547,7 +547,7 @@ function bdCore:createBox(group, option, info, persistent)
 	local container = bdConfig:createContainer(panel)
 
 
-	create:SetSize(200,20)
+	create:SetSize(200,24)
 	bdCore:setBackdrop(create)
 	create.background:SetVertexColor(.10,.14,.17,1)
 	create:SetFont(bdCore.media.font,12)
