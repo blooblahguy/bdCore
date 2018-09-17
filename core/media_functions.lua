@@ -24,7 +24,7 @@ bdCore:hookEvent("bdcore_redraw",function()
 
 	if (config.topViewport and config.topViewport > 0) then
 		bdCore.topViewport = bdCore.topViewport or createViewport()
-		bdCore.topViewport:SetBackdropColor(unpack(bdCore.media.backdrop))
+		bdCore.topViewport:SetBackdropColor(unpack(config.topViewportBGColor))
 		bdCore.topViewport:SetPoint("TOPLEFT", UIParent, "TOPLEFT")
 		bdCore.topViewport:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT")
 		bdCore.topViewport:SetPoint("BOTTOM", WorldFrame, "TOP")
@@ -33,7 +33,7 @@ bdCore:hookEvent("bdcore_redraw",function()
 	end
 	if (config.bottomViewport and config.bottomViewport > 0) then
 		bdCore.bottomViewport = bdCore.bottomViewport or createViewport()
-		bdCore.bottomViewport:SetBackdropColor(unpack(bdCore.media.backdrop))
+		bdCore.bottomViewport:SetBackdropColor(unpack(config.bottomViewportBGColor))
 		bdCore.bottomViewport:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT")
 		bdCore.bottomViewport:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT")
 		bdCore.bottomViewport:SetPoint("TOP", WorldFrame, "BOTTOM")
