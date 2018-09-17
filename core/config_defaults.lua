@@ -849,11 +849,12 @@ shared:Register("border", "bdShadow", bdCore.media.shadow)
 		label = "Top Viewport",
 		callback = function() bdCore:triggerEvent("bdcore_redraw") end
 	}}
-	defaults[#defaults+1] = {topViewportColor={
+	--[[
+	bdCore.general[#bdCore.general+1] = {topViewportColor={
 		type="color",
-		value = unpack(bdCore.media.backdrop),
+		value = {unpack(bdCore.media.backdrop)},
 		name="Top Viewport Color"
-	}}
+	}}--]]
 
 	bdCore.general[#bdCore.general+1] = {bottomViewport = {
 		type = "slider",
@@ -864,11 +865,12 @@ shared:Register("border", "bdShadow", bdCore.media.shadow)
 		label = "Bottom Viewport",
 		callback = function() bdCore:triggerEvent("bdcore_redraw") end
 	}}
-	defaults[#defaults+1] = {bottomViewportColor={
+	--[[
+	bdCore.general[#bdCore.general+1] = {bottomViewportColor={
 		type="color",
-		value = unpack(bdCore.media.backdrop),
+		value = {unpack(bdCore.media.backdrop)},
 		name="Bottom Viewport Color"
-	}}
+	}}--]]
 
 ----------------------------------------
 bdCore.auraconfig = {}
