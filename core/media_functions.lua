@@ -4,6 +4,47 @@ local bdCore, c, f = select(2, ...):unpack()
 local engine = select(2, ...)
 bdCore.oUF = engine.oUF
 
+
+-- viewports
+local function createViewport() {
+	local frame = CreateFrame("frame", "bdCore Top Viewport")
+	frame:SetBackdrop({bgFile = bdCore.media.flat})
+	frame:SetBackdropBorderColor(0,0,0,0)
+	frame:SetFrameStrata("BACKGROUND")
+
+	return frame
+}
+bdCore:hookEvent("bdcore_redraw",function()
+	local config c.persistent.General
+	local screenWidth, screenHeight = GetPhysicalScreenSize()
+	local scale = min(1.15, 768/screenHeight)
+
+	local top = 0
+	local bottom = 0
+
+	if (config.topViewport > 0) {
+		bdCore.topViewport = bdCore.topViewport or createViewport()
+		bdCore.topViewport:SetBackdropColor(unpack(config.topViewportColor))
+		bdCore.topViewport:SetPoint("TOPLEFT", UIParent, "TOPLEFT")
+		bdCore.topViewport:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT")
+		bdCore.topViewport:SetPoint("BOTTOM", WorldFrame, "TOP")
+
+		top = config.topViewport
+	}
+	if (config.bottomViewport > 0) {
+		bdCore.bottomViewport = bdCore.bottomViewport or createViewport()
+		bdCore.bottomViewport:SetBackdropColor(unpack(config.bottomViewportColor))
+		bdCore.bottomViewport:SetPoint("TOPLEFT", UIParent, "TOPLEFT")
+		bdCore.bottomViewport:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT")
+		bdCore.bottomViewport:SetPoint("BOTTOM", WorldFrame, "TOP")
+
+		bottom config.bottomViewport
+	}
+
+	WorldFrame:SetPoint("TOPLEFT", 0, -( top * scale ) )
+	WorldFrame:SetPoint("BOTTOMRIGHT", 0, ( bottom * scale ) )
+end)
+
 -- get media
 function bdCore:getMedia(type, name)
 	if (type == "font") then

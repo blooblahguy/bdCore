@@ -834,6 +834,43 @@ shared:Register("border", "bdShadow", bdCore.media.shadow)
 	}}
 
 ----------------------------------------
+-- viewports
+----------------------------------------
+	bdCore.general[#bdCore.general+1] = {tab = {
+		type = "tab",
+		value = "Viewports"
+	}}
+	bdCore.general[#bdCore.general+1] = {topViewport = {
+		type = "slider",
+		value = 0,
+		min = 0,
+		max = 500,
+		step = 2,
+		label = "Top Viewport",
+		callback = function() bdCore:triggerEvent("bdcore_redraw") end
+	}}
+	defaults[#defaults+1] = {topViewportColor={
+		type="color",
+		value = unpack(bdCore.media.backdrop),
+		name="Top Viewport Color"
+	}}
+
+	bdCore.general[#bdCore.general+1] = {bottomViewport = {
+		type = "slider",
+		value = 0,
+		min = 0,
+		max = 500,
+		step = 2,
+		label = "Bottom Viewport",
+		callback = function() bdCore:triggerEvent("bdcore_redraw") end
+	}}
+	defaults[#defaults+1] = {bottomViewportColor={
+		type="color",
+		value = unpack(bdCore.media.backdrop),
+		name="Bottom Viewport Color"
+	}}
+
+----------------------------------------
 bdCore.auraconfig = {}
 bdCore.auraconfig[#bdCore.auraconfig+1] = {tab = {
 	type="tab",
