@@ -853,7 +853,8 @@ shared:Register("border", "bdShadow", bdCore.media.shadow)
 	bdCore.general[#bdCore.general+1] = {topViewportBGColor={
 		type="color",
 		value = {.11,.15,.18, 1},
-		name="Top Viewport Color"
+		name="Top Viewport Color",
+		callback = function() bdCore:triggerEvent("bdcore_redraw") end
 	}}
 
 	bdCore.general[#bdCore.general+1] = {bottomViewport = {
@@ -869,7 +870,8 @@ shared:Register("border", "bdShadow", bdCore.media.shadow)
 	bdCore.general[#bdCore.general+1] = {bottomViewportBGColor={
 		type="color",
 		value = {.11,.15,.18, 1},
-		name="Bottom Viewport Color"
+		name="Bottom Viewport Color",
+		callback = function() bdCore:triggerEvent("bdcore_redraw") end
 	}}
 
 ----------------------------------------

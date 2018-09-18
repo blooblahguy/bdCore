@@ -604,6 +604,10 @@ function bdCore:colorPicker(group, option, info, persistent)
 			c.profile[group][option] = {r,g,b,a}
 		end
 		self:SetBackdropColor(r,g,b,a)
+
+		if (info.callback) then
+			info:callback()
+		end
 		
 		return r, g, b, a
 	end

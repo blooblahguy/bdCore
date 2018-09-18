@@ -41,6 +41,7 @@ bdCore:hookEvent("bdcore_redraw",function()
 		bottom = config.bottomViewport
 	end
 
+	WorldFrame:ClearAllPoints()
 	WorldFrame:SetPoint("TOPLEFT", 0, -( top * scale ) )
 	WorldFrame:SetPoint("BOTTOMRIGHT", 0, ( bottom * scale ) )
 end)
