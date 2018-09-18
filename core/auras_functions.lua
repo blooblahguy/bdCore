@@ -11,37 +11,31 @@ end
 
 -- filter debuffs/buffs
 function bdCore:filterAura(name, caster, isRaidDebuff, nameplateShowAll, invert)
-
-
-	--local name = string.lower(name)
 	local blacklist = BD_persistent["Auras"]["blacklist"]
 	local whitelist = BD_persistent["Auras"]["whitelist"]
 	local mine = BD_persistent["Auras"]["mine"]
 	local class = BD_persistent["Auras"][bdCore.class]
-	
-	-- raid variables are set in a file, they can be blacklisted though, and added to through whitelist
 	local raid = bdCore.auras.raid
 
-	-- everything is blacklisted by default
-	local allow = false
+	-- blacklist has priority
+	if (blacklist and blacklist[name]) then
+		return false
+	end
 
 	-- but let's let things through that are obvious
 	if (isRaidDebuff or nameplateShowAll or invert) then
-		allow = true
+		return true
 	end
-	
 	
 	if (whitelist and whitelist[name]) then
-		allow = true
+		return true
 	elseif (raid and raid[name]) then
-		allow = true
-	elseif (mine and mine[name] and caster and caster == "player") then
-		allow = true
+		return true
 	elseif (class and class[name]) then
-		allow = true
-	elseif (blacklist and blacklist[name]) then
-		allow = false
+		return true
+	elseif (mine and mine[name] and caster and caster == "player") then
+		return true
 	end
 	
-	return allow
+	return false
 end

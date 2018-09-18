@@ -149,7 +149,6 @@ end
 function bdCore:setBackdrop(frame,resize)
 	if (frame.background) then return end
 
-	
 	frame.background = frame:CreateTexture(nil, "BACKGROUND", nil, -7)
 	frame.background:SetTexture(bdCore.media.flat)
 	frame.background:SetAllPoints(frame)
