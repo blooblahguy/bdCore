@@ -1,5 +1,20 @@
 local bdCore, c, f = select(2, ...):unpack()
 
+
+-----------------------------------------------
+-- Frame Faders
+-- frame: The frame container that should be faded
+-- duration: 0.1s intervals of how quickly the frame should fade in / out
+-- callback: function which dictates whether or not frame should fade in / out
+-----------------------------------------------
+function bdCore:setFadable(frame, duration, callback)
+	local fader = {}
+	frame.fader = fader
+	fader.frame = frame
+	fader.duration = duration 
+	fader.callback = callback 
+end
+
 -----------------------------------------------
 -- align grid
 -- only do this if its not on windowed mode
