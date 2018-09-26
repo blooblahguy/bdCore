@@ -4,6 +4,8 @@ engine[1] = CreateFrame("Frame", nil, UIParent)
 engine[2] = {}
 engine[3] = {}
 
+LoadAddOn("Blizzard_Nameplates")
+
 function engine:unpack()
 	return self[1], self[2], self[3]
 end
