@@ -66,9 +66,10 @@ local function cache_put(cache, params, results)
 end
 
 -- public function
+-- you can use your own local cache by passing it, otherwise it goes into global cache which is weak
 local memoizecache = {}
-function memoize.memoize(f)
-	local cache = memoizecache or {}
+function memoize.memoize(f, cache)
+	cache = cache or memoizecache
 
 	if not is_callable(f) then
 		error(strformat( "Only functions and callable tables are memoizable. Received %s (a %s)", tostring(f), type(f)))
