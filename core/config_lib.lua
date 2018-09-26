@@ -852,9 +852,9 @@ function bdCore:createList(group, option, info, persistent)
 
 		if (info.callback) then
 			info:callback()
-			-- clear aura cache
-			bdCore.caches.auras = {}
 		end
+		-- clear aura cache
+		bdCore.caches.auras = {}
 	end
 
 	list:populate()
