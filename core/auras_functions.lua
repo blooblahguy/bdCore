@@ -1,7 +1,7 @@
 local bdCore, c, f = select(2, ...):unpack()
 
 local persistentAuras 
-bdCore.isBlacklisted = memoize(function(name)
+local blacklisted = function(self, name)
 	persistentAuras = BD_persistent["Auras"]
 	local blacklist = persistentAuras["blacklist"]
 
@@ -9,9 +9,9 @@ bdCore.isBlacklisted = memoize(function(name)
 		return true	
 	end	
 	return false
-end, bdCore.caches.auras)
+end
 
--- filter debuffs/buffs
+bdCore.isBlacklisted = memoize(blacklisted, bdCore.caches.auras)
 
 bdCore.filterAura = memoize(function(self, name, caster, isRaidDebuff, nameplateShowAll, invert)
 	persistentAuras = BD_persistent["Auras"]
