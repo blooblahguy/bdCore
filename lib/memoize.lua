@@ -1,4 +1,4 @@
-local memoize = {
+memoize = {
   _VERSION     = 'memoize v2.0',
   _DESCRIPTION = 'Memoized functions in Lua',
   _URL         = 'https://github.com/kikito/memoize.lua',
@@ -91,5 +91,3 @@ end
 -- bdCore modification: this being weak means that empty values will be expunged on collectgarbage
 setmetatable(memoizecache, {__mode = "kv"}) -- make it weak
 setmetatable(memoize, { __call = function(_, ...) return memoize.memoize(...) end })
-
-return memoize
