@@ -1,6 +1,6 @@
 local bdCore, c, f = select(2, ...):unpack()
 
-bdCore.cache = {}
+bdCore.caches = {}
 bdCore.caches.auras = {}
 
 bdCore.auras = {}
