@@ -1,9 +1,10 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
 	<!-- oUF -->
+	<Include file="lib\memoize.lua"/>
 	<Include file="lib\oUF\oUF.xml"/>
-	<Include file="lib\absorbs.lua"/>
 	<Include file="lib\aurabars.lua"/>
-	<Include file="lib\predict.lua"/>
+	<!-- <Include file="lib\absorbs.lua"/> -->
+	<!-- <Include file="lib\predict.lua"/> -->
 
 	<!-- Libraries -->
 	<Include file="lib\ace\LibStub.lua"/>

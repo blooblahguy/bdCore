@@ -116,6 +116,8 @@ bdCore:SetScript("OnEvent", function(self, event, arg1, arg2, ...)
 		bdCore:triggerEvent('loaded_bdcore')
 		bdCore:triggerEvent('bdcore_redraw')
 		
+		-- a lot of addons do this when they shouldn't it should really only be done when addons finish loading
+		collectgarbage("collect")
 	elseif (event == "LOADING_SCREEN_DISABLED") then
 		--bdCore:triggerEvent("bdcore_redraw")
 	elseif (event == "PLAYER_REGEN_DISABLED") then
