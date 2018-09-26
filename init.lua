@@ -15,20 +15,6 @@ bdCore:RegisterEvent("ADDON_LOADED")
 bdCore.class = string.lower(select(1, UnitClass('player')))
 bdCore.name = string.lower(UnitName('player'))
 
-local roleupdate = CreateFrame("frame",nil)
-roleupdate:RegisterEvent("LFG_ROLE_UPDATE")
-roleupdate:RegisterEvent("PLAYER_ROLES_ASSIGNED")
-roleupdate:RegisterEvent("ROLE_CHANGED_INFORM")
-roleupdate:RegisterEvent("PVP_ROLE_UPDATE")
-roleupdate:SetScript("OnEvent", function(self, event, arg)
-	local spec_id = GetSpecialization()
-	if (spec_id and GetSpecializationInfo(spec_id)) then
-		bdCore.spec = string.lower(select(2,GetSpecializationInfo(spec_id)))
-		bdCore.role = string.lower(select(6,GetSpecializationInfo(spec_id)))
-	end
-end)
-
-
 bdCore.media = {
 	flat = "Interface\\Buttons\\WHITE8x8",
 	smooth = "Interface\\Addons\\bdCore\\media\\smooth.tga",

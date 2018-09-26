@@ -1,5 +1,8 @@
 local bdCore, c, f = select(2, ...):unpack()
 
+bdCore.cache = {}
+bdCore.caches.auras = {}
+
 bdCore.auras = {}
 bdCore.auras.raid = {
 	['Grievous Wound'] = true,

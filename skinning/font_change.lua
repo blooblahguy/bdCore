@@ -133,6 +133,5 @@ local function changeFonts()
 end
 
 -- Base fonts
-bdCore:hookEvent("loaded_bdcore", changeFonts)
 bdCore:hookEvent("bdcore_redraw", changeFonts)
 

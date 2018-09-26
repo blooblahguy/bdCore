@@ -1,6 +1,6 @@
 local bdCore, c, f = select(2, ...):unpack()
 
-local IsItemInRange, CheckInteractDistance, UnitInRange = IsItemInRange, CheckInteractDistance, UnitInRange
+local IsItemInRange, CheckInteractDistance, UnitInRange, find, sub, gsub, floor, byte, tinsert = IsItemInRange, CheckInteractDistance, UnitInRange, string.find, string.sub, string.gsub, math.floor, string.byte, table.insert
 
 -- Unit scanning, sure if i'll use yet since can be expensive
 function UnitInRadius(unit, yards)
@@ -33,7 +33,7 @@ end
 function comma_value(amount)
 	local formatted = amount
 	while true do  
-		formatted, k = string.gsub(formatted, "^(-?%d+)(%d%d%d)", '%1,%2')
+		formatted, k = gsub(formatted, "^(-?%d+)(%d%d%d)", '%1,%2')
 		if (k==0) then
 			break
 		end
@@ -44,20 +44,20 @@ end
 function split(str, del)
 	local t = {}
 	local index = 0;
-	while (string.find(str, del)) do
-		local s, e = string.find(str, del)
-		t[index] = string.sub(str, 1, s-1)
-		str = string.sub(str, s+#del)
+	while (find(str, del)) do
+		local s, e = find(str, del)
+		t[index] = sub(str, 1, s-1)
+		str = sub(str, s+#del)
 		index = index + 1;
 	end
-	table.insert(t, str)
+	tinsert(t, str)
 	return t;
 end
 
 -- lua doesn't have a good function for round
 function round(num, idp)
 	local mult = 10^(idp or 0)
-	return math.floor(num * mult + 0.5) / mult
+	return floor(num * mult + 0.5) / mult
 end
 
 -- lua doesn't have a good function for finding a value in a table
@@ -86,21 +86,20 @@ end
 -- UTF-8 codepoints.  Rather than taking a start index and optionally an end
 -- index, it takes the string, the starting character, and the number of
 -- characters to select from the string.
+bdCore.utf8sub = memoize(function(self, str, startChar, numChars)
+	local startIndex = 1
+	while startChar > 1 do
+		local char = byte(str, startIndex)
+		startIndex = startIndex + chsize(char)
+		startChar = startChar - 1
+	end
 
-function bdCore:utf8sub(str, startChar, numChars)
-  local startIndex = 1
-  while startChar > 1 do
-      local char = string.byte(str, startIndex)
-      startIndex = startIndex + chsize(char)
-      startChar = startChar - 1
-  end
+	local currentIndex = startIndex
 
-  local currentIndex = startIndex
-
-  while numChars > 0 and currentIndex <= #str do
-    local char = string.byte(str, currentIndex)
-    currentIndex = currentIndex + chsize(char)
-    numChars = numChars -1
-  end
-  return str:sub(startIndex, currentIndex - 1)
-end
+	while numChars > 0 and currentIndex <= #str do
+		local char = byte(str, currentIndex)
+		currentIndex = currentIndex + chsize(char)
+		numChars = numChars -1
+	end
+	return sub(str, startIndex, currentIndex - 1)
+end)

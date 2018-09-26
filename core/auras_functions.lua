@@ -1,20 +1,24 @@
 local bdCore, c, f = select(2, ...):unpack()
 
-function bdCore:isBlacklisted(name,caster)	
-	local blacklist = c.persistent["Auras"]["blacklist"]	
-		
+local persistentAuras 
+bdCore.isBlacklisted = memoize(function(name)
+	persistentAuras = BD_persistent["Auras"]
+	local blacklist = persistentAuras["blacklist"]
+
 	if (blacklist[name]) then	
 		return true	
 	end	
-	return false	
-end
+	return false
+end, bdCore.caches.auras)
 
 -- filter debuffs/buffs
-function bdCore:filterAura(name, caster, isRaidDebuff, nameplateShowAll, invert)
-	local blacklist = BD_persistent["Auras"]["blacklist"]
-	local whitelist = BD_persistent["Auras"]["whitelist"]
-	local mine = BD_persistent["Auras"]["mine"]
-	local class = BD_persistent["Auras"][bdCore.class]
+
+bdCore.filterAura = memoize(function(self, name, caster, isRaidDebuff, nameplateShowAll, invert)
+	persistentAuras = BD_persistent["Auras"]
+	local blacklist = persistentAuras["blacklist"]
+	local whitelist = persistentAuras["whitelist"]
+	local mine = persistentAuras["mine"]
+	local class = persistentAuras[bdCore.class]
 	local raid = bdCore.auras.raid
 
 	-- blacklist has priority
@@ -38,4 +42,5 @@ function bdCore:filterAura(name, caster, isRaidDebuff, nameplateShowAll, invert)
 	end
 	
 	return false
-end
+
+end, bdCore.caches.auras)
