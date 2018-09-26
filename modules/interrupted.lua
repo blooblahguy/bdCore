@@ -1,7 +1,7 @@
 local bdCore, c, f = select(2, ...):unpack()
 local channel = 'SAY'
 
-local UnitExists, UnitIsUnit, UnitIsUnit GetSpellLink, SendChatMessage = UnitExists, UnitIsUnit, UnitIsUnit GetSpellLink, SendChatMessage
+local UnitExists, UnitIsUnit, UnitIsUnit, GetSpellLink, SendChatMessage = UnitExists, UnitIsUnit, UnitIsUnit, GetSpellLink, SendChatMessage
 
 local interrupt = CreateFrame('frame')
 interrupt:RegisterEvent('COMBAT_LOG_EVENT_UNFILTERED')
