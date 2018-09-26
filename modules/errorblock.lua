@@ -34,11 +34,10 @@ local filter = {
 }
 
 local errors = CreateFrame('frame')
-local alert = c.persistent.General.errorblock
 UIErrorsFrame:SetScript("OnEvent", function(self, event, msg, ...)
 	if (event ~= "UI_ERROR_MESSAGE") then return end
 
-	alert = c.persistent.General.errorblock
+	local alert = BD_persistent.General.errorblock
 	
 	if (alert and filter[msg]) then
 		return false

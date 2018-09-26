@@ -1,9 +1,9 @@
 local bdCore, c, f = select(2, ...):unpack()
-local interrupt = CreateFrame('frame')
 local channel = 'SAY'
 
 local UnitExists, UnitIsUnit, UnitIsUnit GetSpellLink, SendChatMessage = UnitExists, UnitIsUnit, UnitIsUnit GetSpellLink, SendChatMessage
 
+local interrupt = CreateFrame('frame')
 interrupt:RegisterEvent('COMBAT_LOG_EVENT_UNFILTERED')
 local function OnEvent(self, event)
 	if (not BD_persistent.General.interrupt ) then return end
