@@ -13,7 +13,8 @@ end
 
 bdCore.isBlacklisted = memoize(blacklisted, bdCore.caches.auras)
 
-bdCore.filterAura = memoize(function(self, name, caster, isRaidDebuff, nameplateShowAll, invert)
+local filterAura = function(self, name, castByPlayer, isRaidDebuff, nameplateShowAll, invert)
+	-- print(self, name, castByPlayer, isRaidDebuff, nameplateShowAll, invert)
 	persistentAuras = BD_persistent["Auras"]
 	local blacklist = persistentAuras["blacklist"]
 	local whitelist = persistentAuras["whitelist"]
@@ -37,10 +38,11 @@ bdCore.filterAura = memoize(function(self, name, caster, isRaidDebuff, nameplate
 		return true
 	elseif (class and class[name]) then
 		return true
-	elseif (mine and mine[name] and caster and caster == "player") then
+	elseif (mine and mine[name] and castByPlayer) then
 		return true
 	end
 	
 	return false
+end
 
-end, bdCore.caches.auras)
+bdCore.filterAura = memoize(filterAura, bdCore.caches.auras)

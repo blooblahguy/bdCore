@@ -47,8 +47,13 @@ end
 local function cache_get(cache, params)
 	local node = cache
 	for i=1, #params do
-		node = node.children and node.children[params[i]]
-		if not node then return nil end
+		param = params[i]
+		if (param == nil) then
+			error(strformat( "functions can not memoize with nil paramters. Received %s (a %s)", tostring(f), i))
+		else
+			node = node.children and node.children[params[i]]
+			if not node then return nil end
+		end
 	end
 	return node.results
 end
@@ -58,9 +63,13 @@ local function cache_put(cache, params, results)
 	local param
 	for i=1, #params do
 		param = params[i]
-		node.children = node.children or {}
-		node.children[param] = node.children[param] or {}
-		node = node.children[param]
+		if (param == nil) then
+			error(strformat( "functions can not memoize with nil paramters. Received %s (param %s)", tostring(f), i))
+		else
+			node.children = node.children or {}
+			node.children[param] = node.children[param] or {}
+			node = node.children[param]
+		end
 	end
 	node.results = results
 end
@@ -68,12 +77,15 @@ end
 -- public function
 -- you can use your own local cache by passing it, otherwise it goes into global cache which is weak
 local memoizecache = {}
+local currentf = nil
 function memoize.memoize(f, cache)
 	cache = cache or memoizecache
 
 	if not is_callable(f) then
 		error(strformat( "Only functions and callable tables are memoizable. Received %s (a %s)", tostring(f), type(f)))
 	end
+
+	currentf = f
 
 	return function (...)
 		local params = {...}
