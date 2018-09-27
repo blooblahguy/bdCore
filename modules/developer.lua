@@ -9,6 +9,7 @@ function bdCore_profile()
 
 		local finish = debugprofilestop()
 		local total = finish - start
+		
 		print(name..": ")
 		print("==== "..total)
 		if (response) then
@@ -17,20 +18,51 @@ function bdCore_profile()
 	end
 
 	profile("table_set_loop", function()
-		for i = 1, 1000000 do
+		for i = 1, 100000 do
 			local a = {}
 			a[1] = 1; a[2] = 2; a[3] = 3
 		end
 		print("ran")
 	end)
-
 	profile("optimized_table_set_loop", function()
-		for i = 1, 1000000 do
+		for i = 1, 100000 do
 			local a = {true, true, true}
 			a[1] = 1; a[2] = 2; a[3] = 3
 		end
 	end)
 	print(" ")
+
+	if (UnitExists("nameplate1")) then
+		profile("UnitReaction", function()
+			local var
+			for i = 1, 10000 do
+				var = UnitReaction("player", "nameplate1")
+			end
+		end)
+		profile("optimized_UnitReaction", function()
+			local UnitReaction = UnitReaction
+			local var
+			for i = 1, 10000 do
+				var = UnitReaction("player", "nameplate1")
+			end
+		end)
+		print(" ")
+
+		profile("UnitIsUnit", function()
+			local var
+			for i = 1, 10000 do
+				var = UnitIsUnit("player", "nameplate1")
+			end
+		end)
+		profile("optimized_UnitIsUnit", function()
+			local UnitIsUnit = UnitIsUnit
+			local var
+			for i = 1, 10000 do
+				var = UnitIsUnit("player", "nameplate1")
+			end
+		end)
+		print(" ")
+	end
 
 	profile("aura_loop", function()
 		local var
@@ -38,7 +70,6 @@ function bdCore_profile()
 			var = UnitAura("player", i)
 		end
 	end)
-
 	profile("optimized_aura_loop", function()
 		local UnitAura = UnitAura
 		local var
