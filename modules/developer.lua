@@ -33,6 +33,36 @@ function bdCore_profile()
 	print(" ")
 
 	if (UnitExists("nameplate1")) then
+		profile("UnitIsConnected", function()
+			local var
+			for i = 1, 10000 do
+				var = UnitIsConnected("nameplate1")
+			end
+		end)
+		profile("optimized_UnitIsConnected", function()
+			local UnitIsConnected = UnitIsConnected
+			local var
+			for i = 1, 10000 do
+				var = UnitIsConnected("nameplate1")
+			end
+		end)
+		print(" ")
+
+		profile("UnitExists", function()
+			local var
+			for i = 1, 10000 do
+				var = UnitExists("nameplate1")
+			end
+		end)
+		profile("optimized_UnitExists", function()
+			local UnitExists = UnitExists
+			local var
+			for i = 1, 10000 do
+				var = UnitExists("nameplate1")
+			end
+		end)
+		print(" ")
+
 		profile("UnitReaction", function()
 			local var
 			for i = 1, 10000 do
@@ -62,91 +92,92 @@ function bdCore_profile()
 			end
 		end)
 		print(" ")
+	
+
+		profile("aura_loop", function()
+			local var
+			for i = 1, 10000 do
+				var = UnitAura("nameplate1", i)
+			end
+		end)
+		profile("optimized_aura_loop", function()
+			local UnitAura = UnitAura
+			local var
+			for i = 1, 10000 do
+				var = UnitAura("nameplate1", i)
+			end
+		end)
+		print(" ")
+
+		profile("unit_player", function()
+			for i = 1, 10000 do
+				local var = UnitIsPlayer('nameplate1')
+			end
+		end)
+		profile("optimized_unit_player", function()
+			local UnitIsPlayer = UnitIsPlayer
+			local var
+			for i = 1, 10000 do
+				var = UnitIsPlayer('nameplate1')
+			end
+		end)
+		print(" ")
+
+		profile("unit_tap_denied", function()
+			for i = 1, 10000 do
+				local var = UnitIsTapDenied('nameplate1')
+			end
+		end)
+		profile("optimized_unit_tap_denied", function()
+			local UnitIsTapDenied = UnitIsTapDenied
+			local var
+			for i = 1, 10000 do
+				var = UnitIsTapDenied('nameplate1')
+			end
+		end)
+
+		print(" ")
+		profile("unit_player_controlled", function()
+			for i = 1, 10000 do
+				local var = UnitPlayerControlled('nameplate1')
+			end
+		end)
+		profile("optimized_unit_player_controlled", function()
+			local UnitPlayerControlled = UnitPlayerControlled
+			local var
+			for i = 1, 10000 do
+				var = UnitPlayerControlled('nameplate1')
+			end
+		end)
+		print(" ")
+
+		profile("unit_unit", function()
+			for i = 1, 10000 do
+				local var = UnitHealth('nameplate1')
+			end
+		end)
+		profile("optimized_unit_unit", function()
+			local UnitHealth = UnitHealth
+			local var
+			for i = 1, 10000 do
+				var = UnitHealth('nameplate1')
+			end
+		end)
+		print(" ")
+
+		profile("unit_health_max", function()
+			for i = 1, 10000 do
+				local var = UnitHealthMax('nameplate1')
+			end
+		end)
+		profile("optimized_unit_health_max", function()
+			local UnitHealthMax = UnitHealthMax
+			local var
+			for i = 1, 10000 do
+				var = UnitHealthMax('nameplate1')
+			end
+		end)
 	end
-
-	profile("aura_loop", function()
-		local var
-		for i = 1, 10000 do
-			var = UnitAura("player", i)
-		end
-	end)
-	profile("optimized_aura_loop", function()
-		local UnitAura = UnitAura
-		local var
-		for i = 1, 10000 do
-			var = UnitAura("player", i)
-		end
-	end)
-	print(" ")
-
-	profile("unit_player", function()
-		for i = 1, 10000 do
-			local var = UnitIsPlayer('player')
-		end
-	end)
-	profile("optimized_unit_player", function()
-		local UnitIsPlayer = UnitIsPlayer
-		local var
-		for i = 1, 10000 do
-			var = UnitIsPlayer('player')
-		end
-	end)
-	print(" ")
-
-	profile("unit_tap_denied", function()
-		for i = 1, 10000 do
-			local var = UnitIsTapDenied('player')
-		end
-	end)
-	profile("optimized_unit_tap_denied", function()
-		local UnitIsTapDenied = UnitIsTapDenied
-		local var
-		for i = 1, 10000 do
-			var = UnitIsTapDenied('player')
-		end
-	end)
-
-	print(" ")
-	profile("unit_player_controlled", function()
-		for i = 1, 10000 do
-			local var = UnitPlayerControlled('player')
-		end
-	end)
-	profile("optimized_unit_player_controlled", function()
-		local UnitPlayerControlled = UnitPlayerControlled
-		local var
-		for i = 1, 10000 do
-			var = UnitPlayerControlled('player')
-		end
-	end)
-	print(" ")
-
-	profile("unit_unit", function()
-		for i = 1, 10000 do
-			local var = UnitHealth('player')
-		end
-	end)
-	profile("optimized_unit_unit", function()
-		local UnitHealth = UnitHealth
-		local var
-		for i = 1, 10000 do
-			var = UnitHealth('player')
-		end
-	end)
-	print(" ")
-
-	profile("unit_health_max", function()
-		for i = 1, 10000 do
-			local var = UnitHealthMax('player')
-		end
-	end)
-	profile("optimized_unit_health_max", function()
-		local UnitHealthMax = UnitHealthMax
-		local var
-		for i = 1, 10000 do
-			var = UnitHealthMax('player')
-		end
-	end)
 end
 
 local tester = CreateFrame("frame", nil)
