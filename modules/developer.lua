@@ -1,6 +1,14 @@
 -- i'll use this file for organized testing stuff
 
+local parent = {}
+parent.colors = {}
+parent.colors.reaction = {}
+parent.colors.reaction[4] = {.1, .2, .3, 1}
+
 function bdCore_profile()
+	local total_time = 0
+
+
 
 	local function profile(name, fn)
 		local start = debugprofilestop()
@@ -17,22 +25,39 @@ function bdCore_profile()
 		end
 	end
 
-	profile("table_set_loop", function()
-		for i = 1, 100000 do
-			local a = {}
-			a[1] = 1; a[2] = 2; a[3] = 3
-		end
-		print("ran")
-	end)
-	profile("optimized_table_set_loop", function()
-		for i = 1, 100000 do
-			local a = {true, true, true}
-			a[1] = 1; a[2] = 2; a[3] = 3
-		end
-	end)
-	print(" ")
-
 	if (UnitExists("nameplate1")) then
+		profile("unitreaction_color", function()
+			for i = 1, 100 do
+				local unitreaction = UnitReaction('nameplate1')
+				local color = unpack(parent.colors.reaction[4])
+			end
+		end)
+		profile("optimized_unitreaction_color", function()
+			local unpack, UnitReaction = unpack, UnitReaction
+			local r_table = parent.colors.reaction
+			for i = 1, 100 do
+				local unitreaction = UnitReaction('nameplate1')
+				local color = unpack(r_table[4])
+			end
+		end)
+
+		profile("table_set_loop", function()
+			for i = 1, 100000 do
+				local a = {}
+				a[1] = 1; a[2] = 2; a[3] = 3
+			end
+			print("ran")
+		end)
+		profile("optimized_table_set_loop", function()
+			for i = 1, 100000 do
+				local a = {true, true, true}
+				a[1] = 1; a[2] = 2; a[3] = 3
+			end
+		end)
+		print(" ")
+	end
+
+	--[[if (UnitExists("nameplate1")) then
 		profile("UnitIsConnected", function()
 			local var
 			for i = 1, 10000 do
@@ -177,7 +202,7 @@ function bdCore_profile()
 				var = UnitHealthMax('nameplate1')
 			end
 		end)
-	end
+	end--]]
 end
 
 local tester = CreateFrame("frame", nil)
