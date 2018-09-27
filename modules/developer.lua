@@ -6,13 +6,15 @@ tester:SetScript("OnEvent", function()
 
 	local start
 	local total
+	local finish
 	local function profile(name, fn)
 		start = GetTime();
 
 		fn()
 
-		total = GetTime() - start
-		print(name.." took: "..total)
+		finish = GetTime()
+		total = finish - start
+		print(name.." took: "..total.." and ran from "..start.." to "..finish)
 	end
 
 	profile("table_set_loop", function()
@@ -20,6 +22,7 @@ tester:SetScript("OnEvent", function()
 			local a = {}
 			a[1] = 1; a[2] = 2; a[3] = 3
 		end
+		print("ran")
 	end)
 
 	profile("optimized_table_set_loop", function()
