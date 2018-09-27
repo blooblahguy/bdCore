@@ -54,17 +54,17 @@ function bdCore_profile()
 
 	if (UnitExists("nameplate1")) then
 		profile("unitreaction_color", function()
-			for i = 1, 10000 do
+			for i = 1, 100 do
 				local unitreaction = UnitReaction('nameplate1', 'player')
-				local color = unpack(parent.colors.reaction[4])
+				local color = unpack(bdCore.media.colors.blue)
 			end
 		end)
 		profile("optimized_unitreaction_color", function()
 			local unpack, UnitReaction = unpack, UnitReaction
-			local r_table = parent.colors.reaction
-			for i = 1, 10000 do
+			local r_table = bdCore.media.colors
+			for i = 1, 100 do
 				local unitreaction = UnitReaction('nameplate1', 'player')
-				local color = unpack(r_table[4])
+				local color = unpack(r_table['blue'])
 			end
 		end)
 
