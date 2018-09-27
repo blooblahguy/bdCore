@@ -30,55 +30,41 @@ function bdCore_profile()
 			a[1] = 1; a[2] = 2; a[3] = 3
 		end
 	end)
-
+	print(" ")
 
 	profile("aura_loop", function()
+		local var
 		for i = 1, 10000 do
-			UnitAura("player", i)
+			var = UnitAura("player", i)
 		end
 	end)
 
 	profile("optimized_aura_loop", function()
 		local UnitAura = UnitAura
+		local var
 		for i = 1, 10000 do
-			UnitAura("player", i)
+			var = UnitAura("player", i)
 		end
 	end)
-
-
+	print(" ")
 
 	profile("unit_player", function()
 		for i = 1, 10000 do
 			local var = UnitIsPlayer('player')
 		end
 	end)
-	profile("unit_tap_denied", function()
-		for i = 1, 10000 do
-			local var = UnitIsTapDenied('player')
-		end
-	end)
-	profile("unit_player_controlled", function()
-		for i = 1, 10000 do
-			local var = UnitPlayerControlled('player')
-		end
-	end)
-	profile("unit_unit", function()
-		for i = 1, 10000 do
-			local var = UnitHealth('player')
-		end
-	end)
-	profile("unit_health_max", function()
-		for i = 1, 10000 do
-			local var = UnitHealthMax('player')
-		end
-	end)
-
-
 	profile("optimized_unit_player", function()
 		local UnitIsPlayer = UnitIsPlayer
 		local var
 		for i = 1, 10000 do
 			var = UnitIsPlayer('player')
+		end
+	end)
+	print(" ")
+
+	profile("unit_tap_denied", function()
+		for i = 1, 10000 do
+			local var = UnitIsTapDenied('player')
 		end
 	end)
 	profile("optimized_unit_tap_denied", function()
@@ -88,6 +74,13 @@ function bdCore_profile()
 			var = UnitIsTapDenied('player')
 		end
 	end)
+
+	print(" ")
+	profile("unit_player_controlled", function()
+		for i = 1, 10000 do
+			local var = UnitPlayerControlled('player')
+		end
+	end)
 	profile("optimized_unit_player_controlled", function()
 		local UnitPlayerControlled = UnitPlayerControlled
 		local var
@@ -95,11 +88,25 @@ function bdCore_profile()
 			var = UnitPlayerControlled('player')
 		end
 	end)
+	print(" ")
+
+	profile("unit_unit", function()
+		for i = 1, 10000 do
+			local var = UnitHealth('player')
+		end
+	end)
 	profile("optimized_unit_unit", function()
 		local UnitHealth = UnitHealth
 		local var
 		for i = 1, 10000 do
 			var = UnitHealth('player')
+		end
+	end)
+	print(" ")
+
+	profile("unit_health_max", function()
+		for i = 1, 10000 do
+			local var = UnitHealthMax('player')
 		end
 	end)
 	profile("optimized_unit_health_max", function()
