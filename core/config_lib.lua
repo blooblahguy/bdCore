@@ -101,7 +101,6 @@ bdConfig.header.lock:SetScript("OnLeave", function()
 end)
 bdConfig.header.lock:SetScript("OnClick", function(self)
 	bdCore.toggleLock()
-
 	if (self.x:GetText() == "Lock") then
 		self.x:SetText("Unlock")
 	else
@@ -130,8 +129,10 @@ bdConfig.left:SetBackdropColor(1,1,1,.05)
 function bdCore:toggleConfig()
 	if (bdConfig:IsShown()) then
 		bdConfig:Hide()
+		bdCore:triggerAction("bd_config_close")
 	else
 		bdConfig:Show()
+		bdCore:triggerAction("bd_config_open")
 		bdConfig.modules['General']:select()
 		if (bdCore.moving) then
 			bdConfig.header.lock.x:SetText("Lock")
@@ -453,6 +454,11 @@ end
 --------------------------------------------------
 -- functions here
 --------------------------------------------------
+local function configChange(group, option)
+	bdCore:triggerEvent("config_"..group.."_changed")
+	bdCore:triggerEvent("config_"..group.."_"..option.."_changed")
+end
+
 function bdConfig:createContainer(contentParent, size)
 	if (not size) then 
 		size = "full" 
@@ -536,6 +542,8 @@ function bdCore:createActionButton(group, option, info, persistent)
 		if (info.callback) then
 			info.callback()
 		end
+
+		configChange(group, option)
 	end)
 
 	return container:GetHeight()
@@ -575,6 +583,8 @@ function bdCore:createBox(group, option, info, persistent)
 			info:callback(create:GetText())
 			create:SetText("")
 		end
+
+		configChange(group, option)
 	end)
 
 
@@ -608,6 +618,8 @@ function bdCore:colorPicker(group, option, info, persistent)
 		if (info.callback) then
 			info:callback()
 		end
+
+		configChange(group, option)
 		
 		return r, g, b, a
 	end
@@ -853,6 +865,9 @@ function bdCore:createList(group, option, info, persistent)
 		if (info.callback) then
 			info:callback()
 		end
+
+		configChange(group, option)
+
 		-- clear aura cache
 		bdCore.caches.auras = {}
 	end
@@ -970,6 +985,8 @@ function bdCore:createDropdown(group, option, info, custompanel, persistent)
 				if (info.callback) then
 					info:callback(text)
 				end
+
+				configChange(group, option)
 			
 				selectbox.selected:SetText(text)
 				selectbox:click()
@@ -1034,8 +1051,15 @@ function bdCore:createSlider(group, option, info, persistent)
 	slider.value:SetTextColor(1,1,1)
 	slider.value:SetPoint("TOP", slider,"BOTTOM", 0, -2)
 	slider:Show()
+	slider.lastValue = 0
+	slider:SetScript("OnMouseUp", function(self)
+		configChange(group, option)
+	end)
 	slider:SetScript("OnValueChanged", function(self)
-		local newval = round(slider:GetValue(), 1)
+		local newval = math.floor(slider:GetValue())
+
+		if (slider.lastValue == newval) then return end
+		slider.lastValue = newval
 
 		if (info.persistent or persistent) then
 			if (c.persistent[group][option] == newval) then -- throttle it changing on every pixel
@@ -1090,6 +1114,8 @@ function bdCore:createCheckButton(group, option, info, persistent)
 		if (info.callback) then
 			info:callback(check)
 		end
+
+		configChange(group, option)
 	end)
 	
 	return container:GetHeight()
