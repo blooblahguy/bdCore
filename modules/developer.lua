@@ -1,9 +1,36 @@
 -- i'll use this file for organized testing stuff
 
 local parent = {}
+parent.frames = {}
+parent.functions = {}
+parent.events = {}
+parent.more = {}
 parent.colors = {}
+parent.colors.players = {}
+parent.colors.player[1] = {.1, .2, .3, 1}
+parent.colors.player[2] = {.1, .2, .3, 1}
+parent.colors.player[3] = {.1, .2, .3, 1}
+parent.colors.player[4] = {.1, .2, .3, 1}
+parent.colors.player[5] = {.1, .2, .3, 1}
+parent.colors.player[6] = {.1, .2, .3, 1}
+parent.colors.player[7] = {.1, .2, .3, 1}
+parent.colors.player[8] = {.1, .2, .3, 1}
+parent.colors.player[9] = {.1, .2, .3, 1}
+parent.colors.player[10] = {.1, .2, .3, 1}
+parent.colors.player[11] = {.1, .2, .3, 1}
+parent.colors.aggro = {}
+parent.colors.aggro[1] = {.1, .2, .3, 1}
+parent.colors.aggro[2] = {.1, .2, .3, 1}
+parent.colors.aggro[3] = {.1, .2, .3, 1}
+parent.colors.aggro[4] = {.1, .2, .3, 1}
 parent.colors.reaction = {}
+parent.colors.reaction[1] = {.1, .2, .3, 1}
+parent.colors.reaction[2] = {.1, .2, .3, 1}
+parent.colors.reaction[3] = {.1, .2, .3, 1}
 parent.colors.reaction[4] = {.1, .2, .3, 1}
+parent.colors.reaction[5] = {.1, .2, .3, 1}
+parent.colors.reaction[6] = {.1, .2, .3, 1}
+parent.colors.reaction[7] = {.1, .2, .3, 1}
 
 function bdCore_profile()
 	local total_time = 0
