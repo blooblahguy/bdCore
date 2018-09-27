@@ -1,16 +1,14 @@
 -- i'll use this file for organized testing stuff
 
 function bdCore_profile()
-	local start
-	local total
-	local finish
+
 	local function profile(name, fn)
-		start = GetTime();
+		local start = GetTime()
 
 		fn()
 
-		finish = GetTime()
-		total = finish - start
+		local finish = GetTime()
+		local total = finish - start
 		print(name.." took: "..total.." and ran from "..start.." to "..finish)
 	end
 
@@ -74,32 +72,41 @@ function bdCore_profile()
 
 	profile("optimized_unit_player", function()
 		local UnitIsPlayer = UnitIsPlayer
+		local var
 		for i = 1, 1000 do
-			local var = UnitIsPlayer('player')
+			var = UnitIsPlayer('player')
 		end
+		print(var)
 	end)
 	profile("optimized_unit_tap_denied", function()
 		local UnitIsTapDenied = UnitIsTapDenied
+		local var
 		for i = 1, 1000 do
-			local var = UnitIsTapDenied('player')
+			var = UnitIsTapDenied('player')
 		end
+		print(var)
 	end)
 	profile("optimized_unit_player_controlled", function()
 		local UnitPlayerControlled = UnitPlayerControlled
+		local var
 		for i = 1, 1000 do
-			local var = UnitPlayerControlled('player')
+			var = UnitPlayerControlled('player')
 		end
+		print(var)
 	end)
 	profile("optimized_unit_unit", function()
 		local UnitHealth = UnitHealth
+		local var
 		for i = 1, 1000 do
-			local var = UnitHealth('player')
+			var = UnitHealth('player')
 		end
+		print(var)
 	end)
 	profile("optimized_unit_health_max", function()
 		local UnitHealthMax = UnitHealthMax
+		local var
 		for i = 1, 1000 do
-			local var = UnitHealthMax('player')
+			var = UnitHealthMax('player')
 		end
 		print(var)
 	end)
