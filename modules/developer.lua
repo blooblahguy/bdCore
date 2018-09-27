@@ -56,12 +56,12 @@ function bdCore_profile()
 		profile("unitreaction_color", function()
 			for i = 1, 100 do
 				local unitreaction = UnitReaction('nameplate1', 'player')
-				local color = unpack(bdCore.media.colors.blue)
+				local color = unpack(bdCore.media.blue)
 			end
 		end)
 		profile("optimized_unitreaction_color", function()
 			local unpack, UnitReaction = unpack, UnitReaction
-			local r_table = bdCore.media.colors
+			local r_table = bdCore.media
 			for i = 1, 100 do
 				local unitreaction = UnitReaction('nameplate1', 'player')
 				local color = unpack(r_table['blue'])
