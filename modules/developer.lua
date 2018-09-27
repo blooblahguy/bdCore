@@ -104,6 +104,7 @@ tester:SetScript("OnEvent", function()
 		for i = 1, 1000 do
 			local var = UnitHealthMax('player')
 		end
+		print(var)
 	end)
 
 end)
