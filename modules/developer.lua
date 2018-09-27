@@ -3,11 +3,12 @@
 function bdCore_profile()
 
 	local function profile(name, fn)
-		local start = GetTime()
+		local start = debugprofilestop()
 
 		fn()
+		-- fn()
 
-		local finish = GetTime()
+		local finish = debugprofilestop()
 		local total = finish - start
 		print(name.." took: "..total.." and ran from "..start.." to "..finish)
 	end
