@@ -214,11 +214,11 @@ local function Update(self, event, unit)
 	local auras = {}
 	local lastAuraIndex = 0
 	for index = 1, 40 do
-		local name, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable, nameplateShowSelf, spellID, canApply, isBossDebuff, casterIsPlayer, nameplateShowAll, timeMod, effect1, effect2, effect3 = UnitAura(unit, index, helpOrHarm)
+		local name, texture, count, debuffType, duration, expiration, caster, isStealable, nameplateShowSelf, spellID, canApply, isBossDebuff, casterIsPlayer, nameplateShowAll, timeMod, effect1, effect2, effect3 = UnitAura(unit, index, helpOrHarm)
 
 		if not name then break end
 		
-		if (self.AuraBars.filter or DefaultFilter)(name, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable, nameplateShowSelf, spellID, canApply, isBossDebuff, casterIsPlayer, nameplateShowAll, timeMod, effect1, effect2, effect3) then
+		if (self.AuraBars.filter or DefaultFilter)(element, unit, button, name, texture, count, debuffType, duration, expiration, caster, isStealable, nameplateShowSelf, spellID, canApply, isBossDebuff, casterIsPlayer, nameplateShowAll, timeMod, effect1, effect2, effect3) then
 			lastAuraIndex = lastAuraIndex + 1
 			auras[lastAuraIndex] = {}
 			auras[lastAuraIndex].name = name
