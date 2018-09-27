@@ -1,9 +1,6 @@
 -- i'll use this file for organized testing stuff
 
-local tester = CreateFrame("frame", nil)
-tester:RegisterEvent("LOADING_SCREEN_DISABLED")
-tester:SetScript("OnEvent", function()
-
+function bdCore_profile()
 	local start
 	local total
 	local finish
@@ -106,5 +103,8 @@ tester:SetScript("OnEvent", function()
 		end
 		print(var)
 	end)
+end
 
-end)
+local tester = CreateFrame("frame", nil)
+tester:RegisterEvent("LOADING_SCREEN_DISABLED")
+tester:SetScript("OnEvent", bdCore_profile)
