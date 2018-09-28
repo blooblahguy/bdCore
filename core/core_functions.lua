@@ -31,12 +31,24 @@ function BD_UnitAura(unit, spell, filter)
 	end
 end
 function BD_UnitBuff(unit, spell, filter)
-	filter = filter and filter.."|HELPFUL" or "HELPFUL"
 	return BD_UnitAura(unit, spell, filter)
 end
 function BD_UnitDebuff(unit, spell, filter)
 	filter = filter and filter.."|HARMFUL" or "HARMFUL"
 	return BD_UnitAura(unit, spell, filter)
+end
+function BD_UnitDispelable(unit, type)
+	for i = 1, 40 do
+		local name, _, _, debuffType = UnitAura(unit, i, "HARMFUL")
+		if not name then return end -- out of auras
+		if (debuffType ~= nil and debuffType ~= "") then
+			if (type == nil) then
+				return true
+			elseif (string.lower(type) == string.lower(debuffType)) then
+				return true
+			end
+		end
+	end
 end
 
 
