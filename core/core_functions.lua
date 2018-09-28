@@ -1,6 +1,44 @@
 local bdCore, c, f = select(2, ...):unpack()
 
-local IsItemInRange, CheckInteractDistance, UnitInRange, find, sub, gsub, floor, byte, tinsert = IsItemInRange, CheckInteractDistance, UnitInRange, string.find, string.sub, string.gsub, math.floor, string.byte, table.insert
+local UnitAura, IsItemInRange, CheckInteractDistance, UnitInRange, find, sub, gsub, floor, byte, tinsert, select = UnitAura, IsItemInRange, CheckInteractDistance, UnitInRange, string.find, string.sub, string.gsub, math.floor, string.byte, table.insert, select
+
+
+local class_colors = RAID_CLASS_COLORS
+function BD_ClassColorUnit(unit, returnType)
+	local name = UnitName(unit)
+	local classFileName = select(2, UnitClass(unit))
+	local color = class_colors[classFileName] or {["r"] = 1, ["g"] = 1, ["b"] = 1}
+
+	local hex = bdCore:RGBToHex(color)
+	local parts = {"|cff", hex, name, "|r"}
+	local color_string = table.concat(parts)
+
+	if (not returnType or returnType == "string") then
+		return color_string
+	elseif (returnType == "table") then
+		return color
+	elseif (returnType == "hex") then
+		return hex
+	end
+end
+function BD_UnitAura(unit, spell, filter)
+	for i = 1, 40 do
+		local name, _, _, _, _, _, _, _, _, spellId = UnitAura(unit, i, filter)
+		if not name then return end -- out of auras
+		if spell == spellId or spell == name then
+			return UnitAura(unit, i, filter)
+		end
+	end
+end
+function BD_UnitBuff(unit, spell, filter)
+	filter = filter and filter.."|HELPFUL" or "HELPFUL"
+	return BD_UnitAura(unit, spell, filter)
+end
+function BD_UnitDebuff(unit, spell, filter)
+	filter = filter and filter.."|HARMFUL" or "HARMFUL"
+	return BD_UnitAura(unit, spell, filter)
+end
+
 
 -- Unit scanning, sure if i'll use yet since can be expensive
 function UnitInRadius(unit, yards)
