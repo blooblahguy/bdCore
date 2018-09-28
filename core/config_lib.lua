@@ -129,10 +129,10 @@ bdConfig.left:SetBackdropColor(1,1,1,.05)
 function bdCore:toggleConfig()
 	if (bdConfig:IsShown()) then
 		bdConfig:Hide()
-		bdCore:triggerAction("bd_config_close")
+		bdCore:triggerEvent("bd_config_close")
 	else
 		bdConfig:Show()
-		bdCore:triggerAction("bd_config_open")
+		bdCore:triggerEvent("bd_config_open")
 		bdConfig.modules['General']:select()
 		if (bdCore.moving) then
 			bdConfig.header.lock.x:SetText("Lock")

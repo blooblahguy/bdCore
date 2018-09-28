@@ -8,12 +8,12 @@ interrupt:RegisterEvent('COMBAT_LOG_EVENT_UNFILTERED')
 local function OnEvent(self, event)
 	if (not BD_persistent.General.interrupt ) then return end
 
-	local timestamp, subevent, hideCaster, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, spellID, spellName, spellSchool, amount, overkill, school, resisted, blocked, absorbed, critial, glancing, crushing, isOffHand = CombatLogGetCurrentEventInfo()
+	local timestamp, subevent, hideCaster, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, spellID, spellName, spellSchool, extraSpellID, extraSpellName, school, resisted, blocked, absorbed, critial, glancing, crushing, isOffHand = CombatLogGetCurrentEventInfo()
 
 	if (subevent ~= 'SPELL_INTERRUPT') then return end
 
 	if (UnitExists(sourceName) and UnitIsUnit(sourceName, 'player')) then
-		SendChatMessage(UnitName("player")..' interrupted ' .. GetSpellLink(spellID), channel)
+		SendChatMessage(UnitName("player")..' interrupted ' .. GetSpellLink(extraSpellID), channel)
 	end
 end
 
