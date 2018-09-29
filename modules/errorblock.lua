@@ -35,7 +35,9 @@ local filter = {
 
 local errors = CreateFrame('frame')
 UIErrorsFrame:SetScript("OnEvent", function(self, event, msg, ...)
-	if (event ~= "UI_ERROR_MESSAGE") then return end
+	if (event ~= "UI_ERROR_MESSAGE") then 
+		return orig(self, event, msg, ...)
+	end
 
 	local alert = BD_persistent.General.errorblock
 	
