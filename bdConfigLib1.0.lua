@@ -24,7 +24,6 @@
 
 
 
-
 ========================================================]]
 
 local addonName, addon = ...
@@ -688,7 +687,7 @@ end
 --[[========================================================
 	CONFIGURATION INPUT ELEMENT METHODS
 	This is all of the methods that create user interaction 
-	elements. When adding support for new modules, start here.
+	elements. When adding support for new modules, start here
 ==========================================================]]
 
 --[[========================================================
