@@ -3,6 +3,13 @@ local bdCore, c, f = select(2, ...):unpack()
 local UnitAura, IsItemInRange, CheckInteractDistance, UnitInRange, find, sub, gsub, floor, byte, tinsert, select = UnitAura, IsItemInRange, CheckInteractDistance, UnitInRange, string.find, string.sub, string.gsub, math.floor, string.byte, table.insert, select
 
 
+function bdCore:addModule(name, configuration, persistent)
+	return bdConfigLib:RegisterModule({
+		name = name
+		, persistent = persistent
+	}, configuration, BD_persistent, BD_user)
+end
+
 local class_colors = RAID_CLASS_COLORS
 function BD_ClassColorUnit(unit, returnType)
 	local name = UnitName(unit)
