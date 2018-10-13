@@ -109,7 +109,10 @@ bdCore:SetScript("OnEvent", function(self, event, arg1, arg2, ...)
 			end
 		end--]]
 		
-		bdCore:addModule("General", bdCore.general, true)
+		bdConfigLib:RegisterModule({
+			name = "General"
+			, persistent = true
+		}, bdCore.general, BD_persistent)
 
 		print(bdCore.colorString.." loaded. Type /bd for configuration. We're on Discord! https://discord.gg/2SK3bEw")
 		

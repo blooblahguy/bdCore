@@ -87,7 +87,7 @@ bdCore:hookEvent('profile_config',function()
 		callback = function(self) deleteProfile() end
 	}}
 
-	bdCore:addModule("Profiles", defaults)
+	-- bdCore:addModule("Profiles", defaults)
 	config = bdCore.config.profile['Profiles']
 
 	

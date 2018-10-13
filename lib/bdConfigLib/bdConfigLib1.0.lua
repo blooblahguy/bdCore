@@ -343,6 +343,7 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 	========================================================]]
 	local module = {}
 	module.settings = settings
+	module.name = settings.name
 	module.configuration = configuration
 	module.savedVariable = savedVariable
 	do
@@ -392,6 +393,7 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 		
 		-- Create page / tab
 		function module:CreateTab(name)
+			print("create tab", name)
 			local index = #module.tabs + 1
 
 			-- create scrollable page container to display tab's configuration options
@@ -458,10 +460,10 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 				module.activePage = page
 			end
 			function tab:Unselect()
-				t:Hide()
-				t.page:Hide()
-				t.active = false
-				t.page.active = false
+				tab:Hide()
+				tab.page:Hide()
+				tab.active = false
+				tab.page.active = false
 
 				module.activePage = false
 			end
@@ -477,6 +479,7 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 			if (index == 1) then
 				tab:SetPoint("LEFT", module.tabContainer, "LEFT", 0, 0)
 			else
+				print(module.tabs[index - 1])
 				tab:SetPoint("LEFT", module.tabs[index - 1], "RIGHT", 1, 0)
 			end
 
@@ -485,6 +488,7 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 			page.tab, page.name, page.index = tab, name, index
 
 			-- append to tab storage
+			module.activePage = page
 			module.tabs[index] = tab
 
 			return index
@@ -504,7 +508,7 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 				link:SetPoint("TOPLEFT", config.window.left, "TOPLEFT")
 				config.firstLink = link
 			else
-				link:SetPoint("TOPLEFT", config.window.lastLink, "BOTTOMLEFT")
+				link:SetPoint("TOPLEFT", config.lastLink, "BOTTOMLEFT")
 			end
 
 			config.lastLink = link
@@ -513,7 +517,8 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 	end
 
 	-- Caps/hide the scrollbar as necessary
-	module:SetPageScroll()
+	function module:SetPageScroll()
+		if (#module.tabs == 0) then return end
 		local page = module.activePage or module.tabs[#module.tabs].page
 		local height = 0
 		if (page.rows) then
@@ -548,6 +553,7 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 	save.user = save.user or {}
 	save.user.name = UnitName("player")
 	save.user.profile = save.user.profile or "default"
+	save.user.spec_profile = save.user.spec_profile or {}
 	save.user.spec_profile[1] = save.user.spec_profile[1] or false
 	save.user.spec_profile[2] = save.user.spec_profile[2] or false
 	save.user.spec_profile[3] = save.user.spec_profile[3] or false
@@ -571,11 +577,21 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 	function module:ElementInfo(option, info)
 		local isPersistent = info.persistent or settings.persistent
 		local page = module.tabs[#module.tabs].page
-		local container = config:ElementContainer(module, page, info.type)
-		local save = config.save.profile
+		local container = config:ElementContainer(page, info.type)
+
+		print(config.save.profiles, save.user.profile, module.name, option)
+
+		local save
 		if (isPersistent) then
-			save = config.save.profile[config.save.user.profile]
+			save = config.save.persistent[module.name][option]
+		else
+			print(config.save.profiles, config.save.user.profile, module.name, option)
+			save = config.save.profiles[config.save.user.profile][module.name][option]
 		end
+
+		-- print(save, container, isPersistent)
+		-- save = save
+
 		return save, container, isPersistent
 	end
 	
@@ -591,23 +607,24 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 			local isPersistent = info.persistent or settings.persistent
 			if (isPersistent) then
 				-- if variable is `persistent` its account-wide
-				persistent[name] = persistent[name] or {}
-				if (persistent[name][option] == nil) then
+				persistent[module.name] = persistent[module.name] or {}
+				if (persistent[module.name][option] == nil) then
 					if (info.value == nil) then
 						info.value = {}
 					end
 
-					persistent[name][option] = info.value
+					persistent[module.name][option] = info.value
 				end
 			else
 				-- this is a per-character configuration
-				profile[name] = profile[name] or {}
-				if (profile[name][option] == nil) then
+				profile[module.name] = profile[module.name] or {}
+				if (profile[module.name][option] == nil) then
 					if (info.value == nil) then
 						info.value = {}
 					end
 
-					profile[name][option] = info.value
+					print(module.name, option, info.value)
+					profile[module.name][option] = info.value
 				end
 			end
 
@@ -626,12 +643,17 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 			end
 			
 			-- If the very first entry is not a tab, then create a general tab/page container
-			if (not info.type == "tab" and #module.tabs == 0) then
+			if (info.type ~= "tab" and #module.tabs == 0) then
 				module:CreateTab("General")
 			end
 
 			-- Master Call (slider = config.SliderElement(config, module, option, info))
-			config[info.type:gsub("^%l", string.upper).."Element"](config, module, option, info)
+			local method = info.type:gsub("^%l", string.upper).."Element"
+			if (config[method]) then
+				config[method](config, module, option, info)
+			else
+				debug("No module defined for "..method)
+			end
 		end
 	end
 	
@@ -641,11 +663,12 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 			If we only made 1 tab, hide the tabContianer an
 			make the page take up the extra space
 	========================================================]]
+	print(settings.name)
 	module:SetPageScroll()
 	
 	-- If there aren't additional tabs, act like non exist and fill up space
 	local current_tab = module.tabs[#module.tabs]
-	if (current_tab.text:GetText == "General") then
+	if (current_tab.text:GetText() == "General") then
 		module.tabContainer:Hide()
 		current_tab.page.parent:SetHeight(config.dimensions.height - config.media.borderSize)
 	end
@@ -700,21 +723,21 @@ end
 function config:ElementContainer(page, element)
 	local container = CreateFrame("frame", nil, page)
 	local padding = 10
-	local sizing = { -- size as a percentage
+	local sizing = {
 		text = 1.0
 		, table = 1.0
-		, slider = 1.0
-		, checkbox = 0.5
+		, slider = 0.5
+		, checkbox = 0.33
 		, color = 0.33
 		, dropdown = 0.5
 	}
 
 	-- size the container ((pageWidth / %) - padding left)
-	container:SetSize((page:GetWidth() / sizing[element]) - padding, 30)
+	container:SetSize((page:GetWidth() * sizing[element]) - padding, 30)
 
 	-- TESTING : shows a background around each container for debugging
-	container:SetBackdrop({bdFile = config.media.flat})
-	contianer:SetBackdropColor(.1, .8, .2, 0.5)
+	container:SetBackdrop({bgFile = config.media.flat})
+	container:SetBackdropColor(.1, .8, .2, 0.1)
 
 	-- place the container
 	page.rows = page.rows or {}
@@ -726,15 +749,16 @@ function config:ElementContainer(page, element)
 		if (not page.lastContainer) then
 			container:SetPoint("TOPLEFT", page, "TOPLEFT", padding, -padding)
 		else
-			container:SetPoint("TOPLEFT", page.lastContainer, "BOTTOMLEFT", 0, -padding)
+			container:SetPoint("TOPLEFT", page.lastRow, "BOTTOMLEFT", 0, -padding)
 		end
 
 		-- used to count / measure rows
+		page.lastRow = container
 		page.rows[#page.rows + 1] = container
 	else
 		container:SetPoint("TOPLEFT", page.lastContainer, "TOPRIGHT", padding, 0)
 	end
-
+	
 	page.lastContainer = container
 	return container
 end
@@ -747,7 +771,7 @@ function config:TabElement(module, option, info)
 	module:SetPageScroll()
 
 	-- add new tab
-	module:addTab(info.value)
+	module:CreateTab(info.value)
 end
 
 --[[========================================================
@@ -764,9 +788,12 @@ function config:TextElement(module, option, info)
 	text:SetJustifyV("TOP")
 	text:SetAllPoints(container)
 
-	local lines = math.ceil(container:GetWidth(), text:GetStringWidth())
+	-- print(container:GetWidth(), text:GetStringWidth())
+	-- print(text:GetStringWidth(), container:GetWidth())
+	local lines = math.ceil(text:GetStringWidth() / container:GetWidth())
+	print(lines)
 
-	container:SetHeight( (lines * 14) + 5)
+	container:SetHeight( (lines * 14) + 10)
 
 	return container
 end
@@ -786,15 +813,15 @@ end
 function config:SliderElement(module, option, info)
 	local save, container, persistent = module:ElementInfo(option, info)
 
-	local slider = CreateFrame("Slider", nil, container, "OptionsSliderTemplate")
+	local slider = CreateFrame("Slider", module.name.."_"..option, container, "OptionsSliderTemplate")
 	slider:SetWidth(container:GetWidth())
 	slider:SetHeight(14)
-	slider:SetPoint("TOPLEFT", container ,"TOPLEFT", 0, -20)
+	slider:SetPoint("TOPLEFT", container ,"TOPLEFT", 0, -16)
 	slider:SetOrientation('HORIZONTAL')
 	slider:SetMinMaxValues(info.min, info.max)
 	slider:SetObeyStepOnDrag(true)
 	slider:SetValueStep(info.step)
-	slider:SetValue(save[group][option])
+	slider:SetValue(save)
 	slider.tooltipText = info.tooltip
 
 	local low = _G[slider:GetName() .. 'Low']
@@ -815,7 +842,7 @@ function config:SliderElement(module, option, info)
 	
 	slider.value = slider:CreateFontString(nil, "OVERLAY", "bdConfig_font")
 	slider.value:SetPoint("TOP", slider, "BOTTOM", 0, -2)
-	slider.value:SetText(save[group][option])
+	slider.value:SetText(save)
 
 	slider:Show()
 	slider.lastValue = 0
@@ -825,11 +852,11 @@ function config:SliderElement(module, option, info)
 		if (slider.lastValue == newval) then return end
 		slider.lastValue = newval
 
-		if (save[group][option] == newval) then -- throttle it changing on the same pixel
+		if (save == newval) then -- throttle it changing on the same pixel
 			return false
 		end
 
-		save[group][option] = newval
+		save = newval
 
 		slider:SetValue(newval)
 		slider.value:SetText(newval)
@@ -837,7 +864,7 @@ function config:SliderElement(module, option, info)
 		info:callback()
 	end)
 
-	container:SetHeight(50)
+	container:SetHeight(46)
 
 	return container
 end
@@ -847,8 +874,9 @@ end
 ==========================================================]]
 function config:CheckboxElement(module, option, info)
 	local save, container, persistent = module:ElementInfo(option, info)
+	container:SetHeight(25)
 
-	local check = CreateFrame("CheckButton", nil, container, "ChatConfigCheckButtonTemplate")
+	local check = CreateFrame("CheckButton", module.name.."_"..option, container, "ChatConfigCheckButtonTemplate")
 	check:SetPoint("TOPLEFT", container, "TOPLEFT", 0, 0)
 	local text = _G[check:GetName().."Text"]
 	text:SetText(info.label)
@@ -856,11 +884,10 @@ function config:CheckboxElement(module, option, info)
 	text:ClearAllPoints()
 	text:SetPoint("LEFT", check, "RIGHT", 2, 1)
 	check.tooltip = info.tooltip;
-
-	check:SetChecked(save[group][option])
+	check:SetChecked(save)
 
 	check:SetScript("OnClick", function(self)
-		save[group][option] = self:GetChecked()
+		save = self:GetChecked()
 		info:callback(check)
 	end)
 
@@ -876,12 +903,12 @@ function config:ColorElement(module, option, info)
 	local picker = CreateFrame("button", nil, container)
 	picker:SetSize(20, 20)
 	picker:SetBackdrop({bgFile = bdCore.media.flat, edgeFile = bdCore.media.flat, edgeSize = 2, insets = {top = 2, right = 2, bottom = 2, left = 2}})
-	picker:SetBackdropColor(unpack(save[group][option]))
+	picker:SetBackdropColor(unpack(save))
 	picker:SetBackdropBorderColor(0,0,0,1)
 	picker:SetPoint("LEFT", container, "LEFT", 0, 0)
 	
 	picker.callback = function(self, r, g, b, a)
-		save[group][option] = {r,g,b,a}
+		save = {r,g,b,a}
 		picker:SetBackdropColor(r,g,b,a)
 
 		info:callback()
@@ -891,7 +918,7 @@ function config:ColorElement(module, option, info)
 	
 	picker:SetScript("OnClick",function()		
 		HideUIPanel(ColorPickerFrame)
-		local r, g, b, a = unpack(save[group[option]
+		local r, g, b, a = unpack(save)
 
 		ColorPickerFrame:SetFrameStrata("FULLSCREEN_DIALOG")
 		ColorPickerFrame:SetClampedToScreen(true)
@@ -921,7 +948,7 @@ function config:ColorElement(module, option, info)
 	picker.text:SetText(info.name)
 	picker.text:SetPoint("LEFT", picker, "RIGHT", 8, 0)
 
-	container:SetSize(30)
+	container:SetHeight(30)
 
 	return container
 end
@@ -936,23 +963,13 @@ function config:DropdownElement(module, option, info)
 	local label = container:CreateFontString(nil, "OVERLAY", "bdConfig_font")
 	label:SetPoint("TOPLEFT", container, "TOPLEFT")
 	label:SetText(info.label)
+	container:SetHeight(45)
 
-	local dropdown = CreateFrame("Frame", nil, container, "UIDropDownMenuTemplate")
-	dropdown:SetPoint("TOPLEFT", label, "BOTTOMLEFT", 0, -2)
-	dropdown.makeRoom = function(self)
-		if (self:IsShown()) then
-			container:SetHeight(info.options * 20)
-		else
-			container:SetHeight(30)
-		end
+	local dropdown = CreateFrame("Button", module.name.."_"..option, container, "UIDropDownMenuTemplate")
+	dropdown:SetPoint("TOPLEFT", label, "BOTTOMLEFT", -15, -2)
 
-		module:SetPageScroll()
-	end
-	dropdown:SetScript("OnShow", dropdown.makeRoom)
-	dropdown:SetScript("OnHide", dropdown.makeRoom)
-
-	UIDropDownMenu_SetWidth(dropdown, container:GetWidth());
-	UIDropDownMenu_SetText(save[group][option])
+	UIDropDownMenu_SetWidth(dropdown, container:GetWidth() - 20)
+	UIDropDownMenu_SetText(dropdown, save or "test")
 	UIDropDownMenu_JustifyText(dropdown, "LEFT")
 
 	-- initialize options
@@ -962,7 +979,7 @@ function config:DropdownElement(module, option, info)
 			local info = UIDropDownMenu_CreateInfo()
 			info.text = item
 			info.value = item
-			if (item == save[group][option]) then selected = i end
+			if (item == save) then selected = i end
 
 			info.func = function(self)
 				print(self:GetID())
