@@ -19,7 +19,6 @@
 		list
 		dropdown
 	savedVariable : Per character SavedVariable
-	savedVariableAcct : Account-Wide SavedVariable
 
 
 
@@ -28,14 +27,16 @@
 
 local addonName, addon = ...
 local _G = _G
-local version = 10
+local version = 11
 
-if _G.bdConfigLib and _G.bdConfigLib.version > version then
+if _G.bdConfigLib and _G.bdConfigLib.version >= version then
+	bdConfigLib = _G.bdConfigLib
 	return -- a newer or same version has already been created, ignore this file
 end
 
 _G.bdConfigLib = {}
 bdConfigLib = _G.bdConfigLib
+bdConfigLib.version = version
 local config = _G.bdConfigLib
 
 --[[======================================================
@@ -359,6 +360,10 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 			-- Unselect all modules
 			for name, otherModule in pairs(config.modules) do
 				otherModule:Unselect()
+
+				for k, t in pairs(otherModule.tabs) do
+					t:Unselect()
+				end
 			end
 
 			-- Show this module
@@ -368,6 +373,13 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 
 			-- Select first tab
 			module.tabs[1]:Select()
+
+			-- If there aren't additional tabs, act like non exist and fill up space
+			local current_tab = module.tabs[#module.tabs]
+			if (current_tab.text:GetText() == "General") then
+				module.tabContainer:Hide()
+				current_tab.page.parent:SetHeight(config.dimensions.height - config.media.borderSize)
+			end
 		end
 
 		-- for when hiding
@@ -375,6 +387,7 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 			module.tabContainer:Hide()
 			module.active = false
 			module.link.active = false
+			module.link:OnLeave()
 		end
 
 		-- Create page and tabs container
@@ -382,6 +395,7 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 			local tabContainer = CreateFrame("frame", nil, config.window.right)
 			tabContainer:SetPoint("TOPLEFT")
 			tabContainer:SetPoint("TOPRIGHT")
+			tabContainer:Hide()
 			tabContainer:SetHeight(config.dimensions.header)
 			CreateBackdrop(tabContainer)
 			local r, g, b, a = unpack(config.media.background)
@@ -393,7 +407,6 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 		
 		-- Create page / tab
 		function module:CreateTab(name)
-			print("create tab", name)
 			local index = #module.tabs + 1
 
 			-- create scrollable page container to display tab's configuration options
@@ -450,27 +463,29 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 			tab.inactiveColor = {1,1,1,0}
 			tab.hoverColor = {1,1,1,0.1}
 			tab:OnLeave()
-			tab:Hide()
+
 			function tab:Select()
-				tab:Show()
+				-- tab:Show()
 				tab.page:Show()
 				tab.active = true
 				tab.page.active = true
+				tab:OnLeave()
 
 				module.activePage = page
 			end
 			function tab:Unselect()
-				tab:Hide()
+				-- tab:Hide()
 				tab.page:Hide()
 				tab.active = false
 				tab.page.active = false
+				tab:OnLeave()
 
 				module.activePage = false
 			end
 			tab.OnClick = function()
 				-- unselect / hide other tabs
 				for i, t in pairs(module.tabs) do
-					tab:Unselect()
+					t:Unselect()
 				end
 				-- select this tab
 				tab:Select()
@@ -479,7 +494,6 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 			if (index == 1) then
 				tab:SetPoint("LEFT", module.tabContainer, "LEFT", 0, 0)
 			else
-				print(module.tabs[index - 1])
 				tab:SetPoint("LEFT", module.tabs[index - 1], "RIGHT", 1, 0)
 			end
 
@@ -569,9 +583,9 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 	save.persistent.bd_config = save.persistent.bd_config or {} -- todo : let the user decide how the library looks and behaves
 
 	-- shortcuts
-	local user = save.user
-	local persistent = save.persistent
-	local profile = save.profiles[user.profile]
+	config.user = save.user
+	config.persistent = save.persistent
+	config.profile = save.profiles[config.user.profile]
 
 	-- let's us access module inforomation quickly and easily
 	function module:ElementInfo(option, info)
@@ -579,13 +593,10 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 		local page = module.tabs[#module.tabs].page
 		local container = config:ElementContainer(page, info.type)
 
-		print(config.save.profiles, save.user.profile, module.name, option)
-
 		local save
 		if (isPersistent) then
 			save = config.save.persistent[module.name][option]
 		else
-			print(config.save.profiles, config.save.user.profile, module.name, option)
 			save = config.save.profiles[config.save.user.profile][module.name][option]
 		end
 
@@ -607,24 +618,23 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 			local isPersistent = info.persistent or settings.persistent
 			if (isPersistent) then
 				-- if variable is `persistent` its account-wide
-				persistent[module.name] = persistent[module.name] or {}
-				if (persistent[module.name][option] == nil) then
+				config.persistent[module.name] = config.persistent[module.name] or {}
+				if (config.persistent[module.name][option] == nil) then
 					if (info.value == nil) then
 						info.value = {}
 					end
 
-					persistent[module.name][option] = info.value
+					config.persistent[module.name][option] = info.value
 				end
 			else
 				-- this is a per-character configuration
-				profile[module.name] = profile[module.name] or {}
-				if (profile[module.name][option] == nil) then
+				config.profile[module.name] = config.profile[module.name] or {}
+				if (config.profile[module.name][option] == nil) then
 					if (info.value == nil) then
 						info.value = {}
 					end
 
-					print(module.name, option, info.value)
-					profile[module.name][option] = info.value
+					config.profile[module.name][option] = info.value
 				end
 			end
 
@@ -663,15 +673,9 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 			If we only made 1 tab, hide the tabContianer an
 			make the page take up the extra space
 	========================================================]]
-	print(settings.name)
 	module:SetPageScroll()
-	
-	-- If there aren't additional tabs, act like non exist and fill up space
-	local current_tab = module.tabs[#module.tabs]
-	if (current_tab.text:GetText() == "General") then
-		module.tabContainer:Hide()
-		current_tab.page.parent:SetHeight(config.dimensions.height - config.media.borderSize)
-	end
+	module:Select()
+	module:Unselect()
 
 	-- store in config
 	config.modulesIndex[#config.modulesIndex + 1] = module
@@ -680,6 +684,15 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 	if (settings.init) then
 		setting.init(module)
 	end
+
+	local save
+	if (settings.persistent) then
+		save = config.save.persistent[module.name][option]
+	else
+		save = config.save.profiles[config.save.user.profile][module.name][option]
+	end
+
+	return save
 end
 
 --[[========================================================
@@ -730,14 +743,15 @@ function config:ElementContainer(page, element)
 		, checkbox = 0.33
 		, color = 0.33
 		, dropdown = 0.5
+		, clear = 1.0
 	}
 
 	-- size the container ((pageWidth / %) - padding left)
 	container:SetSize((page:GetWidth() * sizing[element]) - padding, 30)
 
 	-- TESTING : shows a background around each container for debugging
-	container:SetBackdrop({bgFile = config.media.flat})
-	container:SetBackdropColor(.1, .8, .2, 0.1)
+	-- container:SetBackdrop({bgFile = config.media.flat})
+	-- container:SetBackdropColor(.1, .8, .2, 0.1)
 
 	-- place the container
 	page.rows = page.rows or {}
@@ -788,12 +802,20 @@ function config:TextElement(module, option, info)
 	text:SetJustifyV("TOP")
 	text:SetAllPoints(container)
 
-	-- print(container:GetWidth(), text:GetStringWidth())
-	-- print(text:GetStringWidth(), container:GetWidth())
 	local lines = math.ceil(text:GetStringWidth() / container:GetWidth())
-	print(lines)
 
 	container:SetHeight( (lines * 14) + 10)
+
+	return container
+end
+
+--[[========================================================
+	CLEAR (clears the columns and starts a new row)
+==========================================================]]
+function config:ClearElement(module, option, info)
+	local save, container, persistent = module:ElementInfo(option, info)
+
+	container:SetHeight(5)
 
 	return container
 end
