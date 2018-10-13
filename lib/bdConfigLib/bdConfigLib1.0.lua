@@ -561,49 +561,48 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 	========================================================]]
 	savedVariable = savedVariable or {}
 	config.save = savedVariable
-	local save = config.save
+	-- local save = config.save
 
 	-- player configuration
-	save.user = save.user or {}
-	save.user.name = UnitName("player")
-	save.user.profile = save.user.profile or "default"
-	save.user.spec_profile = save.user.spec_profile or {}
-	save.user.spec_profile[1] = save.user.spec_profile[1] or false
-	save.user.spec_profile[2] = save.user.spec_profile[2] or false
-	save.user.spec_profile[3] = save.user.spec_profile[3] or false
-	save.user.spec_profile[4] = save.user.spec_profile[4] or false
+	config.save.user = config.save.user or {}
+	config.save.user.name = UnitName("player")
+	config.save.user.profile = config.save.user.profile or "default"
+	config.save.user.spec_profile = config.save.user.spec_profile or {}
+	config.save.user.spec_profile[1] = config.save.user.spec_profile[1] or false
+	config.save.user.spec_profile[2] = config.save.user.spec_profile[2] or false
+	config.save.user.spec_profile[3] = config.save.user.spec_profile[3] or false
+	config.save.user.spec_profile[4] = config.save.user.spec_profile[4] or false
 
 	-- profile configuration
-	save.profiles = save.profiles or {}
-	save.profiles['default'] = save.profiles['default'] or {}
-	save.profiles.positions = save.profiles.positions or {}
+	config.save.profiles = config.save.profiles or {}
+	config.save.profiles['default'] = config.save.profiles['default'] or {}
+	config.save.profiles.positions = config.save.profiles.positions or {}
+	config.save.profile = config.save.profiles[config.save.user.profile]
 
 	-- persistent configuration
-	save.persistent = save.persistent or {}
-	save.persistent.bd_config = save.persistent.bd_config or {} -- todo : let the user decide how the library looks and behaves
-
-	-- shortcuts
-	config.user = save.user
-	config.persistent = save.persistent
-	config.profile = save.profiles[config.user.profile]
+	config.save.persistent = config.save.persistent or {}
+	config.save.persistent.bd_config = config.save.persistent.bd_config or {} -- todo : let the user decide how the library looks and behaves
 
 	-- let's us access module inforomation quickly and easily
+	function module:Save(option, value)
+		print(config.save.persistent, config.save.persistent[module.name], module.name, option, value)
+
+		if (settings.persistent) then
+			config.save.persistent[self.name][option] = value
+		else
+			config.save.profile[self.name][option] = value
+		end
+	end
+
 	function module:ElementInfo(option, info)
-		local isPersistent = info.persistent or settings.persistent
 		local page = module.tabs[#module.tabs].page
 		local container = config:ElementContainer(page, info.type)
 
-		local save
-		if (isPersistent) then
-			save = config.save.persistent[module.name][option]
+		if (settings.persistent) then
+			return config.save.persistent[module.name][option], container, isPersistent
 		else
-			save = config.save.profiles[config.save.user.profile][module.name][option]
+			return config.save.profile[module.name][option], container, isPersistent
 		end
-
-		-- print(save, container, isPersistent)
-		-- save = save
-
-		return save, container, isPersistent
 	end
 	
 	--[[======================================================
@@ -615,26 +614,27 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 	for k, conf in pairs(configuration) do
 		-- loop through the configuration table to setup, tabs, sliders, inputs, etc.
 		for option, info in pairs(conf) do
-			local isPersistent = info.persistent or settings.persistent
-			if (isPersistent) then
+			if (settings.persistent) then
 				-- if variable is `persistent` its account-wide
-				config.persistent[module.name] = config.persistent[module.name] or {}
-				if (config.persistent[module.name][option] == nil) then
+				
+				config.save.persistent[module.name] = config.save.persistent[module.name] or {}
+				print("set persistent", module.name)
+				if (config.save.persistent[module.name][option] == nil) then
 					if (info.value == nil) then
 						info.value = {}
 					end
 
-					config.persistent[module.name][option] = info.value
+					config.save.persistent[module.name][option] = info.value
 				end
 			else
 				-- this is a per-character configuration
-				config.profile[module.name] = config.profile[module.name] or {}
-				if (config.profile[module.name][option] == nil) then
+				config.save.profile[module.name] = config.save.profile[module.name] or {}
+				if (config.save.profile[module.name][option] == nil) then
 					if (info.value == nil) then
 						info.value = {}
 					end
 
-					config.profile[module.name][option] = info.value
+					config.save.profile[module.name][option] = info.value
 				end
 			end
 
@@ -685,14 +685,19 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 		setting.init(module)
 	end
 
-	local save
-	if (settings.persistent) then
-		save = config.save.persistent[module.name][option]
-	else
-		save = config.save.profiles[config.save.user.profile][module.name][option]
-	end
+	-- shortcuts
+	config.user = config.save.user
+	config.persistent = config.save.persistent
+	config.profile = config.save.profile
 
-	return save
+	-- local save
+	-- if (settings.persistent) then
+	-- 	save = config.save.persistent[module.name][option]
+	-- else
+	-- 	save = config.save.profiles[config.save.user.profile][module.name][option]
+	-- end
+
+	-- return save
 end
 
 --[[========================================================
@@ -909,7 +914,8 @@ function config:CheckboxElement(module, option, info)
 	check:SetChecked(save)
 
 	check:SetScript("OnClick", function(self)
-		save = self:GetChecked()
+		module:Save(option, self:GetChecked())
+
 		info:callback(check)
 	end)
 
