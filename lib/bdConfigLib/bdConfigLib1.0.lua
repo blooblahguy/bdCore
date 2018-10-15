@@ -37,7 +37,6 @@ end
 _G.bdConfigLib = {}
 bdConfigLib = _G.bdConfigLib
 bdConfigLib.version = version
-local config = _G.bdConfigLib
 
 --[[======================================================
 	Create Library
@@ -48,13 +47,13 @@ end
 --[[======================================================
 	Helper functions & variables
 ========================================================]]
-config.dimensions = {
+bdConfigLib.dimensions = {
 	left_column = 150
 	, right_column = 600
 	, height = 450
 	, header = 30
 }
-config.media = {
+bdConfigLib.media = {
 	flat = "Interface\\Buttons\\WHITE8x8"
 	, arrow = "Interface\\Buttons\\Arrow-Down-Down.PNG"
 	, font = "fonts\\ARIALN.ttf"
@@ -69,16 +68,16 @@ config.media = {
 }
 
 -- main font object
-config.font = CreateFont("bdConfig_font")
-config.font:SetFont(config.media.font, config.media.fontSize)
-config.font:SetShadowColor(0, 0, 0)
-config.font:SetShadowOffset(1, -1)
-config.foundBetterFont = false
+bdConfigLib.font = CreateFont("bdConfig_font")
+bdConfigLib.font:SetFont(bdConfigLib.media.font, bdConfigLib.media.fontSize)
+bdConfigLib.font:SetShadowColor(0, 0, 0)
+bdConfigLib.font:SetShadowOffset(1, -1)
+bdConfigLib.foundBetterFont = false
 
-config.arrow = UIParent:CreateTexture(nil, "OVERLAY")
-config.arrow:SetTexture(config.media.arrow)
-config.arrow:SetTexCoord(0.9, 0.9, 0.9, 0.6)
-config.arrow:SetVertexColor(1,1,1,0.5)
+bdConfigLib.arrow = UIParent:CreateTexture(nil, "OVERLAY")
+bdConfigLib.arrow:SetTexture(bdConfigLib.media.arrow)
+bdConfigLib.arrow:SetTexCoord(0.9, 0.9, 0.9, 0.6)
+bdConfigLib.arrow:SetVertexColor(1,1,1,0.5)
 
 -- dirty create shadow (no external textures)
 local function CreateShadow(frame, size)
@@ -88,7 +87,7 @@ local function CreateShadow(frame, size)
 	local start = 0.088
 	for s = 1, size do
 		local shadow = frame:CreateTexture(nil, "BACKGROUND")
-		shadow:SetTexture(config.media.flat)
+		shadow:SetTexture(bdConfigLib.media.flat)
 		shadow:SetVertexColor(0,0,0,1)
 		shadow:SetPoint("TOPLEFT", frame, "TOPLEFT", -s, s)
 		shadow:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", s, -s)
@@ -102,15 +101,15 @@ local function CreateBackdrop(frame)
 	if (frame.bd_background) then return end
 
 	local background = frame:CreateTexture(nil, "BORDER", -1)
-	background:SetTexture(config.media.flat)
-	background:SetVertexColor(unpack(config.media.background))
+	background:SetTexture(bdConfigLib.media.flat)
+	background:SetVertexColor(unpack(bdConfigLib.media.background))
 	background:SetAllPoints()
 	
 	local border = frame:CreateTexture(nil, "BACKGROUND", -8)
-	border:SetTexture(config.media.flat)
-	border:SetVertexColor(unpack(config.media.border))
-	border:SetPoint("TOPLEFT", frame, "TOPLEFT", -config.media.borderSize, config.media.borderSize)
-	border:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", config.media.borderSize, -config.media.borderSize)
+	border:SetTexture(bdConfigLib.media.flat)
+	border:SetVertexColor(unpack(bdConfigLib.media.border))
+	border:SetPoint("TOPLEFT", frame, "TOPLEFT", -bdConfigLib.media.borderSize, bdConfigLib.media.borderSize)
+	border:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", bdConfigLib.media.borderSize, -bdConfigLib.media.borderSize)
 
 	frame.bd_background = background
 	frame.bd_border = border
@@ -120,16 +119,16 @@ end
 
 -- creates basic button template
 local function CreateButton(parent)
-	if (not parent) then parent = config.window end
+	if (not parent) then parent = bdConfigLib.window end
 	local button = CreateFrame("Button", nil, parent)
 
-	button.inactiveColor = config.media.blue
-	button.activeColor = config.media.blue
-	button:SetBackdrop({bgFile = config.media.flat})
+	button.inactiveColor = bdConfigLib.media.blue
+	button.activeColor = bdConfigLib.media.blue
+	button:SetBackdrop({bgFile = bdConfigLib.media.flat})
 
 	function button:BackdropColor(r, g, b, a)
-		button.inactiveColor = self.inactiveColor or config.media.blue
-		button.activeColor = self.activeColor or config.media.blue
+		button.inactiveColor = self.inactiveColor or bdConfigLib.media.blue
+		button.activeColor = self.activeColor or bdConfigLib.media.blue
 
 		if (r and b and g) then
 			self:SetBackdropColorOld(r, g, b, a)
@@ -140,9 +139,9 @@ local function CreateButton(parent)
 	button.SetBackdropColor = button.BackdropColor
 	button.SetVertexColor = button.BackdropColor
 
-	button:SetBackdropColor(unpack(config.media.blue))
+	button:SetBackdropColor(unpack(bdConfigLib.media.blue))
 	button:SetAlpha(0.6)
-	button:SetHeight(config.dimensions.header)
+	button:SetHeight(bdConfigLib.dimensions.header)
 	button:EnableMouse(true)
 
 	button.text = button:CreateFontString(nil, "OVERLAY", "bdConfig_font")
@@ -195,7 +194,7 @@ local function CreateButton(parent)
 	end
 	function button:SetText(text)
 		button.text:SetText(text)
-		button:SetWidth(button.text:GetStringWidth() + config.dimensions.header)
+		button:SetWidth(button.text:GetStringWidth() + bdConfigLib.dimensions.header)
 	end
 
 	button:SetScript("OnEnter", button.OnEnter)
@@ -219,7 +218,7 @@ local function CreateFrames()
 	-- Parent
 	do
 		window:SetPoint("RIGHT", UIParent, "RIGHT", -20, 0)
-		window:SetSize(config.dimensions.left_column + config.dimensions.right_column, config.dimensions.height + config.dimensions.header)
+		window:SetSize(bdConfigLib.dimensions.left_column + bdConfigLib.dimensions.right_column, bdConfigLib.dimensions.height + bdConfigLib.dimensions.header)
 		window:SetMovable(true)
 		window:SetUserPlaced(true)
 		window:SetFrameStrata("DIALOG")
@@ -234,7 +233,7 @@ local function CreateFrames()
 		window.header = CreateFrame("frame", nil, window)
 		window.header:SetPoint("TOPLEFT")
 		window.header:SetPoint("TOPRIGHT")
-		window.header:SetHeight(config.dimensions.header)
+		window.header:SetHeight(bdConfigLib.dimensions.header)
 		window.header:RegisterForDrag("LeftButton", "RightButton")
 		window.header:EnableMouse(true)
 		window.header:SetScript("OnDragStart", function(self) window:StartMoving() end)
@@ -247,28 +246,28 @@ local function CreateFrames()
 		window.header.text:SetJustifyH("LEFT")
 		window.header.text:SetText("Addon Configuration")
 		window.header.text:SetJustifyV("MIDDLE")
-		window.header.text:SetScale(config.media.fontHeaderScale)
+		window.header.text:SetScale(bdConfigLib.media.fontHeaderScale)
 
 		window.header.close = CreateButton(window.header)
 		window.header.close:SetPoint("TOPRIGHT", window.header)
 		window.header.close:SetText("x")
-		window.header.close.inactiveColor = config.media.red
+		window.header.close.inactiveColor = bdConfigLib.media.red
 		window.header.close:OnLeave()
 		window.header.close.OnClick = function()
 			window:Hide()
 		end
 
 		window.header.reload = CreateButton(window.header)
-		window.header.reload:SetPoint("TOPRIGHT", window.header.close, "TOPLEFT", -config.media.borderSize, 0)
+		window.header.reload:SetPoint("TOPRIGHT", window.header.close, "TOPLEFT", -bdConfigLib.media.borderSize, 0)
 		window.header.reload:SetText("Reload UI")
-		window.header.reload.inactiveColor = config.media.green
+		window.header.reload.inactiveColor = bdConfigLib.media.green
 		window.header.reload:OnLeave()
 		window.header.reload.OnClick = function()
 			ReloadUI();
 		end
 
 		window.header.lock = CreateButton(window.header)
-		window.header.lock:SetPoint("TOPRIGHT", window.header.reload, "TOPLEFT", -config.media.borderSize, 0)
+		window.header.lock:SetPoint("TOPRIGHT", window.header.reload, "TOPLEFT", -bdConfigLib.media.borderSize, 0)
 		window.header.lock:SetText("Unlock")
 		window.header.lock.autoToggle = true
 		window.header.lock.OnClick = function(self)
@@ -283,25 +282,25 @@ local function CreateFrames()
 	-- Left Column
 	do
 		window.left = CreateFrame( "Frame", nil, window)
-		window.left:SetPoint("TOPLEFT", window, "TOPLEFT", 0, -config.dimensions.header-config.media.borderSize)
-		window.left:SetSize(config.dimensions.left_column, config.dimensions.height)
+		window.left:SetPoint("TOPLEFT", window, "TOPLEFT", 0, -bdConfigLib.dimensions.header-bdConfigLib.media.borderSize)
+		window.left:SetSize(bdConfigLib.dimensions.left_column, bdConfigLib.dimensions.height)
 		CreateBackdrop(window.left)
 	end
 
 	-- Right Column
 	do
 		window.right = CreateFrame( "Frame", nil, window)
-		window.right:SetPoint("TOPRIGHT", window, "TOPRIGHT", 0, -config.dimensions.header-config.media.borderSize)
-		window.right:SetSize(config.dimensions.right_column-config.media.borderSize, config.dimensions.height)
+		window.right:SetPoint("TOPRIGHT", window, "TOPRIGHT", 0, -bdConfigLib.dimensions.header-bdConfigLib.media.borderSize)
+		window.right:SetSize(bdConfigLib.dimensions.right_column-bdConfigLib.media.borderSize, bdConfigLib.dimensions.height)
 		CreateBackdrop(window.right)
-		window.right.bd_background:SetVertexColor(unpack(config.media.border))
+		window.right.bd_background:SetVertexColor(unpack(bdConfigLib.media.border))
 	end
 
 	return window
 end
 
 local function FindBetterFont()
-	if (config.foundBetterFont) then return end
+	if (bdConfigLib.foundBetterFont) then return end
 	local font = false
 
 	if (bdCore) then
@@ -311,8 +310,8 @@ local function FindBetterFont()
 	end
 
 	if (font) then
-		config.foundBetterFont = true
-		config.font:SetFont(font, config.media.fontSize)
+		bdConfigLib.foundBetterFont = true
+		bdConfigLib.font:SetFont(font, bdConfigLib.media.fontSize)
 	end
 end
 
@@ -358,7 +357,7 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 			if (module.active) then return end
 
 			-- Unselect all modules
-			for name, otherModule in pairs(config.modules) do
+			for name, otherModule in pairs(bdConfigLib.modules) do
 				otherModule:Unselect()
 
 				for k, t in pairs(otherModule.tabs) do
@@ -378,7 +377,7 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 			local current_tab = module.tabs[#module.tabs]
 			if (current_tab.text:GetText() == "General") then
 				module.tabContainer:Hide()
-				current_tab.page.parent:SetHeight(config.dimensions.height - config.media.borderSize)
+				current_tab.page.parent:SetHeight(bdConfigLib.dimensions.height - bdConfigLib.media.borderSize)
 			end
 		end
 
@@ -392,13 +391,13 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 
 		-- Create page and tabs container
 		do
-			local tabContainer = CreateFrame("frame", nil, config.window.right)
+			local tabContainer = CreateFrame("frame", nil, bdConfigLib.window.right)
 			tabContainer:SetPoint("TOPLEFT")
 			tabContainer:SetPoint("TOPRIGHT")
 			tabContainer:Hide()
-			tabContainer:SetHeight(config.dimensions.header)
+			tabContainer:SetHeight(bdConfigLib.dimensions.header)
 			CreateBackdrop(tabContainer)
-			local r, g, b, a = unpack(config.media.background)
+			local r, g, b, a = unpack(bdConfigLib.media.background)
 			tabContainer.bd_border:Hide()
 			tabContainer.bd_background:SetVertexColor(r, g, b, 0.5)
 
@@ -413,10 +412,10 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 			local page = CreateFrame("Frame", nil, scrollContainer) 
 			do
 				--parent frame 
-				local scrollFrameParent = CreateFrame("Frame", nil, config.window.right) 
+				local scrollFrameParent = CreateFrame("Frame", nil, bdConfigLib.window.right) 
 				scrollFrameParent:SetPoint("BOTTOMRIGHT")
 				scrollFrameParent:SetPoint("BOTTOMLEFT")
-				scrollFrameParent:SetHeight(config.dimensions.height - config.dimensions.header - config.media.borderSize)
+				scrollFrameParent:SetHeight(bdConfigLib.dimensions.height - bdConfigLib.dimensions.header - bdConfigLib.media.borderSize)
 
 				--scrollframe 
 				scrollContainer = CreateFrame("ScrollFrame", nil, scrollFrameParent) 
@@ -433,7 +432,7 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 				scrollbar.scrollStep = 1 
 				scrollbar:SetValue(0) 
 				scrollbar:SetWidth(16) 
-				scrollbar:SetBackdrop({bgFile = config.media.flat})
+				scrollbar:SetBackdrop({bgFile = bdConfigLib.media.flat})
 				scrollbar:SetBackdropColor(0,0,0,.2)
 				scrollFrameParent.scrollbar = scrollbar 
 
@@ -510,22 +509,22 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 
 		-- Create module navigation link
 		do
-			local link = CreateButton(config.window.left)
+			local link = CreateButton(bdConfigLib.window.left)
 			link.inactiveColor = {0, 0, 0, 0}
 			link.hoverColor = {1, 1, 1, .2}
 			link:OnLeave()
 			link.OnClick = module.Select
 			link:SetText(settings.name)
-			link:SetWidth(config.dimensions.left_column)
+			link:SetWidth(bdConfigLib.dimensions.left_column)
 			link.text:SetPoint("LEFT", link, "LEFT", 6, 0)
-			if (not config.lastLink) then
-				link:SetPoint("TOPLEFT", config.window.left, "TOPLEFT")
-				config.firstLink = link
+			if (not bdConfigLib.lastLink) then
+				link:SetPoint("TOPLEFT", bdConfigLib.window.left, "TOPLEFT")
+				bdConfigLib.firstLink = link
 			else
-				link:SetPoint("TOPLEFT", config.lastLink, "BOTTOMLEFT")
+				link:SetPoint("TOPLEFT", bdConfigLib.lastLink, "BOTTOMLEFT")
 			end
 
-			config.lastLink = link
+			bdConfigLib.lastLink = link
 			module.link = link
 		end
 	end
@@ -543,10 +542,10 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 
 		if (#module.tabs > 0) then
 			-- make the scrollbar only scroll the height of the page
-			page.scrollbar:SetMinMaxValues(1, math.max(1, height - config.dimensions.height - config.dimensions.header))
+			page.scrollbar:SetMinMaxValues(1, math.max(1, height - bdConfigLib.dimensions.height - bdConfigLib.dimensions.header))
 
 			-- if the size of the page is lesser than it's height. don't show a scrollbar
-			if ((height  - config.dimensions.height - config.dimensions.header) < 2) then
+			if ((height  - bdConfigLib.dimensions.height - bdConfigLib.dimensions.header) < 2) then
 				page.scrollbar:Hide()
 			end
 		end
@@ -559,49 +558,50 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 			Persistent config (non-profile)
 			Defaults
 	========================================================]]
+	-- print(settings.name, module.save["persistent"][settings.name]['errorblock'])
 	savedVariable = savedVariable or {}
-	config.save = savedVariable
-	-- local save = config.save
+	module.save = module.save or savedVariable
 
 	-- player configuration
-	config.save.user = config.save.user or {}
-	config.save.user.name = UnitName("player")
-	config.save.user.profile = config.save.user.profile or "default"
-	config.save.user.spec_profile = config.save.user.spec_profile or {}
-	config.save.user.spec_profile[1] = config.save.user.spec_profile[1] or false
-	config.save.user.spec_profile[2] = config.save.user.spec_profile[2] or false
-	config.save.user.spec_profile[3] = config.save.user.spec_profile[3] or false
-	config.save.user.spec_profile[4] = config.save.user.spec_profile[4] or false
+	module.save.user = module.save.user or {}
+	module.save.user.name = UnitName("player")
+	module.save.user.profile = module.save.user.profile or "default"
+	module.save.user.spec_profile = module.save.user.spec_profile or {}
+	module.save.user.spec_profile[1] = module.save.user.spec_profile[1] or false
+	module.save.user.spec_profile[2] = module.save.user.spec_profile[2] or false
+	module.save.user.spec_profile[3] = module.save.user.spec_profile[3] or false
+	module.save.user.spec_profile[4] = module.save.user.spec_profile[4] or false
 
 	-- profile configuration
-	config.save.profiles = config.save.profiles or {}
-	config.save.profiles['default'] = config.save.profiles['default'] or {}
-	config.save.profiles.positions = config.save.profiles.positions or {}
-	config.save.profile = config.save.profiles[config.save.user.profile]
+	module.save.profiles = module.save.profiles or {}
+	module.save.profiles[module.save.user.profile] = module.save.profiles[module.save.user.profile] or {}
+	module.save.profiles[module.save.user.profile].positions = module.save.profiles[module.save.user.profile].positions or {}
+
+	module.save.profile = module.save.profiles[module.save.user.profile]
 
 	-- persistent configuration
-	config.save.persistent = config.save.persistent or {}
-	config.save.persistent.bd_config = config.save.persistent.bd_config or {} -- todo : let the user decide how the library looks and behaves
+	module.save.persistent = module.save.persistent or {}
+	module.save.persistent.bd_config = module.save.persistent.bd_config or {} -- todo : let the user decide how the library looks and behaves
 
 	-- let's us access module inforomation quickly and easily
 	function module:Save(option, value)
-		print(config.save.persistent, config.save.persistent[module.name], module.name, option, value)
+		print(module.save.persistent, self.name, option, value)
 
 		if (settings.persistent) then
-			config.save.persistent[self.name][option] = value
+			module.save.persistent[option] = value
 		else
-			config.save.profile[self.name][option] = value
+			module.save.profile[option] = value
 		end
 	end
 
 	function module:ElementInfo(option, info)
 		local page = module.tabs[#module.tabs].page
-		local container = config:ElementContainer(page, info.type)
+		local container = bdConfigLib:ElementContainer(page, info.type)
 
 		if (settings.persistent) then
-			return config.save.persistent[module.name][option], container, isPersistent
+			return module.save.persistent[option], container, isPersistent
 		else
-			return config.save.profile[module.name][option], container, isPersistent
+			return module.save.profiles[module.save.user.profile][option], container, isPersistent
 		end
 	end
 	
@@ -617,24 +617,21 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 			if (settings.persistent) then
 				-- if variable is `persistent` its account-wide
 				
-				config.save.persistent[module.name] = config.save.persistent[module.name] or {}
-				print("set persistent", module.name)
-				if (config.save.persistent[module.name][option] == nil) then
+				if (module.save.persistent[option] == nil) then
 					if (info.value == nil) then
 						info.value = {}
 					end
 
-					config.save.persistent[module.name][option] = info.value
+					module.save.persistent[option] = info.value
 				end
 			else
 				-- this is a per-character configuration
-				config.save.profile[module.name] = config.save.profile[module.name] or {}
-				if (config.save.profile[module.name][option] == nil) then
+				if (module.save.profile[option] == nil) then
 					if (info.value == nil) then
 						info.value = {}
 					end
 
-					config.save.profile[module.name][option] = info.value
+					module.save.profile[option] = info.value
 				end
 			end
 
@@ -646,6 +643,7 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 			if (settings.callback) then
 				callbacks[#callbacks + 1] = settings.callback
 			end
+
 			info.callback = function()
 				for k, fn in pairs(callbacks) do
 					fn()
@@ -657,10 +655,10 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 				module:CreateTab("General")
 			end
 
-			-- Master Call (slider = config.SliderElement(config, module, option, info))
+			-- Master Call (slider = bdConfigLib.SliderElement(config, module, option, info))
 			local method = info.type:gsub("^%l", string.upper).."Element"
-			if (config[method]) then
-				config[method](config, module, option, info)
+			if (bdConfigLib[method]) then
+				bdConfigLib[method](bdConfigLib, module, option, info)
 			else
 				debug("No module defined for "..method)
 			end
@@ -678,23 +676,24 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 	module:Unselect()
 
 	-- store in config
-	config.modulesIndex[#config.modulesIndex + 1] = module
-	config.modules[settings.name] = module
+	bdConfigLib.modulesIndex[#bdConfigLib.modulesIndex + 1] = module
+	bdConfigLib.modules[settings.name] = module
 
 	if (settings.init) then
 		setting.init(module)
 	end
 
 	-- shortcuts
-	config.user = config.save.user
-	config.persistent = config.save.persistent
-	config.profile = config.save.profile
+	bdConfigLib.saves[settings.name] = bdConfigLib.saves[settings.name] or {}
+	bdConfigLib.saves[settings.name].user = module.save.user
+	bdConfigLib.saves[settings.name].persistent = module.save.persistent
+	bdConfigLib.saves[settings.name].profile = module.save.profile
 
 	-- local save
 	-- if (settings.persistent) then
-	-- 	save = config.save.persistent[module.name][option]
+	-- 	save = module.save.persistent[module.name][option]
 	-- else
-	-- 	save = config.save.profiles[config.save.user.profile][module.name][option]
+	-- 	save = module.save.profiles[module.save.user.profile][module.name][option]
 	-- end
 
 	-- return save
@@ -707,26 +706,30 @@ end
 ==========================================================]]
 do
 	-- returns a list of modules currently loaded
-	function config:GetModules()
+	function bdConfigLib:GetSave(name)
+		return bdConfigLib.saves[name]
+	end
+	function bdConfigLib:GetModules()
 
 	end
 
 	-- Selects first module, hides column if only 1
-	function config:OnShow()
+	function bdConfigLib:OnShow()
 
 	end
 
 	-- create tables
-	config.modules = {}
-	config.modulesIndex = {}
-	config.lastLink = false
-	config.firstLink = false
+	bdConfigLib.modules = {}
+	bdConfigLib.modulesIndex = {}
+	bdConfigLib.saves = {}
+	bdConfigLib.lastLink = false
+	bdConfigLib.firstLink = false
 
 	-- create frame objects
-	config.window = CreateFrames()
+	bdConfigLib.window = CreateFrames()
 
 	-- associate RegisterModule function
-	config.RegisterModule = RegisterModule
+	bdConfigLib.RegisterModule = RegisterModule
 end
 
 --[[========================================================
@@ -738,7 +741,7 @@ end
 --[[========================================================
 	ELEMENT CONTAINER WITH `COLUMN` SUPPORT
 ==========================================================]]
-function config:ElementContainer(page, element)
+function bdConfigLib:ElementContainer(page, element)
 	local container = CreateFrame("frame", nil, page)
 	local padding = 10
 	local sizing = {
@@ -755,7 +758,7 @@ function config:ElementContainer(page, element)
 	container:SetSize((page:GetWidth() * sizing[element]) - padding, 30)
 
 	-- TESTING : shows a background around each container for debugging
-	-- container:SetBackdrop({bgFile = config.media.flat})
+	-- container:SetBackdrop({bgFile = bdConfigLib.media.flat})
 	-- container:SetBackdropColor(.1, .8, .2, 0.1)
 
 	-- place the container
@@ -785,7 +788,7 @@ end
 --[[========================================================
 	ADDING NEW TABS / SETTING SCROLLFRAME
 ==========================================================]]
-function config:TabElement(module, option, info)
+function bdConfigLib:TabElement(module, option, info)
 	-- We're done with the current page contianer, cap it's slider/height and start a new tab / height
 	module:SetPageScroll()
 
@@ -796,7 +799,7 @@ end
 --[[========================================================
 	TEXT ELEMENT FOR USER INFO
 ==========================================================]]
-function config:TextElement(module, option, info)
+function bdConfigLib:TextElement(module, option, info)
 	local save, container, persistent = module:ElementInfo(option, info)
 
 	local text = container:CreateFontString(nil, "OVERLAY", "bdConfig_font")
@@ -817,7 +820,7 @@ end
 --[[========================================================
 	CLEAR (clears the columns and starts a new row)
 ==========================================================]]
-function config:ClearElement(module, option, info)
+function bdConfigLib:ClearElement(module, option, info)
 	local save, container, persistent = module:ElementInfo(option, info)
 
 	container:SetHeight(5)
@@ -828,7 +831,7 @@ end
 --[[========================================================
 	TABLE ELEMENT
 ==========================================================]]
-function config:TableElement(module, option, info)
+function bdConfigLib:TableElement(module, option, info)
 	local save, container, persistent = module:ElementInfo(option, info)
 
 	return container
@@ -837,7 +840,7 @@ end
 --[[========================================================
 	SLIDER ELEMENT
 ==========================================================]]
-function config:SliderElement(module, option, info)
+function bdConfigLib:SliderElement(module, option, info)
 	local save, container, persistent = module:ElementInfo(option, info)
 
 	local slider = CreateFrame("Slider", module.name.."_"..option, container, "OptionsSliderTemplate")
@@ -899,7 +902,7 @@ end
 --[[========================================================
 	CHECKBOX ELEMENT
 ==========================================================]]
-function config:CheckboxElement(module, option, info)
+function bdConfigLib:CheckboxElement(module, option, info)
 	local save, container, persistent = module:ElementInfo(option, info)
 	container:SetHeight(25)
 
@@ -925,7 +928,7 @@ end
 --[[========================================================
 	COLORPICKER ELEMENT
 ==========================================================]]
-function config:ColorElement(module, option, info)
+function bdConfigLib:ColorElement(module, option, info)
 	local save, container, persistent = module:ElementInfo(option, info)
 
 	local picker = CreateFrame("button", nil, container)
@@ -984,7 +987,7 @@ end
 --[[========================================================
 	DROPDOWN ELEMENT
 ==========================================================]]
-function config:DropdownElement(module, option, info)
+function bdConfigLib:DropdownElement(module, option, info)
 	local save, container, persistent = module:ElementInfo(option, info)
 
 	-- revert to blizzard dropdown for the time being
@@ -1004,12 +1007,13 @@ function config:DropdownElement(module, option, info)
 	UIDropDownMenu_Initialize(dropdown, function(self, level, menuList)
 		local selected = 0
 		for i, item in pairs(info.options) do
-			local info = UIDropDownMenu_CreateInfo()
-			info.text = item
-			info.value = item
+			local opt = UIDropDownMenu_CreateInfo()
+			opt.text = item
+			opt.value = item
+			print(save)
 			if (item == save) then selected = i end
 
-			info.func = function(self)
+			opt.func = function(self)
 				print(self:GetID())
 				UIDropDownMenu_SetSelectedID(dropdown, self:GetID())
 				CloseDropDownMenus()
@@ -1017,7 +1021,7 @@ function config:DropdownElement(module, option, info)
 				info:callback()
 			end
 
-			UIDropDownMenu_AddButton(info, level)
+			UIDropDownMenu_AddButton(opt, level)
 		end
 
 		UIDropDownMenu_SetSelectedID(dropdown, selected)
@@ -1027,10 +1031,6 @@ function config:DropdownElement(module, option, info)
 
 
 end
-
-
--- Reference back just for safety
-_G.bdConfigLib = config
 
 --[[
 

@@ -1,7 +1,7 @@
 local addon, engine = ...
 
 engine[1] = CreateFrame("Frame", nil, UIParent)
-engine[2] = {}
+engine[2] = function() return bdConfigLib:GetSave("bdAddons") end 
 engine[3] = {}
 
 function engine:unpack()
@@ -10,6 +10,9 @@ end
 
 
 bdCore = engine[1]
+bdCore.config = engine[2]
+bdCore.frames = engine[3]
+
 bdCore:RegisterEvent("ADDON_LOADED")
 
 bdCore.class = string.lower(select(1, UnitClass('player')))
@@ -35,12 +38,9 @@ bdCore.media = {
 }
 
 bdCore.colorString = '|cffA02C2Fbd|r'
-bdCore.config = engine[2]
-bdCore.frames = engine[3]
+
+
 local explevel = GetExpansionLevel()
-bdCore.isLegion = explevel == 6 or false
-bdCore.isBFA = true
-bdCore.explevel = explevel
 
 bdCore.font = CreateFont("bdCore.font")
 bdCore.font:SetFont("Interface\\Addons\\bdCore\\media\\font.ttf", 13)
