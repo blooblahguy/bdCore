@@ -200,10 +200,63 @@ local function CreateButton(parent)
 	button:SetScript("OnEnter", button.OnEnter)
 	button:SetScript("OnLeave", button.OnLeave)
 	button:SetScript("OnClick", button.OnClickDefault)
-	-- button.text.SetText = button.SetText
-	-- button.text.GetText = button.GetText
 
 	return button
+end
+
+-- creates scroll frame and returns its content
+function CreateScrollFrame(parent, width, height)
+	width = width or parent:GetWidth()
+	height = height or parent:GetHeight()
+
+	-- scrollframe
+	local scrollParent = CreateFrame("ScrollFrame", nil, parent) 
+	scrollParent:SetPoint("TOPLEFT", parent) 
+	scrollParent:SetSize(width, height) 
+	--scrollbar 
+	local scrollbar = CreateFrame("Slider", nil, scrollParent, "UIPanelScrollBarTemplate") 
+	scrollbar:SetPoint("TOPRIGHT", parent, "TOPRIGHT", -2, -18) 
+	scrollbar:SetPoint("BOTTOMLEFT", parent, "BOTTOMRIGHT", -18, 18) 
+	scrollbar:SetMinMaxValues(1, 600)
+	scrollbar:SetValueStep(1)
+	scrollbar.scrollStep = 1
+	scrollbar:SetValue(0)
+	scrollbar:SetWidth(16)
+	CreateBackdrop(scrollbar)
+	parent.scrollbar = scrollbar
+	--content frame 
+	local content = CreateFrame("Frame", nil, scrollParent) 
+	content:SetPoint("TOPLEFT", parent, "TOPLEFT") 
+	content:SetSize(width, height)
+	scrollParent.content = content
+	scrollParent:SetScrollChild(content)
+
+	-- scripts
+	scrollbar:SetScript("OnValueChanged", function (self, value) 
+		self:GetParent():SetVerticalScroll(value) 
+	end)
+	scrollFrameParent:SetScript("OnMouseWheel", function(self, delta)
+		self.scrollbar:SetValue(self.scrollbar:GetValue() - (delta*20))
+	end)
+	-- auto resizing
+	content.Update = function()
+		local height = content:GetHeight()
+		scrollbar:SetMinMaxValues(1, height)
+	end
+	content.SetSize = content.SetHeight
+	content.Update = content.Update
+	hooksecurefunc(content, "SetHeight", content.Update)
+	hooksecurefunc(content, "SetSize", content.Update)
+
+	-- store
+	parent.scrollParent = scrollParent
+	parent.scrollbar = scrollbar
+	parent.content = content
+
+	content.scrollParent = scrollParent
+	content.scrollbar = scrollbar
+
+	return content
 end
 
 
@@ -224,7 +277,6 @@ local function CreateFrames()
 		window:SetFrameStrata("DIALOG")
 		window:SetClampedToScreen(true)
 		-- window:Hide()
-		-- CreateBackdrop(window)
 		CreateShadow(window, 10)
 	end
 
@@ -377,7 +429,7 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 			local current_tab = module.tabs[#module.tabs]
 			if (current_tab.text:GetText() == "General") then
 				module.tabContainer:Hide()
-				current_tab.page.parent:SetHeight(bdConfigLib.dimensions.height - bdConfigLib.media.borderSize)
+				current_tab.page.scrollParent:SetHeight(bdConfigLib.dimensions.height - bdConfigLib.media.borderSize)
 			end
 		end
 
@@ -409,53 +461,8 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 			local index = #module.tabs + 1
 
 			-- create scrollable page container to display tab's configuration options
-			local page = CreateFrame("Frame", nil, scrollContainer) 
-			do
-				--parent frame 
-				local scrollFrameParent = CreateFrame("Frame", nil, bdConfigLib.window.right) 
-				scrollFrameParent:SetPoint("BOTTOMRIGHT")
-				scrollFrameParent:SetPoint("BOTTOMLEFT")
-				scrollFrameParent:SetHeight(bdConfigLib.dimensions.height - bdConfigLib.dimensions.header - bdConfigLib.media.borderSize)
-
-				--scrollframe 
-				scrollContainer = CreateFrame("ScrollFrame", nil, scrollFrameParent) 
-				scrollContainer:SetPoint("TOPRIGHT", scrollFrameParent, "TOPRIGHT", 0, 0) 
-				scrollContainer:SetSize(scrollFrameParent:GetWidth(), scrollFrameParent:GetHeight()) 
-				scrollFrameParent.scrollframe = scrollContainer 
-
-				--scrollbar 
-				scrollbar = CreateFrame("Slider", nil, scrollContainer, "UIPanelScrollBarTemplate") 
-				scrollbar:SetPoint("TOPRIGHT", scrollFrameParent, "TOPRIGHT", 0, -16) 
-				scrollbar:SetPoint("BOTTOMRIGHT", scrollFrameParent, "BOTTOMRIGHT", 0, 16) 
-				scrollbar:SetMinMaxValues(1, math.ceil(scrollFrameParent:GetHeight()+1)) 
-				scrollbar:SetValueStep(1) 
-				scrollbar.scrollStep = 1 
-				scrollbar:SetValue(0) 
-				scrollbar:SetWidth(16) 
-				scrollbar:SetBackdrop({bgFile = bdConfigLib.media.flat})
-				scrollbar:SetBackdropColor(0,0,0,.2)
-				scrollFrameParent.scrollbar = scrollbar 
-
-				--content frame 
-				page:SetPoint("TOPLEFT", scrollFrameParent, "TOPLEFT")
-				page:SetSize(scrollFrameParent:GetWidth() - 32, scrollFrameParent:GetHeight()) 
-				scrollContainer.content = page 
-				scrollContainer:SetScrollChild(page)
-
-				-- scripts
-				scrollbar:SetScript("OnValueChanged", function (self, value) 
-					self:GetParent():SetVerticalScroll(value) 
-				end)
-				scrollFrameParent:SetScript("OnMouseWheel", function(self, delta)
-					self.scrollbar:SetValue(self.scrollbar:GetValue() - (delta*20))
-				end)
-
-				-- to reference things
-				page.scrollbar = scrollbar
-				page.parent = scrollFrameParent
-
-				page:Hide()
-			end
+			local page = CreateScrollFrame(bdConfigLib.window.right)
+			page:Hide()
 
 			-- create tab to link to this page
 			local tab = CreateButton(module.tabContainer)
@@ -585,23 +592,17 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 
 	-- let's us access module inforomation quickly and easily
 	function module:Save(option, value)
-		print(module.save.persistent, self.name, option, value)
-
 		if (settings.persistent) then
 			module.save.persistent[option] = value
 		else
 			module.save.profile[option] = value
 		end
 	end
-
-	function module:ElementInfo(option, info)
-		local page = module.tabs[#module.tabs].page
-		local container = bdConfigLib:ElementContainer(page, info.type)
-
+	function module:Get(option)
 		if (settings.persistent) then
-			return module.save.persistent[option], container, isPersistent
+			return module.save.persistent[option]
 		else
-			return module.save.profiles[module.save.user.profile][option], container, isPersistent
+			return module.save.profile[option]
 		end
 	end
 	
@@ -741,7 +742,9 @@ end
 --[[========================================================
 	ELEMENT CONTAINER WITH `COLUMN` SUPPORT
 ==========================================================]]
-function bdConfigLib:ElementContainer(page, element)
+function bdConfigLib:ElementContainer(module, info)
+	local page = module.tabs[#module.tabs].page
+	local element = info.type
 	local container = CreateFrame("frame", nil, page)
 	local padding = 10
 	local sizing = {
@@ -752,6 +755,8 @@ function bdConfigLib:ElementContainer(page, element)
 		, color = 0.33
 		, dropdown = 0.5
 		, clear = 1.0
+		, button = 1.0
+		, textbox = 1.0
 	}
 
 	-- size the container ((pageWidth / %) - padding left)
@@ -800,7 +805,7 @@ end
 	TEXT ELEMENT FOR USER INFO
 ==========================================================]]
 function bdConfigLib:TextElement(module, option, info)
-	local save, container, persistent = module:ElementInfo(option, info)
+	local container = bdConfigLib:ElementContainer(module, info)
 
 	local text = container:CreateFontString(nil, "OVERLAY", "bdConfig_font")
 
@@ -821,7 +826,7 @@ end
 	CLEAR (clears the columns and starts a new row)
 ==========================================================]]
 function bdConfigLib:ClearElement(module, option, info)
-	local save, container, persistent = module:ElementInfo(option, info)
+	local container = bdConfigLib:ElementContainer(module, info)
 
 	container:SetHeight(5)
 
@@ -830,9 +835,171 @@ end
 
 --[[========================================================
 	TABLE ELEMENT
+	lets you define a group of configs into a row, and allow for rows to be added
 ==========================================================]]
-function bdConfigLib:TableElement(module, option, info)
-	local save, container, persistent = module:ElementInfo(option, info)
+function bdConfigLib:ListElement(module, option, info)
+	local container = bdConfigLib:ElementContainer(module, info)
+	container:SetHeight(200)
+
+
+	local title = container:CreateFontString(nil, "OVERLAY", "bdConfig_font")
+	title:SetPoint("TOPLEFT", container, "TOPLEFT", 0, 0)
+	title:SetText(info.label)
+
+	local insertbox = CreateFrame("EditBox", nil, container)
+	insertbox:SetFontObject("bdConfig_font")
+	insertbox:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -6)
+	insertbox:SetSize(container:GetWidth() - 66, 24)
+	insertbox:SetTextInsets(6, 2, 2, 2)
+	insertbox:SetMaxLetters(200)
+	insertbox:SetHistoryLines(1000)
+	insertbox:SetAutoFocus(false) 
+	insertbox:SetScript("OnEnterPressed", function(self, key) button:Click() end)
+	insertbox:SetScript("OnEscapePressed", function(self, key) self:ClearFocus() end)
+	CreateBackdrop(insertbox)
+
+	insertbox.alert = insertbox:CreateFontString(nil, "OVERLAY", "bdConfig_font")
+	insertbox.alert:SetPoint("TOPRIGHT",container,"TOPRIGHT", -2, 0)
+	insertbox.startFade = function()
+		local total = 0
+		self.alert:Show()
+		self:SetScript("OnUpdate",function(self, elapsed)
+			total = total + elapsed
+			if (total > 2.5) then
+				self.alert:SetAlpha(self.alert:GetAlpha()-0.02)
+				
+				if (self.alert:GetAlpha() <= 0.05) then
+					self:SetScript("OnUpdate", function() return end)
+					self.alert:Hide()
+				end
+			end
+		end)
+	end
+
+	local button = CreateButton(container)
+	button:SetPoint("TOPLEFT", insertbox, "TOPRIGHT", 0, 2)
+	button:SetText("Add/Remove")
+	insertbox:SetSize(container:GetWidth() - button:GetWidth() + 2, 24)
+	button.OnClick = function()
+		local value = insertbox:GetText()
+
+		if (strlen(value) > 0) then
+			list:addRemove(insertbox:GetText())
+		end
+
+		insertbox:SetText("")
+		insertbox:ClearFocus()
+	end)
+
+	local list = CreateFrame("frame", nil, container)
+	list:SetPoint("TOPLEFT", insertbox, "BOTTOMLEFT", 0, -2)
+	list:SetPoint("BOTTOMRIGHT", container, "BOTTOMRIGHT")
+	CreateBackdrop(list)
+
+	local content = CreateScrollFrame(list)
+
+	list.text = content:CreateFontString(nil, "OVERLAY", "bdConfig_font")
+	list.text:SetPoint("TOPLEFT", content, "TOPLEFT", 5, 0)
+	list.text:SetHeight(600)
+	list.text:SetWidth(list:GetWidth() - 10)
+	list.text:SetJustifyH("LEFT")
+	list.text:SetJustifyV("TOP")
+	list.text:SetText("test")
+	
+
+	-- show all config entries in this list
+	function list:populate()
+		local string = "";
+		local height = 0;
+
+		for k, v in pairs(module:Get[option]) do
+			string = string..k.."\n";
+			height = height + 14
+		end
+
+		local scrollheight = (height - 200) 
+		scrollheight = scrollheight > 1 and scrollheight or 1
+
+		list.scrollbar:SetMinMaxValues(1, scrollheight)
+		if (scrollheight == 1) then 
+			list.scrollbar:Hide()
+		else
+			list.scrollbar:Show()
+		end
+
+		list.text:SetHeight(height)
+		list.text:SetText(string)
+	end
+
+	-- remove or add something, then redraw the text
+	function list:addRemove(value)
+		if (module:Get(option)) then
+			insertbox.alert:SetText(value.." removed")
+		else
+			insertbox.alert:SetText(value.." added")
+		end
+		module:Save(option, value)
+		insertbox:startFade()
+		
+		self:populate()
+		info:callback()
+
+		-- clear aura cache
+		bdCore.caches.auras = {}
+	end
+
+	list:populate()
+
+	return container
+end
+--[[========================================================
+	BUTTON ELEMENT
+	lets you define a group of configs into a row, and allow for rows to be added
+==========================================================]]
+function bdConfigLib:ButtonElement(module, option, info)
+	local container = bdConfigLib:ElementContainer(module, info)
+
+	local create = CreateButton(container)
+	create:SetPoint("TOPLEFT", container, "TOPLEFT")
+	create:SetText(info.value)
+
+	create:SetScript("OnClick", function()
+		info.callback()
+	end)
+
+	return container
+end
+
+--[[========================================================
+	TEXTBOX ELEMENT
+==========================================================]]
+function bdConfigLib:TextBoxElement(module, option, info)
+	local container = bdConfigLib:ElementContainer(module, info)
+
+	local create = CreateFrame("EditBox", nil, container)
+	create:SetSize(200,24)
+	create:SetFontObject("bdConfig_font")
+	create:SetText(info.value)
+	create:SetTextInsets(6, 2, 2, 2)
+	create:SetMaxLetters(200)
+	create:SetHistoryLines(1000)
+	create:SetAutoFocus(false) 
+	create:SetScript("OnEnterPressed", function(self, key) create.button:Click() end)
+	create:SetScript("OnEscapePressed", function(self, key) self:ClearFocus() end)
+	create:SetPoint("TOPLEFT", container, "TOPLEFT", 5, 0)
+	CreateBackdrop(create)
+
+	create.label = create:CreateFontString(nil, "OVERLAY", "bdConfig_font")
+	create.label:SetText(info.description)
+	create.label:SetPoint("BOTTOMLEFT", create, "TOPLEFT", 0, 4)
+
+	create.button = CreateButton(create)
+	create.button:SetPoint("LEFT", create, "RIGHT", 4, 0)
+	create.button:SetText(info.button)
+	create.button.OnClick = function()
+		info:callback(create:GetText())
+		create:SetText("")
+	end)
 
 	return container
 end
@@ -841,7 +1008,7 @@ end
 	SLIDER ELEMENT
 ==========================================================]]
 function bdConfigLib:SliderElement(module, option, info)
-	local save, container, persistent = module:ElementInfo(option, info)
+	local container = bdConfigLib:ElementContainer(module, info)
 
 	local slider = CreateFrame("Slider", module.name.."_"..option, container, "OptionsSliderTemplate")
 	slider:SetWidth(container:GetWidth())
@@ -851,7 +1018,7 @@ function bdConfigLib:SliderElement(module, option, info)
 	slider:SetMinMaxValues(info.min, info.max)
 	slider:SetObeyStepOnDrag(true)
 	slider:SetValueStep(info.step)
-	slider:SetValue(save)
+	slider:SetValue(module:Get(option))
 	slider.tooltipText = info.tooltip
 
 	local low = _G[slider:GetName() .. 'Low']
@@ -872,7 +1039,7 @@ function bdConfigLib:SliderElement(module, option, info)
 	
 	slider.value = slider:CreateFontString(nil, "OVERLAY", "bdConfig_font")
 	slider.value:SetPoint("TOP", slider, "BOTTOM", 0, -2)
-	slider.value:SetText(save)
+	slider.value:SetText(module:Get(option))
 
 	slider:Show()
 	slider.lastValue = 0
@@ -882,11 +1049,11 @@ function bdConfigLib:SliderElement(module, option, info)
 		if (slider.lastValue == newval) then return end
 		slider.lastValue = newval
 
-		if (save == newval) then -- throttle it changing on the same pixel
+		if (module:Get(option) == newval) then -- throttle it changing on the same pixel
 			return false
 		end
 
-		save = newval
+		module:Save(option, newval)
 
 		slider:SetValue(newval)
 		slider.value:SetText(newval)
@@ -903,7 +1070,7 @@ end
 	CHECKBOX ELEMENT
 ==========================================================]]
 function bdConfigLib:CheckboxElement(module, option, info)
-	local save, container, persistent = module:ElementInfo(option, info)
+	local container = bdConfigLib:ElementContainer(module, info)
 	container:SetHeight(25)
 
 	local check = CreateFrame("CheckButton", module.name.."_"..option, container, "ChatConfigCheckButtonTemplate")
@@ -914,7 +1081,7 @@ function bdConfigLib:CheckboxElement(module, option, info)
 	text:ClearAllPoints()
 	text:SetPoint("LEFT", check, "RIGHT", 2, 1)
 	check.tooltip = info.tooltip;
-	check:SetChecked(save)
+	check:SetChecked(module:Get(option))
 
 	check:SetScript("OnClick", function(self)
 		module:Save(option, self:GetChecked())
@@ -929,17 +1096,17 @@ end
 	COLORPICKER ELEMENT
 ==========================================================]]
 function bdConfigLib:ColorElement(module, option, info)
-	local save, container, persistent = module:ElementInfo(option, info)
+	local container = bdConfigLib:ElementContainer(module, info)
 
 	local picker = CreateFrame("button", nil, container)
 	picker:SetSize(20, 20)
 	picker:SetBackdrop({bgFile = bdCore.media.flat, edgeFile = bdCore.media.flat, edgeSize = 2, insets = {top = 2, right = 2, bottom = 2, left = 2}})
-	picker:SetBackdropColor(unpack(save))
+	picker:SetBackdropColor(unpack(module:Get(option)))
 	picker:SetBackdropBorderColor(0,0,0,1)
 	picker:SetPoint("LEFT", container, "LEFT", 0, 0)
 	
 	picker.callback = function(self, r, g, b, a)
-		save = {r,g,b,a}
+		module:Save(option, {r,g,b,a})
 		picker:SetBackdropColor(r,g,b,a)
 
 		info:callback()
@@ -949,7 +1116,7 @@ function bdConfigLib:ColorElement(module, option, info)
 	
 	picker:SetScript("OnClick",function()		
 		HideUIPanel(ColorPickerFrame)
-		local r, g, b, a = unpack(save)
+		local r, g, b, a = unpack(module:Get(option))
 
 		ColorPickerFrame:SetFrameStrata("FULLSCREEN_DIALOG")
 		ColorPickerFrame:SetClampedToScreen(true)
@@ -988,7 +1155,7 @@ end
 	DROPDOWN ELEMENT
 ==========================================================]]
 function bdConfigLib:DropdownElement(module, option, info)
-	local save, container, persistent = module:ElementInfo(option, info)
+	local container = bdConfigLib:ElementContainer(module, info)
 
 	-- revert to blizzard dropdown for the time being
 	local label = container:CreateFontString(nil, "OVERLAY", "bdConfig_font")
@@ -1000,7 +1167,7 @@ function bdConfigLib:DropdownElement(module, option, info)
 	dropdown:SetPoint("TOPLEFT", label, "BOTTOMLEFT", -15, -2)
 
 	UIDropDownMenu_SetWidth(dropdown, container:GetWidth() - 20)
-	UIDropDownMenu_SetText(dropdown, save or "test")
+	UIDropDownMenu_SetText(dropdown, module:Get(option) or "test")
 	UIDropDownMenu_JustifyText(dropdown, "LEFT")
 
 	-- initialize options
@@ -1010,13 +1177,13 @@ function bdConfigLib:DropdownElement(module, option, info)
 			local opt = UIDropDownMenu_CreateInfo()
 			opt.text = item
 			opt.value = item
-			print(save)
-			if (item == save) then selected = i end
+			if (item == module:Get(option)) then selected = i end
 
 			opt.func = function(self)
-				print(self:GetID())
 				UIDropDownMenu_SetSelectedID(dropdown, self:GetID())
 				CloseDropDownMenus()
+
+				module:Save(option, info.options[i])
 
 				info:callback()
 			end
@@ -1028,260 +1195,4 @@ function bdConfigLib:DropdownElement(module, option, info)
 	end)
 
 	return container
-
-
 end
-
---[[
-
-function bdCore:createActionButton(group, option, info, persistent)
-	local panel = bdConfig.modules[group].lastFrame
-
-	local container = bdConfig:createContainer(panel)
-
-	local create = CreateFrame("Button", nil, panel)
-	create:SetPoint("TOPLEFT", container, "TOPLEFT")
-	create:SetText(info.value)
-	bdCore:skinButton(create, false, "blue")
-
-	-- create:SetSize(tab.text:GetWidth()+30,26)
-
-	create:SetScript("OnClick", function()
-		if (info.callback) then
-			info.callback()
-		end
-
-		configChange(group, option)
-	end)
-
-	return container:GetHeight()
-end
-function bdCore:createBox(group, option, info, persistent)
-	local panel = bdConfig.modules[group].lastFrame
-	local create = CreateFrame("EditBox",nil,panel)
-
-	local container = bdConfig:createContainer(panel)
-
-
-	create:SetSize(200,24)
-	bdCore:setBackdrop(create)
-	create.background:SetVertexColor(.10,.14,.17,1)
-	create:SetFont(bdCore.media.font,12)
-	create:SetText(info.value)
-	create:SetTextInsets(6, 2, 2, 2)
-	create:SetMaxLetters(200)
-	create:SetHistoryLines(1000)
-	create:SetAutoFocus(false) 
-	create:SetScript("OnEnterPressed", function(self, key) create.button:Click() end)
-	create:SetScript("OnEscapePressed", function(self, key) self:ClearFocus() end)
-
-	create:SetPoint("TOPLEFT", container, "TOPLEFT", 5, 0)
-
-	create.label = create:CreateFontString(nil)
-	create.label:SetFont(bdCore.media.font, 12)
-	create.label:SetText(info.description)
-	create.label:SetPoint("BOTTOMLEFT", create, "TOPLEFT", 0, 4)
-
-	create.button = CreateFrame("Button", nil, create)
-	create.button:SetPoint("LEFT", create, "RIGHT", 4, 0)
-	create.button:SetText(info.button)
-	bdCore:skinButton(create.button, false, "blue")
-	create.button:SetScript("OnClick", function()
-		if (info.callback) then
-			info:callback(create:GetText())
-			create:SetText("")
-		end
-
-		configChange(group, option)
-	end)
-
-
-	return container:GetHeight()
-end
-
-function bdCore:createList(group, option, info, persistent)
-	local panel = bdConfig.modules[group].lastFrame
-	
-	local container = bdConfig:createContainer(panel)
-	container:SetHeight(200)
-
-	-- bdCore:setBackdrop(container)
-
-	local title = container:CreateFontString(nil)
-	local insertbox = CreateFrame("EditBox",nil, container)
-	local button = CreateFrame("Button", nil, container)
-	local list = CreateFrame("frame", nil, container)
-	
-	title:SetFont(media.font, 14)
-	title:SetPoint("TOPLEFT", container, "TOPLEFT", 0, 0)
-	title:SetText(info.label)
-
-	insertbox:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -6)
-	insertbox:SetSize(container:GetWidth() - 66, 24)
-	insertbox:SetFont(media.font,12)
-	insertbox:SetTextInsets(6, 2, 2, 2)
-	insertbox:SetMaxLetters(200)
-	insertbox:SetHistoryLines(1000)
-	insertbox:SetAutoFocus(false) 
-	insertbox:SetScript("OnEnterPressed", function(self, key) button:Click() end)
-	insertbox:SetScript("OnEscapePressed", function(self, key) self:ClearFocus() end)
-	bdCore:setBackdrop(insertbox)
-	insertbox.background:SetVertexColor(.10,.14,.17,1)
-
-	insertbox.alert = insertbox:CreateFontString(nil)
-	insertbox.alert:SetFont(bdCore.media.font,13)
-	insertbox.alert:SetPoint("TOPRIGHT",container,"TOPRIGHT", -2, 0)
-
-	function insertbox:startFade()
-		local total = 0
-
-		self.alert:Show()
-		self:SetScript("OnUpdate",function(self, elapsed)
-			total = total + elapsed
-			if (total > 1.5) then
-				self.alert:SetAlpha(self.alert:GetAlpha()-0.02)
-				
-				if (self.alert:GetAlpha() <= 0.05) then
-					self:SetScript("OnUpdate", function() return end)
-					self.alert:Hide()
-				end
-			end
-		end)
-	end
-
-	button:SetPoint("TOPLEFT", insertbox, "TOPRIGHT", 0, 2)
-	button:SetText("Add/Remove")
-	bdCore:skinButton(button, false, "blue")
-	insertbox:SetSize(container:GetWidth() - button:GetWidth() + 2, 24)
-
-	button:SetScript("OnClick", function()
-		local value = insertbox:GetText()
-
-		if (strlen(value) > 0) then
-			list:addRemove(insertbox:GetText())
-		end
-
-		insertbox:SetText("")
-		insertbox:ClearFocus()
-	end)
-
-	list:SetPoint("TOPLEFT", insertbox, "BOTTOMLEFT", 0, -2)
-	list:SetPoint("BOTTOMRIGHT", container, "BOTTOMRIGHT")
-
-	--scrollframe 
-	local scrollframe = CreateFrame("ScrollFrame", nil, list) 
-	scrollframe:SetPoint("TOPLEFT", list, "TOPLEFT", 0, -5) 
-	scrollframe:SetSize(list:GetWidth(), list:GetHeight() - 10) 
-	list.scrollframe = scrollframe 
-
-	--scrollbar 
-	local scrollbar = CreateFrame("Slider", nil, scrollframe, "UIPanelScrollBarTemplate") 
-	scrollbar:SetPoint("TOPRIGHT", list, "TOPRIGHT", -2, -18) 
-	scrollbar:SetPoint("BOTTOMLEFT", list, "BOTTOMRIGHT", -18, 18) 
-	scrollbar:SetMinMaxValues(1, 600) 
-	scrollbar:SetValueStep(1) 
-	scrollbar.scrollStep = 1
-	scrollbar:SetValue(0) 
-	scrollbar:SetWidth(16) 
-	scrollbar:SetScript("OnValueChanged", function (self, value) self:GetParent():SetVerticalScroll(value) self:SetValue(value) end) 
-	scrollbar:SetBackdrop({bgFile = media.flat})
-	scrollbar:SetBackdropColor(0,0,0,.2)
-	list.scrollbar = scrollbar 
-
-	--content frame 
-	list.content = CreateFrame("Frame", nil, scrollframe) 
-	list.content:SetPoint("TOPLEFT", list, "TOPLEFT") 
-	list.content:SetSize(list:GetWidth(), list:GetHeight()) 
-	scrollframe.content = list.content
-	scrollframe:SetScrollChild(list.content)
-	
-	list.text = list.content:CreateFontString(nil)
-	list.text:SetFont(media.font,12)
-	list.text:SetPoint("TOPLEFT", list.content, "TOPLEFT", 5, 0)
-	list.text:SetHeight(600)
-	list.text:SetWidth(list:GetWidth()-10)
-	list.text:SetJustifyH("LEFT")
-	list.text:SetJustifyV("TOP")
-
-	list.text:SetText("test")
-
-
-	bdCore:setBackdrop(list)
-
-	-- show all config entries in this list
-	function list:populate()
-		local string = "";
-		local height = 0;
-
-		if (info.persistent or persistent) then
-			for k, v in pairs(c.persistent[group][option]) do
-				string = string..k.."\n";
-				height = height + 13
-			end
-		else
-			for k, v in pairs(c.profile[group][option]) do
-				string = string..k.."\n";
-				height = height + 13
-			end
-		end
-
-		local scrollheight = height-200
-		if (scrollheight < 1) then 
-			scrollheight = 1 
-			scrollbar:Hide()
-		else
-			scrollbar:Show()
-			list:SetScript("OnMouseWheel", function(self, delta) self.scrollbar:SetValue(self.scrollbar:GetValue() - (delta*30)) end)
-		end
-
-		scrollbar:SetMinMaxValues(1,scrollheight)
-
-		list.text:SetHeight(height)
-		list.text:SetText(string)
-	end
-
-	-- remove or add something, then redraw the text
-	function list:addRemove(value)
-		if (info.persistent or persistent) then
-			if (c.persistent[group][option][value]) then
-				c.persistent[group][option][value] = nil
-				insertbox.alert:SetText(value.." removed")
-				insertbox.alert:SetTextColor(1, .3, .3)
-				insertbox:startFade()
-			else
-				c.persistent[group][option][value] = true
-				insertbox.alert:SetText(value.." added")
-				insertbox.alert:SetTextColor(.3, 1, .3)
-				insertbox:startFade()
-			end
-		else
-			if (c.profile[group][option][value]) then
-				c.profile[group][option][value] = nil
-				insertbox.alert:SetText(value.." removed")
-				insertbox.alert:SetTextColor(1, .3, .3)
-				insertbox:startFade()
-			else
-				c.profile[group][option][value] = true
-				insertbox.alert:SetText(value.." added")
-				insertbox.alert:SetTextColor(.3, 1, .3)
-				insertbox:startFade()
-			end
-		end
-		self:populate()
-
-		if (info.callback) then
-			info:callback()
-		end
-
-		configChange(group, option)
-
-		-- clear aura cache
-		bdCore.caches.auras = {}
-	end
-
-	list:populate()
-
-	return container:GetHeight()
-end
-
---]]
