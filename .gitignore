@@ -3,3 +3,4 @@
 *.db
 .svn/format
 .svn/entries
+lib/bdConfigLib/*
