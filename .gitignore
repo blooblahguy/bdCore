@@ -1,7 +1,0 @@
-lib/bdConfigLib
-lib/bdConfigLib/*
-*.svn-base
-.svn/wc.db-journal
-*.db
-.svn/format
-.svn/entries
