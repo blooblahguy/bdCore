@@ -233,10 +233,10 @@ function CreateScrollFrame(parent, width, height)
 
 	-- scripts
 	scrollbar:SetScript("OnValueChanged", function (self, value) 
-		self:GetParent():SetVerticalScroll(value) 
+		scrollParent:GetParent():SetVerticalScroll(value) 
 	end)
-	scrollFrameParent:SetScript("OnMouseWheel", function(self, delta)
-		self.scrollbar:SetValue(self.scrollbar:GetValue() - (delta*20))
+	scrollParent:SetScript("OnMouseWheel", function(self, delta)
+		scrollbar:SetValue(scrollbar:GetValue() - (delta*20))
 	end)
 	-- auto resizing
 	content.Update = function()
@@ -889,7 +889,7 @@ function bdConfigLib:ListElement(module, option, info)
 
 		insertbox:SetText("")
 		insertbox:ClearFocus()
-	end)
+	end
 
 	local list = CreateFrame("frame", nil, container)
 	list:SetPoint("TOPLEFT", insertbox, "BOTTOMLEFT", 0, -2)
@@ -912,7 +912,7 @@ function bdConfigLib:ListElement(module, option, info)
 		local string = "";
 		local height = 0;
 
-		for k, v in pairs(module:Get[option]) do
+		for k, v in pairs(module:Get(option)) do
 			string = string..k.."\n";
 			height = height + 14
 		end
@@ -999,7 +999,7 @@ function bdConfigLib:TextBoxElement(module, option, info)
 	create.button.OnClick = function()
 		info:callback(create:GetText())
 		create:SetText("")
-	end)
+	end
 
 	return container
 end
