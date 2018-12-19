@@ -382,10 +382,10 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 		debug("When addind a module, you must include a configuration table to outline it's options.")
 		return
 	end
-	if (not savedVariable) then 
-		debug("When addind a module, you must include a savedVariable reference so that your settings can be saved.")
-		return
-	end
+	-- if (not savedVariable) then 
+	-- 	debug("When addind a module, you must include a savedVariable reference so that your settings can be saved.")
+	-- 	return
+	-- end
 
 	-- see if we can upgrade font object here
 	FindBetterFont()
@@ -396,8 +396,8 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 	local module = {}
 	module.settings = settings
 	module.name = settings.name
-	module.configuration = configuration
-	module.savedVariable = savedVariable
+	-- module.configuration = configuration
+	-- module.savedVariable = savedVariable
 	do
 		module.tabs = {}
 		module.tabContainer = false
@@ -565,12 +565,20 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 			Persistent config (non-profile)
 			Defaults
 	========================================================]]
-	-- print(settings.name, module.save["persistent"][settings.name]['errorblock'])
-	savedVariable = savedVariable or {}
-	module.save = module.save or savedVariable
+	_G[savedVariable] = _G[savedVariable] or {}
+	_G[savedVariable][settings.name] = _G[savedVariable][settings.name] or {}
+	module.save = _G[savedVariable][settings.name]
+	
+	-- module.save[settings.name] = module.save[settings.name] or {}
+
+	module.save.persistent = module.save.persistent or {}
+	module.save.user = module.save.user or {}
+	module.save.profiles = module.save.profiles or {}
+	module.save.profile = module.save.profile or {}
+	-- module.save = savedVariable[settings.name]
 
 	-- player configuration
-	module.save.user = module.save.user or {}
+	-- module.save.user = module.save.user or {}
 	module.save.user.name = UnitName("player")
 	module.save.user.profile = module.save.user.profile or "default"
 	module.save.user.spec_profile = module.save.user.spec_profile or {}
@@ -580,31 +588,40 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 	module.save.user.spec_profile[4] = module.save.user.spec_profile[4] or false
 
 	-- profile configuration
-	module.save.profiles = module.save.profiles or {}
+	-- module.save.profiles = module.save.profiles or {}
 	module.save.profiles[module.save.user.profile] = module.save.profiles[module.save.user.profile] or {}
 	module.save.profiles[module.save.user.profile].positions = module.save.profiles[module.save.user.profile].positions or {}
 
 	module.save.profile = module.save.profiles[module.save.user.profile]
 
 	-- persistent configuration
-	module.save.persistent = module.save.persistent or {}
+	-- module.save.persistent = module.save.persistent or {}
 	module.save.persistent.bd_config = module.save.persistent.bd_config or {} -- todo : let the user decide how the library looks and behaves
 
 	-- let's us access module inforomation quickly and easily
 	function module:Save(option, value)
+		-- module.save = savedVariable[settings.name]
+		-- dump(savedVariable[settings.name].profiles["default"])
+		-- module.save = savedVariable
 		if (settings.persistent) then
 			module.save.persistent[option] = value
 		else
-			module.save.profile[option] = value
+			print(option, value)
+			-- module.save.profile[option] = value
+			module.save.profiles[module.save.user.profile][option] = value
 		end
 	end
 	function module:Get(option)
+	-- dump(savedVariable[settings.name].profiles["default"])
+		-- module.save = savedVariable[settings.name]
 		if (settings.persistent) then
 			return module.save.persistent[option]
 		else
-			return module.save.profile[option]
+			return module.save.profiles[module.save.user.profile][option]
 		end
 	end
+
+	-- dump(savedVariable[settings.name].profiles["default"])
 	
 	--[[======================================================
 		2: CREATE INPUTS AND DEFAULTS
@@ -685,10 +702,10 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 	end
 
 	-- shortcuts
-	bdConfigLib.saves[settings.name] = bdConfigLib.saves[settings.name] or {}
-	bdConfigLib.saves[settings.name].user = module.save.user
-	bdConfigLib.saves[settings.name].persistent = module.save.persistent
-	bdConfigLib.saves[settings.name].profile = module.save.profile
+	bdConfigLib.saves[settings.name] = module.save
+	-- bdConfigLib.saves[settings.name].user = module.save.user
+	-- bdConfigLib.saves[settings.name].persistent = module.save.persistent
+	-- bdConfigLib.saves[settings.name].profile = module.save.profile
 
 	-- local save
 	-- if (settings.persistent) then
@@ -697,7 +714,16 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 	-- 	save = module.save.profiles[module.save.user.profile][module.name][option]
 	-- end
 
-	-- return save
+	-- print("test")
+	-- dump(module.save)
+
+	if (settings.persistent) then
+		bdConfigLib.saves[settings.name] = module.save
+		return module.save
+	else
+		bdConfigLib.saves[settings.name] = module.save.profiles[module.save.user.profile]
+		return module.save.profiles[module.save.user.profile]
+	end
 end
 
 --[[========================================================
@@ -756,8 +782,12 @@ function bdConfigLib:ElementContainer(module, info)
 		, dropdown = 0.5
 		, clear = 1.0
 		, button = 1.0
+		, list = 1.0
 		, textbox = 1.0
 	}
+	if (not sizing[element]) then
+		print("size not found for "..element)
+	end
 
 	-- size the container ((pageWidth / %) - padding left)
 	container:SetSize((page:GetWidth() * sizing[element]) - padding, 30)
@@ -772,7 +802,7 @@ function bdConfigLib:ElementContainer(module, info)
 	page.row_width = page.row_width + sizing[element]
 
 	if (page.row_width > 1.0 or not page.lastContainer) then
-		page.row_width = sizing[element]
+		page.row_width = sizing[element]	
 		if (not page.lastContainer) then
 			container:SetPoint("TOPLEFT", page, "TOPLEFT", padding, -padding)
 		else

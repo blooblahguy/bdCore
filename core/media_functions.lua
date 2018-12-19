@@ -1,4 +1,5 @@
 local bdCore, c, f = select(2, ...):unpack()
+bdCore:hookEvent("loaded_bdcore", function() c = bdConfigLib:GetSave("bdAddons") end)
 
 -- load oUF
 local engine = select(2, ...)
@@ -15,7 +16,8 @@ local function createViewport()
 	return frame
 end
 bdCore:hookEvent("bdcore_redraw",function()
-	local config = bdConfigLib.persistent.General
+	local config = c.persistent
+	-- dump(config)
 	local screenWidth, screenHeight = GetPhysicalScreenSize()
 	local scale = min(1.15, 768/screenHeight)
 
@@ -164,10 +166,10 @@ function bdCore:setBackdrop(frame,resize)
 	
 	if (resize ~= false) then
 		bdCore:hookEvent("bdcore_redraw",function()
-			local background = bdCore:getMedia("background", c.persistent['General'].background)
-			local font = bdCore:getMedia("font", c.persistent['General'].font)
+			local background = bdCore:getMedia("background", c.persistent.background)
+			local font = bdCore:getMedia("font", c.persistent.font)
 
-			local border = c.persistent['General'].border or bdCore.general.border
+			local border = c.persistent.border or bdCore.general.border
 			frame.background:SetTexture(background)			
 			frame.border:SetPoint("TOPLEFT", frame, "TOPLEFT", -border, border)
 			frame.border:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", border, -border)

@@ -1,5 +1,5 @@
 local bdCore, c, f = select(2, ...):unpack()
-bdCore:hookEvent("loaded_bdcore", function() c = c() end)
+bdCore:hookEvent("loaded_bdcore", function() c = bdConfigLib:GetSave("bdAddons") end)
 
 -----------------------------------------------
 -- Frame Faders
@@ -216,7 +216,6 @@ function bdCore:makeMovable(frame, resize, rename)
 		return button
 	end
 
-	print(c.persistent)
 	local border = c.persistent.border
 	local height = frame:GetHeight()
 	local width = frame:GetWidth()
@@ -350,7 +349,7 @@ function bdCore:makeMovable(frame, resize, rename)
 	end)
 
 	bdCore:hookEvent("frames_resized, bdcore_redraw", function()
-		local border = bdConfigLib.persistent['General'].border
+		local border = c.persistent['General'].border
 		local height = frame:GetHeight()
 		local width = frame:GetWidth()
 		Mover:SetSize(width+border, height+border)
@@ -365,7 +364,8 @@ function bdCore:makeMovable(frame, resize, rename)
 
 		self.controls:position()
 
-		bdConfigLib.profile.positions[self.frame:GetName()] = {point, relativeTo, relativePoint, xOfs, yOfs}
+
+		c.profile.positions[self.frame:GetName()] = {point, relativeTo, relativePoint, xOfs, yOfs}
 	end
 	
 	Mover.text:SetFont(bdCore.media.font, 16)
@@ -382,12 +382,12 @@ function bdCore:makeMovable(frame, resize, rename)
 	-- on profile swaps
 	Mover.position = function(self)
 		Mover:ClearAllPoints()
-		if (bdConfigLib.profile.positions[rename]) then
-			local point, relativeTo, relativePoint, xOfs, yOfs = unpack(bdConfigLib.profile.positions[rename])
+		if (c.profile.positions[rename]) then
+			local point, relativeTo, relativePoint, xOfs, yOfs = unpack(c.profile.positions[rename])
 			relativeTo = _G[relativeTo]
 
 			if (not point or not relativeTo or not relativePoint or not xOfs or not yOfs) then
-				bdConfigLib.profile.positions[rename] = nil
+				c.profile.positions[rename] = nil
 				Mover:position()
 			else
 				Mover:SetPoint(point, relativeTo, relativePoint, xOfs, yOfs)

@@ -33,7 +33,7 @@ bdCore:hookEvent('loaded_bdcore', function()
 	gmotd:RegisterEvent("GUILD_ROSTER_UPDATE")
 	gmotd:SetScript("OnEvent", function(self, event, message)
 
-		if (not c.persistent.General.skingmotd) then return end
+		if (not c.skingmotd) then return end
 		
 		local guild = false
 		local msg = false

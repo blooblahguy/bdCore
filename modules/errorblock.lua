@@ -1,4 +1,5 @@
 local bdCore, c, f = select(2, ...):unpack()
+bdCore:hookEvent("loaded_bdcore", function() c = bdConfigLib:GetSave("bdAddons") end)
 
 local orig = UIErrorsFrame:GetScript("OnEvent")
 
@@ -39,7 +40,7 @@ UIErrorsFrame:SetScript("OnEvent", function(self, event, msg, ...)
 		return orig(self, event, msg, ...)
 	end
 
-	local alert = BD_persistent.General.errorblock
+	local alert = c.errorblock
 	
 	if (alert and filter[msg]) then
 		return false

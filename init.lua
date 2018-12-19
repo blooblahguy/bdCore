@@ -1,7 +1,7 @@
 local addon, engine = ...
 
 engine[1] = CreateFrame("Frame", nil, UIParent)
-engine[2] = function() return bdConfigLib:GetSave("bdAddons") end 
+engine[2] = {}
 engine[3] = {}
 
 function engine:unpack()

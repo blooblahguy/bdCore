@@ -1,4 +1,5 @@
 local bdCore, c, f = select(2, ...):unpack()
+bdCore:hookEvent("loaded_bdcore", function() c = bdConfigLib:GetSave("bdAddons") end)
 
 local persistentAuras 
 local blacklisted = function(self, name)
@@ -15,7 +16,8 @@ bdCore.isBlacklisted = memoize(blacklisted, bdCore.caches.auras)
 
 local filterAura = function(self, name, castByPlayer, isRaidDebuff, nameplateShowAll, invert)
 	-- print(self, name, castByPlayer, isRaidDebuff, nameplateShowAll, invert)
-	persistentAuras = BD_persistent["Auras"]
+	return false
+	--[[persistentAuras = BD_persistent["Auras"]
 	local blacklist = persistentAuras["blacklist"]
 	local whitelist = persistentAuras["whitelist"]
 	local mine = persistentAuras["mine"]
@@ -42,7 +44,7 @@ local filterAura = function(self, name, castByPlayer, isRaidDebuff, nameplateSho
 		return true
 	end
 	
-	return false
+	return false--]]
 end
 
 bdCore.filterAura = memoize(filterAura, bdCore.caches.auras)

@@ -109,13 +109,14 @@ bdCore:SetScript("OnEvent", function(self, event, arg1, arg2, ...)
 			end
 		end--]]
 		
-		bdConfigLib:RegisterModule({
+		-- bdConfigLib.savedVariable = BD_persistent
+		c = bdConfigLib:RegisterModule({
 			name = "bdAddons"
 			, persistent = true
-		}, bdCore.general, BD_persistent)
-
-		c = bdConfigLib:GetSave("bdAddons")
-		bdCore.config = bdConfigLib:GetSave("bdAddons")
+		}, bdCore.general, "BD_persistent")
+		
+		-- c = bdConfigLib:GetSave("bdAddons")
+		-- bdCore.config = bdConfigLib:GetSave("bdAddons")
 
 		print(bdCore.colorString.." loaded. Type /bd for configuration. We're on Discord! https://discord.gg/2SK3bEw")
 		
