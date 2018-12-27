@@ -9,9 +9,7 @@ local InCombatLockdown = InCombatLockdown
 -- Because this is such a freaking bear on larger resolutions, reusing some of the ElvUI code here since they support so many situations
 local scale, uiParentWidth, uiParentHeight, uiParentScale
 function bdCore:pixelPerfection(self, event, arg1)
-	dump(c)
 	if (not c or not c.persistent.forcescale) then return end
-	print("scaling")
 
 	local screenWidth, screenHeight = GetPhysicalScreenSize()
 	local scale = min(1.15, 768/screenHeight)

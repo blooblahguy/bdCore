@@ -703,19 +703,6 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 
 	-- shortcuts
 	bdConfigLib.saves[settings.name] = module.save
-	-- bdConfigLib.saves[settings.name].user = module.save.user
-	-- bdConfigLib.saves[settings.name].persistent = module.save.persistent
-	-- bdConfigLib.saves[settings.name].profile = module.save.profile
-
-	-- local save
-	-- if (settings.persistent) then
-	-- 	save = module.save.persistent[module.name][option]
-	-- else
-	-- 	save = module.save.profiles[module.save.user.profile][module.name][option]
-	-- end
-
-	-- print("test")
-	-- dump(module.save)
 
 	if (settings.persistent) then
 		bdConfigLib.saves[settings.name] = module.save

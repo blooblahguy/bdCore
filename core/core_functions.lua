@@ -5,10 +5,10 @@ local UnitAura, IsItemInRange, CheckInteractDistance, UnitInRange, find, sub, gs
 function dump (tbl, indent)
 	if not indent then indent = 0 end
 	for k, v in pairs(tbl) do
-		formatting = string.rep("  ", indent) .. k .. ": "
+		formatting = string.rep("     ", indent) .. k .. ": "
 		if type(v) == "table" then
 			print(formatting)
-			dump(v, indent+1)
+			-- dump(v, indent+1)
 		elseif type(v) == 'boolean' then
 			print(formatting .. tostring(v))      
 		elseif type(v) == 'userdata' then
