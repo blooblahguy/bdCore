@@ -7,42 +7,79 @@ local GetCVar, SetCVar = GetCVar, SetCVar
 local InCombatLockdown = InCombatLockdown
 
 -- Because this is such a freaking bear on larger resolutions, reusing some of the ElvUI code here since they support so many situations
-local scale, uiParentWidth, uiParentHeight, uiParentScale
-function bdCore:pixelPerfection(self, event, arg1)
+function bdCore:pixelPerfection(event, loginFrame)
 	if (not c or not c.persistent.forcescale) then return end
+
+	local width, height = GetPhysicalScreenSize()
+	local scale, mult, spacing, border
+
+	local uiScaleCVar = GetCVar('uiScale')
+
+	local minScale = 0.64
+	scale = max(minScale, min(1.15, 768 / height))
+
+	mult = 768 / height / scale
+	scale = math.floor(scale * 100) / 100
+	spacing = mult and mult or 0
+	border = (mult) or mult*2
+	-- print(scale, event)
+
+	--Set UIScale, NOTE: SetCVar for UIScale can cause taints so only do this when we need to..
+	if event == 'PLAYER_LOGIN' and (round(UIParent:GetScale(), 5) ~= round(scale, 5)) then
+		SetCVar("useUiScale", 1)
+		SetCVar("uiScale", scale)
+		SetCVar("uiScaleMultiplier", "-1")
+	end
+
+	--SetCVar for UI scale only accepts value as low as 0.64, so scale UIParent if needed
+	if scale < 0.64 then
+		UIParent:SetScale(scale)
+	end
+
+	if event == 'PLAYER_LOGIN' or event == 'UI_SCALE_CHANGED' then
+
+
+		if loginFrame and event == 'PLAYER_LOGIN' then
+			loginFrame:UnregisterEvent('PLAYER_LOGIN')
+		end
+	end
+end
+
+--[[function bdCore:pixelPerfection(event, arg1)
+	if (not c or not c.persistent.forcescale) then return end
+	
 
 	local screenWidth, screenHeight = GetPhysicalScreenSize()
 	local scale = min(1.15, 768/screenHeight)
+	-- scale = math.ceil(scale * 10) / 10
 	local multiplier = 768/screenHeight/scale
+	print(scale, multiplier)
 
 	if ( InCombatLockdown()) then
-		local width, height = UIParent:GetSize()
-		uiParentWidth, uiParentHeight, uiParentScale = width, height, scale
 		bdCore.pixeler:RegisterEvent("PLAYER_REGEN_ENABLED")
 	else
 		-- Alt tabbing in combat breaks scale on large resolutions
 		if (event == "PLAYER_REGEN_ENABLED") then
 			bdCore.pixeler:UnregisterEvent("PLAYER_REGEN_ENABLED")
 			
-			if uiParentScale and (uiParentScale < 0.64) then
-				UIParent:SetScale(uiParentScale)
-				uiParentWidth, uiParentHeight = UIParent:GetSize()
-			end
-
-			UIParent:SetSize(uiParentWidth, uiParentHeight)
+			-- if scale and (scale < 0.64) then
+				-- UIParent:SetScale(scale)
+			-- end
 		end
 
+		print(event)
 		-- Only set these once
 		if (event == "PLAYER_LOGIN") then
-			bdCore.pixeler:UnregisterEvent('PLAYER_LOGIN')
+			bdCore.pixeler:UnregisterEvent(event)
 			SetCVar("useUiScale", 1);
+			SetCVar("uiScaleMultipler", multiplier);
 			SetCVar("uiScale", scale);
 		end
 
 		-- blizzard for real, why make this the limit? people have big monitors these days
-		if (scale < 0.64) then
-			UIParent:SetScale(scale)
-		end
+		-- UIParent:SetScale(scale)
+		-- if (scale < 0.64) then
+		-- end
 	end
 
 	-- bdCore.scale = 768/s_height
@@ -54,7 +91,10 @@ function bdCore:pixelPerfection(self, event, arg1)
 	-- end)
 	-- bdCore.forceScale = false
 end
+--]]
 
 bdCore.pixeler = CreateFrame("frame", nil, UIParent)
 bdCore.pixeler:RegisterEvent("PLAYER_LOGIN")
+bdCore.pixeler:RegisterEvent("UI_SCALE_CHANGED")
+-- bdCore.pixeler:RegisterEvent("PLAYER_ENTERING_WORLD")
 bdCore.pixeler:SetScript("OnEvent", bdCore.pixelPerfection)

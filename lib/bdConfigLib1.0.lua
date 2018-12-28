@@ -52,7 +52,10 @@ bdConfigLib.dimensions = {
 	, right_column = 600
 	, height = 450
 	, header = 30
+	, padding = 10
 }
+local dimensions = bdConfigLib.dimensions
+
 bdConfigLib.media = {
 	flat = "Interface\\Buttons\\WHITE8x8"
 	, arrow = "Interface\\Buttons\\Arrow-Down-Down.PNG"
@@ -212,7 +215,7 @@ function CreateScrollFrame(parent, width, height)
 	-- scrollframe
 	local scrollParent = CreateFrame("ScrollFrame", nil, parent) 
 	scrollParent:SetPoint("TOPLEFT", parent) 
-	scrollParent:SetSize(width, height) 
+	scrollParent:SetSize(width - dimensions.padding, height) 
 	--scrollbar 
 	local scrollbar = CreateFrame("Slider", nil, scrollParent, "UIPanelScrollBarTemplate") 
 	scrollbar:SetPoint("TOPRIGHT", parent, "TOPRIGHT", -2, -18) 
@@ -227,26 +230,26 @@ function CreateScrollFrame(parent, width, height)
 	--content frame 
 	local content = CreateFrame("Frame", nil, scrollParent) 
 	content:SetPoint("TOPLEFT", parent, "TOPLEFT") 
-	content:SetSize(width, height)
+	content:SetSize(scrollParent:GetWidth() - (dimensions.padding * 2), scrollParent:GetHeight())
 	scrollParent.content = content
 	scrollParent:SetScrollChild(content)
 
 	-- scripts
 	scrollbar:SetScript("OnValueChanged", function (self, value) 
-		scrollParent:GetParent():SetVerticalScroll(value) 
+		self:GetParent():SetVerticalScroll(value) 
 	end)
 	scrollParent:SetScript("OnMouseWheel", function(self, delta)
 		scrollbar:SetValue(scrollbar:GetValue() - (delta*20))
 	end)
 	-- auto resizing
-	content.Update = function()
-		local height = content:GetHeight()
-		scrollbar:SetMinMaxValues(1, height)
-	end
-	content.SetSize = content.SetHeight
-	content.Update = content.Update
-	hooksecurefunc(content, "SetHeight", content.Update)
-	hooksecurefunc(content, "SetSize", content.Update)
+	-- content.Update = function()
+	-- 	local height = content:GetHeight()
+	-- 	scrollbar:SetMinMaxValues(1, height)
+	-- end
+	-- content.SetSize = content.SetHeight
+	-- content.Update = content.Update
+	-- hooksecurefunc(content, "SetHeight", content.Update)
+	-- hooksecurefunc(content, "SetSize", content.Update)
 
 	-- store
 	parent.scrollParent = scrollParent
@@ -255,6 +258,7 @@ function CreateScrollFrame(parent, width, height)
 
 	content.scrollParent = scrollParent
 	content.scrollbar = scrollbar
+	content.parent = parent
 
 	return content
 end
@@ -276,7 +280,7 @@ local function CreateFrames()
 		window:SetUserPlaced(true)
 		window:SetFrameStrata("DIALOG")
 		window:SetClampedToScreen(true)
-		-- window:Hide()
+		window:Hide()
 		CreateShadow(window, 10)
 	end
 
@@ -323,6 +327,7 @@ local function CreateFrames()
 		window.header.lock:SetText("Unlock")
 		window.header.lock.autoToggle = true
 		window.header.lock.OnClick = function(self)
+			bdCore:toggleLock()
 			if (self:GetText() == "Lock") then
 				self:SetText("Unlock")
 			else
@@ -382,6 +387,10 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 		debug("When addind a module, you must include a configuration table to outline it's options.")
 		return
 	end
+	if (bdConfigLib.modules[settings.name]) then
+		debug("There is already a module loaded with the name "..settings.name..". Please choose a unique name for the module")
+		return
+	end
 	-- if (not savedVariable) then 
 	-- 	debug("When addind a module, you must include a savedVariable reference so that your settings can be saved.")
 	-- 	return
@@ -404,12 +413,14 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 		module.pageContainer = false
 		module.link = false
 		module.lastTab = false
+		module.active = false
 
 		function module:Select()
 			if (module.active) then return end
 
 			-- Unselect all modules
 			for name, otherModule in pairs(bdConfigLib.modules) do
+				-- print("unselect", otherModule.name)
 				otherModule:Unselect()
 
 				for k, t in pairs(otherModule.tabs) do
@@ -420,6 +431,7 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 			-- Show this module
 			module.active = true
 			module.link.active = true
+			module.link:OnLeave()
 			module.tabContainer:Show()
 
 			-- Select first tab
@@ -473,14 +485,19 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 			function tab:Select()
 				-- tab:Show()
 				tab.page:Show()
+				if (not tab.page.noScrollbar) then
+					tab.page.scrollbar:Show()
+				end
+
 				tab.active = true
 				tab.page.active = true
 				tab:OnLeave()
-
 				module.activePage = page
 			end
+
 			function tab:Unselect()
 				-- tab:Hide()
+				tab.page.scrollbar:Hide()
 				tab.page:Hide()
 				tab.active = false
 				tab.page.active = false
@@ -537,23 +554,38 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 	end
 
 	-- Caps/hide the scrollbar as necessary
+	-- also resize the page
 	function module:SetPageScroll()
-		if (#module.tabs == 0) then return end
-		local page = module.activePage or module.tabs[#module.tabs].page
-		local height = 0
-		if (page.rows) then
-			for k, container in pairs(page.rows) do
-				height = height + container:GetHeight()
+		-- now that all configs have been created, loop through the tabs
+		for index, tab in pairs(module.tabs) do
+			local page = tab.page
+		
+			local height = 0
+			if (page.rows) then
+				for k, container in pairs(page.rows) do
+					height = height + container:GetHeight() + 10
+				end
 			end
-		end
 
-		if (#module.tabs > 0) then
+			-- size based on if there are tabs or scrollbars
+			local scrollHeight = 0
+			if (#module.tabs > 1) then
+				scrollHeight = math.max(dimensions.height, height + dimensions.header) - dimensions.height + 1			
+				page.scrollParent:SetPoint("TOPLEFT", page.parent, "TOPLEFT", 0, - dimensions.header)
+				page.scrollParent:SetHeight(page.scrollParent:GetParent():GetHeight() - dimensions.header)
+			else
+				scrollHeight = math.max(dimensions.height, height) - dimensions.height + 1
+			end
+
 			-- make the scrollbar only scroll the height of the page
-			page.scrollbar:SetMinMaxValues(1, math.max(1, height - bdConfigLib.dimensions.height - bdConfigLib.dimensions.header))
+			page.scrollbar:SetMinMaxValues(1, scrollHeight)
 
-			-- if the size of the page is lesser than it's height. don't show a scrollbar
-			if ((height  - bdConfigLib.dimensions.height - bdConfigLib.dimensions.header) < 2) then
+			if (scrollHeight <= 1) then
+				page.noScrollbar = true
 				page.scrollbar:Hide()
+			else
+				page.noScrollbar = false
+				page.scrollbar:Show()
 			end
 		end
 	end
@@ -674,11 +706,11 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 			end
 
 			-- Master Call (slider = bdConfigLib.SliderElement(config, module, option, info))
-			local method = info.type:gsub("^%l", string.upper).."Element"
+			local method = string.lower(info.type):gsub("^%l", string.upper).."Element"
 			if (bdConfigLib[method]) then
 				bdConfigLib[method](bdConfigLib, module, option, info)
 			else
-				debug("No module defined for "..method)
+				debug("No module defined for "..method.." in "..settings.name)
 			end
 		end
 	end
@@ -690,8 +722,8 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 			make the page take up the extra space
 	========================================================]]
 	module:SetPageScroll()
-	module:Select()
-	module:Unselect()
+	-- module:Select()
+	-- module:Unselect()
 
 	-- store in config
 	bdConfigLib.modulesIndex[#bdConfigLib.modulesIndex + 1] = module
@@ -723,12 +755,15 @@ do
 	function bdConfigLib:GetSave(name)
 		return bdConfigLib.saves[name]
 	end
-	function bdConfigLib:GetModules()
-
+	function bdConfigLib:Toggle()
+		if (not bdConfigLib.toggled) then
+			bdConfigLib.window:Show()
+		else
+			bdConfigLib.window:Hide()
+		end
+		bdConfigLib.toggled = not bdConfigLib.toggled
 	end
-
-	-- Selects first module, hides column if only 1
-	function bdConfigLib:OnShow()
+	function bdConfigLib:GetModules()
 
 	end
 
@@ -741,6 +776,10 @@ do
 
 	-- create frame objects
 	bdConfigLib.window = CreateFrames()
+	-- Selects first module, hides column if only 1
+	bdConfigLib.window:SetScript("OnShow", function()
+		bdConfigLib.modulesIndex[1]:Select()
+	end)
 
 	-- associate RegisterModule function
 	bdConfigLib.RegisterModule = RegisterModule
@@ -772,12 +811,17 @@ function bdConfigLib:ElementContainer(module, info)
 		, list = 1.0
 		, textbox = 1.0
 	}
-	if (not sizing[element]) then
+
+	local size = sizing[string.lower(element)]
+	if (not size) then
 		print("size not found for "..element)
+		size = 1
 	end
 
+	-- sizing[element] = 1
+
 	-- size the container ((pageWidth / %) - padding left)
-	container:SetSize((page:GetWidth() * sizing[element]) - padding, 30)
+	container:SetSize((page:GetWidth() * size) - padding, 30)
 
 	-- TESTING : shows a background around each container for debugging
 	-- container:SetBackdrop({bgFile = bdConfigLib.media.flat})
@@ -786,10 +830,10 @@ function bdConfigLib:ElementContainer(module, info)
 	-- place the container
 	page.rows = page.rows or {}
 	page.row_width = page.row_width or 0
-	page.row_width = page.row_width + sizing[element]
+	page.row_width = page.row_width + size
 
 	if (page.row_width > 1.0 or not page.lastContainer) then
-		page.row_width = sizing[element]	
+		page.row_width = size	
 		if (not page.lastContainer) then
 			container:SetPoint("TOPLEFT", page, "TOPLEFT", padding, -padding)
 		else
@@ -800,7 +844,7 @@ function bdConfigLib:ElementContainer(module, info)
 		page.lastRow = container
 		page.rows[#page.rows + 1] = container
 	else
-		container:SetPoint("TOPLEFT", page.lastContainer, "TOPRIGHT", padding, 0)
+		container:SetPoint("LEFT", page.lastContainer, "RIGHT", padding, 0)
 	end
 	
 	page.lastContainer = container
@@ -812,7 +856,7 @@ end
 ==========================================================]]
 function bdConfigLib:TabElement(module, option, info)
 	-- We're done with the current page contianer, cap it's slider/height and start a new tab / height
-	module:SetPageScroll()
+	-- module:SetPageScroll()
 
 	-- add new tab
 	module:CreateTab(info.value)
@@ -832,7 +876,7 @@ function bdConfigLib:TextElement(module, option, info)
 	text:SetJustifyV("TOP")
 	text:SetAllPoints(container)
 
-	local lines = math.ceil(text:GetStringWidth() / container:GetWidth())
+	local lines = math.ceil(text:GetStringWidth() / (container:GetWidth() - 4))
 
 	container:SetHeight( (lines * 14) + 10)
 
@@ -990,7 +1034,7 @@ end
 --[[========================================================
 	TEXTBOX ELEMENT
 ==========================================================]]
-function bdConfigLib:TextBoxElement(module, option, info)
+function bdConfigLib:TextboxElement(module, option, info)
 	local container = bdConfigLib:ElementContainer(module, info)
 
 	local create = CreateFrame("EditBox", nil, container)
@@ -1014,8 +1058,9 @@ function bdConfigLib:TextBoxElement(module, option, info)
 	create.button:SetPoint("LEFT", create, "RIGHT", 4, 0)
 	create.button:SetText(info.button)
 	create.button.OnClick = function()
-		info:callback(create:GetText())
+		local text = create:GetText()
 		create:SetText("")
+		info['callback'](text, text, text)
 	end
 
 	return container
