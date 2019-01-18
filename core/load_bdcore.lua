@@ -36,7 +36,7 @@ bdCore:SetScript("OnEvent", function(self, event, arg1, arg2, ...)
 		bdCore.general[4].background.options = bg_table
 
 		-- add profile config here, before we set any defaults below
-		bdCore:triggerEvent('profile_config')
+		-- bdCore:triggerEvent('profile_config')
 		
 	
 		-- we shouldn't need this since lua references automatically the same table?
@@ -76,7 +76,7 @@ bdCore:SetScript("OnEvent", function(self, event, arg1, arg2, ...)
 		
 		bdCore:triggerEvent('loaded_bdcore')
 		bdCore:triggerEvent('bdcore_redraw')
-		bdCore:triggerEvent("profile_config")
+		-- bdCore:triggerEvent("profile_config")
 		
 		-- a lot of addons do this when they shouldn't it should really only be done when addons finish loading
 		collectgarbage("collect")

@@ -34,16 +34,14 @@ if _G.bdConfigLib and _G.bdConfigLib.version >= version then
 	return -- a newer or same version has already been created, ignore this file
 end
 
-_G.bdConfigLib = {}
-bdConfigLib = _G.bdConfigLib
-bdConfigLib.version = version
-
 --[[======================================================
 	Create Library
 ========================================================]]
-local function debug(...)
-	print("|cffA02C2FbdConfigLib|r:", ...)
-end
+_G.bdConfigLib = {}
+_G.bdConfigLibProfiles = {}
+bdConfigLib = _G.bdConfigLib
+bdConfigLib.version = version
+
 --[[======================================================
 	Helper functions & variables
 ========================================================]]
@@ -81,6 +79,11 @@ bdConfigLib.arrow = UIParent:CreateTexture(nil, "OVERLAY")
 bdConfigLib.arrow:SetTexture(bdConfigLib.media.arrow)
 bdConfigLib.arrow:SetTexCoord(0.9, 0.9, 0.9, 0.6)
 bdConfigLib.arrow:SetVertexColor(1,1,1,0.5)
+
+-- debug
+local function debug(...)
+	print("|cffA02C2FbdConfigLib|r:", ...)
+end
 
 -- dirty create shadow (no external textures)
 local function CreateShadow(frame, size)
@@ -356,6 +359,7 @@ local function CreateFrames()
 	return window
 end
 
+--[[ Use fonts from bdCore if possible, can extend this ]]
 local function FindBetterFont()
 	if (bdConfigLib.foundBetterFont) then return end
 	local font = false
@@ -391,10 +395,6 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 		debug("There is already a module loaded with the name "..settings.name..". Please choose a unique name for the module")
 		return
 	end
-	-- if (not savedVariable) then 
-	-- 	debug("When addind a module, you must include a savedVariable reference so that your settings can be saved.")
-	-- 	return
-	-- end
 
 	-- see if we can upgrade font object here
 	FindBetterFont()
@@ -722,8 +722,6 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 			make the page take up the extra space
 	========================================================]]
 	module:SetPageScroll()
-	-- module:Select()
-	-- module:Unselect()
 
 	-- store in config
 	bdConfigLib.modulesIndex[#bdConfigLib.modulesIndex + 1] = module
@@ -734,8 +732,6 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 	end
 
 	-- shortcuts
-	bdConfigLib.saves[settings.name] = module.save
-
 	if (settings.persistent) then
 		bdConfigLib.saves[settings.name] = module.save
 		return module.save
@@ -763,9 +759,6 @@ do
 		end
 		bdConfigLib.toggled = not bdConfigLib.toggled
 	end
-	function bdConfigLib:GetModules()
-
-	end
 
 	-- create tables
 	bdConfigLib.modules = {}
@@ -786,6 +779,64 @@ do
 end
 
 --[[========================================================
+	PROFILES
+	Modules that are added that aren't persistent are 
+	automatically stored inside of a profile, and those
+	profiles are common between SavedVariables
+==========================================================]]
+
+
+	local profile_table = {}
+	for k, v in pairs(c.profiles) do
+		table.insert(profile_table, k)
+	end
+
+	-- make new profile form
+	local name, realm = UnitName("player")
+	realm = GetRealmName()
+	local placeholder = name.."-"..realm
+	
+	local defaults = {}
+	defaults[#defaults+1] = {intro = {
+		type = "text",
+		value = "You can use profiles to store configuration per character and spec automatically, or save templates to use when needed."
+	}}
+	defaults[#defaults+1] = {currentprofile = {
+		type = "dropdown",
+		value = c.profile,
+		override = true,
+		options = profile_table,
+		update = function(dropdown) profileDropdown(dropdown) end,
+		updateOn = "bd_update_profiles",
+		tooltip = "Your currently selected profile.",
+		callback = function(self, value) profileChange(value) end
+	}}
+	defaults[#defaults+1] = {createprofile = {
+		type = "textBox",
+		value = placeholder,
+		button = "Create & Copy",
+		description = "Create New Profile: ",
+		tooltip = "Your currently selected profile.",
+		callback = addProfile
+	}}
+	defaults[#defaults+1] = {deleteprofile = {
+		type = "button",
+		value = "Delete Current Profile",
+		callback = function(self) deleteProfile() end
+	}}
+
+	-- bdCore:addModule("Profiles", defaults)
+	-- config = bdCore.config.profile['Profiles']
+
+	bdConfigLib:RegisterModule({
+		name = "Profiles"
+		, persistent = true
+	}, defaults, "bdConfigLibProfiles")
+local function SetProfiles()
+
+end
+
+--[[========================================================
 	CONFIGURATION INPUT ELEMENT METHODS
 	This is all of the methods that create user interaction 
 	elements. When adding support for new modules, start here
@@ -803,7 +854,7 @@ function bdConfigLib:ElementContainer(module, info)
 		text = 1.0
 		, table = 1.0
 		, slider = 0.5
-		, checkbox = 0.33
+		, checkbox = 0.5
 		, color = 0.33
 		, dropdown = 0.5
 		, clear = 1.0
