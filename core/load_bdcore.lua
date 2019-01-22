@@ -34,52 +34,22 @@ bdCore:SetScript("OnEvent", function(self, event, arg1, arg2, ...)
 		-- update shared media configuration
 		bdCore.general[2].font.options = font_table
 		bdCore.general[4].background.options = bg_table
-
-		-- add profile config here, before we set any defaults below
-		-- bdCore:triggerEvent('profile_config')
-		
-	
-		-- we shouldn't need this since lua references automatically the same table?
-		-- when we update the default configuration, those new configurations should be copied over
-		--[[ for group, options in pairs(c) do
-			if (bdCoreDataPerChar[group] == nil) then
-				bdCoreDataPerChar[group] = c[group]
-			end
-			for option, value in pairs(options) do
-				if (bdCoreDataPerChar[group][option] == nil) then
-					bdCoreDataPerChar[group][option] = value
-				end
-			end
-			
-		end--]]
-		
-		--[[
-		for group, options in pairs(c.sv) do
-			for option, value in pairs(options) do
-				if (not c[group]) then c[group] = {} end
-				if (c[group][option] ~= value) then
-					c[group][option] = value
-				end
-			end
-		end--]]
 		
 		-- bdConfigLib.savedVariable = BD_persistent
-		config = bdConfigLib:RegisterModule({
+		local saves = bdConfigLib:RegisterModule({
 			name = "bdAddons"
 			, persistent = true
+			, return = "both"
 		}, bdCore.general, "BD_persistent")
 
-		c.profile = config.profile
-		c.persistent = config.persistent
-		
-		-- c = bdConfigLib:GetSave("bdAddons")
-		-- bdCore.config = bdConfigLib:GetSave("bdAddons")
+		-- create ref pointers
+		c.persistent = saves.persistent
+		c.profile = saves.profile
 
 		print(bdCore.colorString.." loaded. Type /bd for configuration. We're on Discord! https://discord.gg/2SK3bEw")
 		
 		bdCore:triggerEvent('loaded_bdcore')
 		bdCore:triggerEvent('bdcore_redraw')
-		-- bdCore:triggerEvent("profile_config")
 		
 		-- a lot of addons do this when they shouldn't it should really only be done when addons finish loading
 		collectgarbage("collect")

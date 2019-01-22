@@ -755,7 +755,15 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 	end
 
 	-- return config
-	return c
+	if (not settings.return) then
+		return c.save
+	elseif (settings.return == "both") then
+		return c
+	elseif (settings.return == "profile") then
+		return c.profile
+	elseif (settings.return == "persistent") then
+		return c.persistent
+	end
 end
 
 --[[========================================================
