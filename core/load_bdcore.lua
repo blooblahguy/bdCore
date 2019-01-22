@@ -64,10 +64,13 @@ bdCore:SetScript("OnEvent", function(self, event, arg1, arg2, ...)
 		end--]]
 		
 		-- bdConfigLib.savedVariable = BD_persistent
-		c = bdConfigLib:RegisterModule({
+		config = bdConfigLib:RegisterModule({
 			name = "bdAddons"
 			, persistent = true
 		}, bdCore.general, "BD_persistent")
+
+		c.profile = config.profile
+		c.persistent = config.persistent
 		
 		-- c = bdConfigLib:GetSave("bdAddons")
 		-- bdCore.config = bdConfigLib:GetSave("bdAddons")
