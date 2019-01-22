@@ -6,19 +6,20 @@
 	curse.com/
 	bdConfigLib Main Usage
 
-	bdConfigLib:RegisterModule(settings, configuration, savedVariable[, savedVariableAcct])
+	bdConfigLib:RegisterModule(settings, configuration, "savedVariable")
 
 	settings
 		name : name of the module in the configuration window
 		command : /command that opens configuration to your module
 		init : function callback for when configuration is initialized
 		callback : function callback for when a configuration changes
+		returnType : By default it retuns your direct save table, but you can return the persistent and profile versions or "both" if needed
 	configuration : table of the configuration options for this module
 		tab
 		text
 		list
 		dropdown
-	savedVariable : Per character SavedVariable
+	savedVariable : Per character SavedVariable as a STRING ie SavedVariableName = "SavedVariableName"
 
 
 
@@ -406,12 +407,8 @@ local function FindBetterFont()
 	end
 end
 
--- local UpdateConfig {
--- 	__add = function(lhs, rhs)
--- 		return setmetatable({value = lhs.value + rhs.value}, UpdateConfig)
--- 	end,
--- }
 
+-- Primary function
 local function RegisterModule(self, settings, configuration, savedVariable)
 	local enabled, loaded = IsAddOnLoaded(addonName)
 	if (not loaded and not bdConfigLib.ProfileSetup) then

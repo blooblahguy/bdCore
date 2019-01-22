@@ -69,7 +69,7 @@ SlashCmdList["BDCORE"] = function(msg, editbox)
 		print("   /"..bdCore.colorString.." reset - reset the saved settings account-wide (careful)")
 		--print("-- /bui lock - locks the UI")
 	elseif (msg == "unlock" or msg == "lock") then
-		bdCore.toggleLock()
+		bdCore:toggleLock()
 	elseif (msg == "reset") then
 		BD_user = nil
 		BD_profiles = nil
