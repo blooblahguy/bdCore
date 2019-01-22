@@ -13,6 +13,7 @@
 	<Include file="lib\ace\CallbackHandler-1.0.lua"/>
 	<Include file="lib\ace\LibSharedMedia-3.0.lua"/>
 	<Include file="lib\ace\LibButtonGlow-1.0.lua"/>
+	<Include file="modules\helpers.lua"></Include>
 
 	<!-- Core -->
 	<Include file="core\core_functions.lua"></Include>
