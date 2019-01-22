@@ -636,9 +636,6 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 	_G[savedVariable][settings.name] = _G[savedVariable][settings.name] or {}
 	local c = _G[savedVariable][settings.name]
 
-	-- persistent
-	c.persistent = c.persistent or {}
-
 	-- user
 	c.users = c.users or {}
 	c.users[UnitName("player")] = c.users[UnitName("player")] or {}
@@ -650,6 +647,9 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 	c.user.spec_profile[2] = c.user.spec_profile[2] or {}
 	c.user.spec_profile[3] = c.user.spec_profile[3] or {}
 	c.user.spec_profile[4] = c.user.spec_profile[4] or {}
+
+	-- persistent
+	c.persistent = c.persistent or {}
 
 	-- profile
 	c.profiles = c.profiles or {}
@@ -1397,7 +1397,7 @@ do
 	}}
 	profile_settings[#profile_settings+1] = {clear = {
 		type = "clear"
-	}
+	}}
 	-- loop through and display spec dropdowns (@todo)
 	for i = 1, specs do
 		-- profile_settings[#profile_settings+1] = {["spec"..i] = {
