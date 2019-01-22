@@ -771,7 +771,13 @@ end
 do
 	-- returns a list of modules currently loaded
 	function bdConfigLib:GetSave(name)
-		return bdConfigLib.saves[name].save
+		-- print(name)
+		-- print(name.save)
+		if (self.saves[name]) then
+			return self.saves[name].save
+		else
+			return false
+		end
 	end
 	function bdConfigLib:Toggle()
 		if (not bdConfigLib.toggled) then
@@ -1441,4 +1447,4 @@ end
 
 
 -- for testing, pops up config on reload for easy access :)
-bdConfigLib:Toggle()
+-- bdConfigLib:Toggle()
