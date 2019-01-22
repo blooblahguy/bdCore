@@ -6,19 +6,20 @@
 	curse.com/
 	bdConfigLib Main Usage
 
-	bdConfigLib:RegisterModule(settings, configuration, savedVariable[, savedVariableAcct])
+	bdConfigLib:RegisterModule(settings, configuration, "savedVariable")
 
 	settings
 		name : name of the module in the configuration window
 		command : /command that opens configuration to your module
 		init : function callback for when configuration is initialized
 		callback : function callback for when a configuration changes
+		returnType : By default it retuns your direct save table, but you can return the persistent and profile versions or "both" if needed
 	configuration : table of the configuration options for this module
 		tab
 		text
 		list
 		dropdown
-	savedVariable : Per character SavedVariable
+	savedVariable : Per character SavedVariable as a STRING ie SavedVariableName = "SavedVariableName"
 
 
 
@@ -39,8 +40,14 @@ end
 ========================================================]]
 _G.bdConfigLib = {}
 _G.bdConfigLibProfiles = {}
+_G.bdConfigLibSave = {}
+
 bdConfigLib = _G.bdConfigLib
+bdConfigLibSave = _G.bdConfigLibSave
 bdConfigLibProfiles = _G.bdConfigLibProfiles
+bdConfigLibProfiles.Selected = "default"
+bdConfigLibProfiles.Profiles = {}
+bdConfigLibProfiles.SavedVariables = {}
 bdConfigLib.version = version
 
 --[[======================================================
@@ -80,6 +87,30 @@ bdConfigLib.arrow = UIParent:CreateTexture(nil, "OVERLAY")
 bdConfigLib.arrow:SetTexture(bdConfigLib.media.arrow)
 bdConfigLib.arrow:SetTexCoord(0.9, 0.9, 0.9, 0.6)
 bdConfigLib.arrow:SetVertexColor(1,1,1,0.5)
+
+-- event system
+-- custom events/hooks
+bdConfigLib.events = {}
+function bd_add_action(event, func)
+	local events = strsplit(",", event) or {event}
+	events = type(events) == "table" and events or {event}
+
+	for i = 1, #events do
+		e = events[i]
+		if (not bdConfigLib.events[e]) then
+			bdConfigLib.events[e] = {}
+		end
+		bdConfigLib.events[e][#bdConfigLib.events[e]+1] = func
+	end
+end
+
+function bd_do_action(event,...)
+	if (bdConfigLib.events[event]) then
+		for k, v in pairs(bdConfigLib.events[event]) do
+			v(...)
+		end
+	end
+end
 
 -- debug
 local function debug(...)
@@ -284,7 +315,6 @@ local function CreateFrames()
 		window:SetUserPlaced(true)
 		window:SetFrameStrata("DIALOG")
 		window:SetClampedToScreen(true)
-		window:Hide()
 		CreateShadow(window, 10)
 	end
 
@@ -377,9 +407,11 @@ local function FindBetterFont()
 	end
 end
 
+
+-- Primary function
 local function RegisterModule(self, settings, configuration, savedVariable)
 	local enabled, loaded = IsAddOnLoaded(addonName)
-	if (not loaded) then
+	if (not loaded and not bdConfigLib.ProfileSetup) then
 		debug("Addon", addonName, "saved variables not loaded yet, make sure you wrap your addon inside of an ADDON_LOADED event.")
 		return
 	end
@@ -421,7 +453,6 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 
 			-- Unselect all modules
 			for name, otherModule in pairs(bdConfigLib.modules) do
-				-- print("unselect", otherModule.name)
 				otherModule:Unselect()
 
 				for k, t in pairs(otherModule.tabs) do
@@ -600,61 +631,54 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 	========================================================]]
 	_G[savedVariable] = _G[savedVariable] or {}
 	_G[savedVariable][settings.name] = _G[savedVariable][settings.name] or {}
-	module.save = _G[savedVariable][settings.name]
-	
-	-- module.save[settings.name] = module.save[settings.name] or {}
+	local c = _G[savedVariable][settings.name]
 
-	module.save.persistent = module.save.persistent or {}
-	module.save.user = module.save.user or {}
-	module.save.profiles = module.save.profiles or {}
-	module.save.profile = module.save.profile or {}
-	-- module.save = savedVariable[settings.name]
+	-- user
+	c.users = c.users or {}
+	c.users[UnitName("player")] = c.users[UnitName("player")] or {}
+	c.user = c.users[UnitName("player")] or {}
+	c.user.name = UnitName("player")
+	c.user.profile = c.user.profile or "default"
+	c.user.spec_profile = c.user.spec_profile or {}
+	c.user.spec_profile[1] = c.user.spec_profile[1] or {}
+	c.user.spec_profile[2] = c.user.spec_profile[2] or {}
+	c.user.spec_profile[3] = c.user.spec_profile[3] or {}
+	c.user.spec_profile[4] = c.user.spec_profile[4] or {}
 
-	-- player configuration
-	-- module.save.user = module.save.user or {}
-	module.save.user.name = UnitName("player")
-	module.save.user.profile = module.save.user.profile or "default"
-	module.save.user.spec_profile = module.save.user.spec_profile or {}
-	module.save.user.spec_profile[1] = module.save.user.spec_profile[1] or false
-	module.save.user.spec_profile[2] = module.save.user.spec_profile[2] or false
-	module.save.user.spec_profile[3] = module.save.user.spec_profile[3] or false
-	module.save.user.spec_profile[4] = module.save.user.spec_profile[4] or false
+	-- persistent
+	c.persistent = c.persistent or {}
 
-	-- profile configuration
-	-- module.save.profiles = module.save.profiles or {}
-	module.save.profiles[module.save.user.profile] = module.save.profiles[module.save.user.profile] or {}
-	module.save.profiles[module.save.user.profile].positions = module.save.profiles[module.save.user.profile].positions or {}
+	-- profile
+	c.profiles = c.profiles or {}
+	c.profiles[c.user.profile] = c.profiles[c.user.profile] or {}
+	c.profile = c.profiles[c.user.profile]
+	c.profile.positions = c.profile.positions or {}
 
-	module.save.profile = module.save.profiles[module.save.user.profile]
+	-- shortcut to corrent save table
+	if (settings.persistent) then
+		c.save = c.persistent
+	else
+		c.save = c.profile
+	end
 
 	-- persistent configuration
-	-- module.save.persistent = module.save.persistent or {}
-	module.save.persistent.bd_config = module.save.persistent.bd_config or {} -- todo : let the user decide how the library looks and behaves
+	-- module.save.persistent.bd_config = module.save.persistent.bd_config or {} -- todo : let the user decide how the library looks and behaves
 
 	-- let's us access module inforomation quickly and easily
 	function module:Save(option, value)
-		-- module.save = savedVariable[settings.name]
-		-- dump(savedVariable[settings.name].profiles["default"])
-		-- module.save = savedVariable
 		if (settings.persistent) then
-			module.save.persistent[option] = value
+			c.persistent[option] = value
 		else
-			print(option, value)
-			-- module.save.profile[option] = value
-			module.save.profiles[module.save.user.profile][option] = value
+			c.profile[option] = value
 		end
 	end
 	function module:Get(option)
-	-- dump(savedVariable[settings.name].profiles["default"])
-		-- module.save = savedVariable[settings.name]
 		if (settings.persistent) then
-			return module.save.persistent[option]
+			return c.persistent[option]
 		else
-			return module.save.profiles[module.save.user.profile][option]
+			return c.profile[option]
 		end
 	end
-
-	-- dump(savedVariable[settings.name].profiles["default"])
 	
 	--[[======================================================
 		2: CREATE INPUTS AND DEFAULTS
@@ -666,40 +690,28 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 		-- loop through the configuration table to setup, tabs, sliders, inputs, etc.
 		for option, info in pairs(conf) do
 			if (settings.persistent) then
-				-- if variable is `persistent` its account-wide
+				-- if variable is `persistent` its not associate with a profile
 				
-				if (module.save.persistent[option] == nil) then
+				if (c.persistent[option] == nil) then
 					if (info.value == nil) then
 						info.value = {}
 					end
 
-					module.save.persistent[option] = info.value
+					c.persistent[option] = info.value
 				end
 			else
 				-- this is a per-character configuration
-				if (module.save.profile[option] == nil) then
+				if (c.profile[option] == nil) then
 					if (info.value == nil) then
 						info.value = {}
 					end
 
-					module.save.profile[option] = info.value
+					c.profile[option] = info.value
 				end
 			end
 
-			-- Store callbacks and call them all togther
-			local callbacks = {}
-			if (info.callback) then
-				callbacks[#callbacks + 1] = info.callback
-			end
-			if (settings.callback) then
-				callbacks[#callbacks + 1] = settings.callback
-			end
-
-			info.callback = function()
-				for k, fn in pairs(callbacks) do
-					fn()
-				end
-			end
+			-- force blank callbacks if not set
+			info.callback = info.callback or function() return false end
 			
 			-- If the very first entry is not a tab, then create a general tab/page container
 			if (info.type ~= "tab" and #module.tabs == 0) then
@@ -731,14 +743,23 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 	if (settings.init) then
 		setting.init(module)
 	end
+	
+	-- profile stuff
+	if (not bdConfigLib.ProfileSetup) then
+		bdConfigLibProfiles.SavedVariables[savedVariable] = true
+		bdConfigLib.saves[settings.name] = c
+		bd_do_action("update_profiles");
+	end
 
-	-- shortcuts
-	if (settings.persistent) then
-		bdConfigLib.saves[settings.name] = module.save
-		return module.save
-	else
-		bdConfigLib.saves[settings.name] = module.save.profiles[module.save.user.profile]
-		return module.save.profiles[module.save.user.profile]
+	-- return config
+	if (not settings.returnType) then
+		return c.save
+	elseif (settings.returnType == "both") then
+		return c
+	elseif (settings.returnType == "profile") then
+		return c.profile
+	elseif (settings.returnType == "persistent") then
+		return c.persistent
 	end
 end
 
@@ -750,7 +771,7 @@ end
 do
 	-- returns a list of modules currently loaded
 	function bdConfigLib:GetSave(name)
-		return bdConfigLib.saves[name]
+		return bdConfigLib.saves[name].save
 	end
 	function bdConfigLib:Toggle()
 		if (not bdConfigLib.toggled) then
@@ -780,74 +801,6 @@ do
 end
 
 --[[========================================================
-	PROFILES
-	Modules that are added that aren't persistent are 
-	automatically stored inside of a profile, and those
-	profiles are common between SavedVariables
-==========================================================]]
-
-function OnProfileAdded()
-	bdConfigLibProfiles = {}
-	-- foreach ()
-	for k, v in pairs(bdConfigLib.save.profiles) do
-		table.insert(profile_table, k)
-	end
-end
-
-	-- make new profile form
-	local name, realm = UnitName("player")
-	realm = GetRealmName()
-	local placeholder = name.."-"..realm
-
-	-- how many specs does this class have
-	local class = select(2, UnitClass("player"));
-	local specs = 3
-	if (class == "DRUID") then
-		specs = 4
-	elseif (class == "DEMONHUNTER") then
-		specs = 2
-	end
-	
-	local defaults = {}
-	defaults[#defaults+1] = {intro = {
-		type = "text",
-		value = "You can use profiles to store configuration per character and spec automatically, or save templates to use when needed."
-	}}
-	defaults[#defaults+1] = {currentprofile = {
-		type = "dropdown",
-		value = c.profile,
-		override = true,
-		options = profile_table,
-		update = function(dropdown) profileDropdown(dropdown) end,
-		updateOn = "bd_update_profiles",
-		tooltip = "Your currently selected profile.",
-		callback = function(self, value) profileChange(value) end
-	}}
-	defaults[#defaults+1] = {createprofile = {
-		type = "textBox",
-		value = placeholder,
-		button = "Create & Copy",
-		description = "Create New Profile: ",
-		tooltip = "Your currently selected profile.",
-		callback = addProfile
-	}}
-	defaults[#defaults+1] = {deleteprofile = {
-		type = "button",
-		value = "Delete Current Profile",
-		callback = function(self) deleteProfile() end
-	}}
-
-	bdConfigLib:RegisterModule({
-		name = "Profiles"
-		, persistent = true
-	}, profile_settings, "bdConfigLibProfiles")
-
-		
-	local function SetProfiles()
-
-	end
-
---[[========================================================
 	CONFIGURATION INPUT ELEMENT METHODS
 	This is all of the methods that create user interaction 
 	elements. When adding support for new modules, start here
@@ -869,7 +822,7 @@ function bdConfigLib:ElementContainer(module, info)
 		, color = 0.33
 		, dropdown = 0.5
 		, clear = 1.0
-		, button = 1.0
+		, button = 0.5
 		, list = 1.0
 		, textbox = 1.0
 	}
@@ -1121,8 +1074,8 @@ function bdConfigLib:TextboxElement(module, option, info)
 	create.button:SetText(info.button)
 	create.button.OnClick = function()
 		local text = create:GetText()
+		info:callback(text)
 		create:SetText("")
-		info['callback'](text, text, text)
 	end
 
 	return container
@@ -1142,7 +1095,7 @@ function bdConfigLib:SliderElement(module, option, info)
 	slider:SetMinMaxValues(info.min, info.max)
 	slider:SetObeyStepOnDrag(true)
 	slider:SetValueStep(info.step)
-	slider:SetValue(module:Get(option))
+	slider:SetValue(info.value)
 	slider.tooltipText = info.tooltip
 
 	local low = _G[slider:GetName() .. 'Low']
@@ -1289,34 +1242,203 @@ function bdConfigLib:DropdownElement(module, option, info)
 
 	local dropdown = CreateFrame("Button", module.name.."_"..option, container, "UIDropDownMenuTemplate")
 	dropdown:SetPoint("TOPLEFT", label, "BOTTOMLEFT", -15, -2)
+	
+	-- recreate dropdown each time
+	function dropdown:populate(options)
+		UIDropDownMenu_SetWidth(dropdown, container:GetWidth() - 20)
+		UIDropDownMenu_JustifyText(dropdown, "LEFT")
 
-	UIDropDownMenu_SetWidth(dropdown, container:GetWidth() - 20)
-	UIDropDownMenu_SetText(dropdown, module:Get(option) or "test")
-	UIDropDownMenu_JustifyText(dropdown, "LEFT")
+		UIDropDownMenu_Initialize(dropdown, function(self, level)
+			local selected = 1
+			for i, item in pairs(options) do
+				if (type(item) == "string") then
+					opt = UIDropDownMenu_CreateInfo()
+					opt.text = item:gsub("^%l", string.upper)
+					opt.value = item
+					if (info.value == nil) then
+						info.value = item
+					end
+					opt.func = function(self)
+						UIDropDownMenu_SetSelectedID(dropdown, self:GetID())
+						CloseDropDownMenus()
 
-	-- initialize options
-	UIDropDownMenu_Initialize(dropdown, function(self, level, menuList)
-		local selected = 0
-		for i, item in pairs(info.options) do
-			local opt = UIDropDownMenu_CreateInfo()
-			opt.text = item
-			opt.value = item
-			if (item == module:Get(option)) then selected = i end
+						module:Save(option, options[i])
+						info.value = options[i]
 
-			opt.func = function(self)
-				UIDropDownMenu_SetSelectedID(dropdown, self:GetID())
-				CloseDropDownMenus()
+						info:callback(options[i])
+					end
 
-				module:Save(option, info.options[i])
+					if (item == module:Get(option)) then selected = i end
+					if (info.override) then
+						if item == info.value then
+							selected = i
+						end
+					end
 
-				info:callback()
+					UIDropDownMenu_AddButton(opt, level)
+				end
 			end
 
-			UIDropDownMenu_AddButton(opt, level)
-		end
+			UIDropDownMenu_SetSelectedID(dropdown, selected)
+		end)
+	end
 
-		UIDropDownMenu_SetSelectedID(dropdown, selected)
-	end)
+	if (info.update_action and info.update) then
+		bd_add_action(info.update_action, function(updateTable)
+			info:update(dropdown)
+		end)
+	end
+
+	dropdown:populate(info.options)
 
 	return container
 end
+
+--[[========================================================
+	PROFILES
+	Modules that are added that aren't persistent are 
+	automatically stored inside of a profile, and those
+	profiles are common between SavedVariables
+==========================================================]]
+do
+	-- add a profile to every saved variable inside of bdConfigLib
+	function bdConfigLib:AddProfile(value)
+		for savedVariable, v in pairs(bdConfigLibProfiles.SavedVariables) do
+			for module, save in pairs(_G[savedVariable]) do
+				if (save.user.profile == value) then
+					print("Profile named "..value.." already exists. Profile names must be unique.")
+					return 
+				else
+					save.profiles[value] = save.profile
+					bdConfigLibProfiles.Selected = value
+					bg_do_action("update_profiles")
+				end
+			end
+		end
+	end
+
+	-- the trick here is changing profiles for all saved variables stored inside bdConfigLib
+	function bdConfigLib:ChangeProfile(value)
+		for savedVariable, v in pairs(bdConfigLibProfiles.SavedVariables) do
+			for module, save in pairs(_G[savedVariable]) do
+				save.user.profile = value
+				save.profile = save.profiles[value]
+				bdConfigLibProfiles.Selected = value
+			end
+		end
+	end
+
+	-- delete a profile inside of every saved variable in bdConfigLib
+	function bdConfigLib:DeleteProfile()
+		for savedVariable, v in pairs(bdConfigLibProfiles.SavedVariables) do
+			for module, save in pairs(_G[savedVariable]) do
+				if (save.user.profile == "default") then
+					print("You cannot delete the default profile, but you're free to modify it.")
+					return 
+				else
+					save.profile = nil
+					bdConfigLibProfiles.Selected = nil
+					bd_do_action("update_profiles")
+				end
+			end
+		end
+	end
+
+	-- return a table of profile names
+	function bdConfigLib:UpdateProfiles(dropdown)
+		bdConfigLibProfiles.Profiles = {}
+		local profile_table = {}
+		--_G[savedVariable][settings.name].user.profile
+		for savedVariable, v in pairs(bdConfigLibProfiles.SavedVariables) do
+			for module, c in pairs(_G[savedVariable]) do
+				if (not bdConfigLibProfiles.Selected) then
+					bdConfigLibProfiles.Selected = c.user.profile
+				end
+				for profile, config in pairs(c.profiles) do
+					profile_table[profile] = true
+				end
+			end
+		end
+
+		for k, v in pairs(profile_table) do
+			table.insert(bdConfigLibProfiles.Profiles, k)
+		end
+
+		dropdown:populate(bdConfigLibProfiles.Profiles)
+	end
+
+	-- make new profile form
+	local name, realm = UnitName("player")
+	realm = GetRealmName()
+	local placeholder = name.."-"..realm
+
+	-- how many specs does this class have
+	local class = select(2, UnitClass("player"));
+	local specs = 3
+	if (class == "DRUID") then
+		specs = 4
+	elseif (class == "DEMONHUNTER") then
+		specs = 2
+	end
+
+	local profile_settings = {}
+	profile_settings[#profile_settings+1] = {intro = {
+		type = "text",
+		value = "You can use profiles to store configuration per character and spec automatically, or save templates to use when needed."
+	}}
+	-- create new profile
+	profile_settings[#profile_settings+1] = {createprofile = {
+		type = "textbox",
+		value = placeholder,
+		button = "Create & Copy",
+		description = "Create New Profile: ",
+		tooltip = "Your currently selected profile.",
+		callback = function(self, value) bdConfigLib:AddProfile(value) end
+	}}
+
+	-- select / delete profiles
+	profile_settings[#profile_settings+1] = {currentprofile = {
+		type = "dropdown",
+		label = "Current Profile",
+		value = bdConfigLibProfiles.Selected,
+		options = bdConfigLibProfiles.Profiles,
+		update = function(self, dropdown) bdConfigLib:UpdateProfiles(dropdown) end,
+		update_action = "update_profiles",
+		tooltip = "Your currently selected profile.",
+		callback = function(self, value) bdConfigLib:ChangeProfile(value) end
+	}}
+	profile_settings[#profile_settings+1] = {deleteprofile = {
+		type = "button",
+		value = "Delete Current Profile",
+		callback = bdConfigLib.DeleteProfile
+	}}
+	profile_settings[#profile_settings+1] = {clear = {
+		type = "clear"
+	}}
+	-- loop through and display spec dropdowns (@todo)
+	for i = 1, specs do
+		-- profile_settings[#profile_settings+1] = {["spec"..i] = {
+		-- 	type = "dropdown",
+		-- 	label = "Spec "..i.." Profile"
+		-- 	value = bdConfigLibProfiles.Selected,
+		-- 	override = true,
+		-- 	options = bdConfigLibProfiles.Profiles,
+		-- 	update = function(self, dropdown) bdConfigLib:UpdateProfiles(dropdown) end,
+		-- 	update_action = "update_profiles",
+		-- 	tooltip = "Your currently selected profile.",
+		-- 	callback = function(self, value) bdConfigLib:ChangeProfile(value) end
+		-- }}
+	end
+
+
+	bdConfigLib.ProfileSetup = true
+	bdConfigLib:RegisterModule({
+		name = "Profiles"
+		, persistent = true
+	}, profile_settings, "bdConfigLibProfiles")
+	bdConfigLib.ProfileSetup = nil
+end
+
+
+-- for testing, pops up config on reload for easy access :)
+bdConfigLib:Toggle()

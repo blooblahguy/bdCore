@@ -110,7 +110,7 @@ local function WhyElvWhy(frame)
 end
 
 
-function aura_env.GetFrame(target)
+function GetFrame(target)
     local frames = GetFrames(target)
     if not frames then return nil end
     for i=1,#frame_priority do
@@ -122,20 +122,3 @@ function aura_env.GetFrame(target)
     end
     return WhyElvWhy(frames[1])
 end
-
-
--- print("***********")
--- local target  = "player"
--- print("* first frame in priority list :")
--- local frame = GetFrame(target)
--- if frame then
---    --print(WeakAuras.ShowGlowOverlay(frame))
---    print(frame:GetName())
--- end
-
--- print("* all frames :")
--- local frames = GetFrames(target)
--- for _,frame in pairs(frames) do
---    --print(WeakAuras.ShowGlowOverlay(frame))
---    print(frame:GetName())   
--- end

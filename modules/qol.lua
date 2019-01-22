@@ -1,5 +1,5 @@
 local bdCore, c, s = select(2, ...):unpack()
-bdCore:hookEvent("loaded_bdcore", function() c = bdConfigLib:GetSave("bdAddons") end)
+-- bdCore:hookEvent("loaded_bdcore", function() c = bdConfigLib:GetSave("bdAddons") end)
 
 
 -- Load all quality of life modules in one place
