@@ -808,7 +808,7 @@ function bdConfigLib:ElementContainer(module, info)
 		, color = 0.33
 		, dropdown = 0.5
 		, clear = 1.0
-		, button = 1.0
+		, button = 0.5
 		, list = 1.0
 		, textbox = 1.0
 	}
@@ -1284,6 +1284,7 @@ end
 	profiles are common between SavedVariables
 ==========================================================]]
 do
+	-- add a profile to every saved variable inside of bdConfigLib
 	function bdConfigLib:AddProfile(value)
 		for savedVariable, v in pairs(bdConfigLibProfiles.SavedVariables) do
 			for module, save in pairs(_G[savedVariable]) do
@@ -1298,6 +1299,8 @@ do
 			end
 		end
 	end
+
+	-- the trick here is changing profiles for all saved variables stored inside bdConfigLib
 	function bdConfigLib:ChangeProfile(value)
 		for savedVariable, v in pairs(bdConfigLibProfiles.SavedVariables) do
 			for module, save in pairs(_G[savedVariable]) do
@@ -1307,6 +1310,8 @@ do
 			end
 		end
 	end
+
+	-- delete a profile inside of every saved variable in bdConfigLib
 	function bdConfigLib:DeleteProfile()
 		for savedVariable, v in pairs(bdConfigLibProfiles.SavedVariables) do
 			for module, save in pairs(_G[savedVariable]) do
@@ -1314,18 +1319,23 @@ do
 					print("You cannot delete the default profile, but you're free to modify it.")
 					return 
 				else
-					save.profiles[save.user.profile] = nil
+					save.profile = nil
+					bdConfigLibProfiles.Selected = nil
 					do_action("update_profiles")
 				end
 			end
 		end
 	end
+
+	-- return a table of profile names
 	function bdConfigLib:UpdateProfiles(dropdown)
 		bdConfigLibProfiles.Profiles = {}
 		local profile_table = {}
 		for savedVariable, v in pairs(bdConfigLibProfiles.SavedVariables) do
 			for module, save in pairs(_G[savedVariable]) do
-				bdConfigLibProfiles.Selected = save.user.profile
+				if (not bdConfigLibProfiles.Selected) then
+					bdConfigLibProfiles.Selected = save.user.profile
+				end
 				for profile, c in pairs(save.profiles) do
 					profile_table[profile] = true
 				end
@@ -1358,6 +1368,17 @@ do
 		type = "text",
 		value = "You can use profiles to store configuration per character and spec automatically, or save templates to use when needed."
 	}}
+	-- create new profile
+	profile_settings[#profile_settings+1] = {createprofile = {
+		type = "textbox",
+		value = placeholder,
+		button = "Create & Copy",
+		description = "Create New Profile: ",
+		tooltip = "Your currently selected profile.",
+		callback = function(self, value) bdConfigLib:AddProfile(value) end
+	}}
+
+	-- select / delete profiles
 	profile_settings[#profile_settings+1] = {currentprofile = {
 		type = "dropdown",
 		label = "Current Profile"
@@ -1369,22 +1390,29 @@ do
 		tooltip = "Your currently selected profile.",
 		callback = function(self, value) bdConfigLib:ChangeProfile(value) end
 	}}
-	profile_settings[#profile_settings+1] = {clear = {
-		type = "clear"
-	}
-	profile_settings[#profile_settings+1] = {createprofile = {
-		type = "textbox",
-		value = placeholder,
-		button = "Create & Copy",
-		description = "Create New Profile: ",
-		tooltip = "Your currently selected profile.",
-		callback = function(self, value) bdConfigLib:AddProfile(value) end
-	}}
 	profile_settings[#profile_settings+1] = {deleteprofile = {
 		type = "button",
 		value = "Delete Current Profile",
 		callback = bdConfigLib.DeleteProfile
 	}}
+	profile_settings[#profile_settings+1] = {clear = {
+		type = "clear"
+	}
+	-- loop through and display spec dropdowns (@todo)
+	for i = 1, specs do
+		-- profile_settings[#profile_settings+1] = {["spec"..i] = {
+		-- 	type = "dropdown",
+		-- 	label = "Spec "..i.." Profile"
+		-- 	value = bdConfigLibProfiles.Selected,
+		-- 	override = true,
+		-- 	options = bdConfigLibProfiles.Profiles,
+		-- 	update = function(self, dropdown) bdConfigLib:UpdateProfiles(dropdown) end,
+		-- 	update_action = "update_profiles",
+		-- 	tooltip = "Your currently selected profile.",
+		-- 	callback = function(self, value) bdConfigLib:ChangeProfile(value) end
+		-- }}
+	end
+
 
 	bdConfigLib.ProfileSetup = true
 	bdConfigLib:RegisterModule({
