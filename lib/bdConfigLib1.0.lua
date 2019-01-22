@@ -657,6 +657,13 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 	c.profile = c.profiles[c.user.profile]
 	c.profile.positions = c.profile.positions or {}
 
+	-- shortcut to corrent save table
+	if (settings.persistent) then
+		c.save = c.persistent
+	else
+		c.save = c.profile
+	end
+
 	-- persistent configuration
 	-- module.save.persistent.bd_config = module.save.persistent.bd_config or {} -- todo : let the user decide how the library looks and behaves
 
@@ -744,7 +751,6 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 	if (not bdConfigLib.ProfileSetup) then
 		bdConfigLibProfiles.SavedVariables[savedVariable] = true
 		bdConfigLib.saves[settings.name] = c
-		module.save = c
 		do_action("update_profiles");
 	end
 
@@ -760,7 +766,7 @@ end
 do
 	-- returns a list of modules currently loaded
 	function bdConfigLib:GetSave(name)
-		return bdConfigLib.saves[name].profile or 
+		return bdConfigLib.saves[name].save or 
 	end
 	function bdConfigLib:Toggle()
 		if (not bdConfigLib.toggled) then
