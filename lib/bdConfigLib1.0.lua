@@ -91,7 +91,7 @@ bdConfigLib.arrow:SetVertexColor(1,1,1,0.5)
 -- event system
 -- custom events/hooks
 bdConfigLib.events = {}
-local function add_action(event, func)
+function bd_add_action(event, func)
 	local events = strsplit(",", event) or {event}
 	events = type(events) == "table" and events or {event}
 
@@ -104,7 +104,7 @@ local function add_action(event, func)
 	end
 end
 
-local function do_action(event,...)
+function bd_do_action(event,...)
 	if (bdConfigLib.events[event]) then
 		for k, v in pairs(bdConfigLib.events[event]) do
 			v(...)
@@ -748,7 +748,7 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 	if (not bdConfigLib.ProfileSetup) then
 		bdConfigLibProfiles.SavedVariables[savedVariable] = true
 		bdConfigLib.saves[settings.name] = c
-		do_action("update_profiles");
+		bd_do_action("update_profiles");
 	end
 
 	-- return config
@@ -1255,6 +1255,9 @@ function bdConfigLib:DropdownElement(module, option, info)
 					opt = UIDropDownMenu_CreateInfo()
 					opt.text = item:gsub("^%l", string.upper)
 					opt.value = item
+					if (info.value == nil) then
+						info.value = item
+					end
 					opt.func = function(self)
 						UIDropDownMenu_SetSelectedID(dropdown, self:GetID())
 						CloseDropDownMenus()
@@ -1281,7 +1284,7 @@ function bdConfigLib:DropdownElement(module, option, info)
 	end
 
 	if (info.update_action and info.update) then
-		add_action(info.update_action, function(updateTable)
+		bd_add_action(info.update_action, function(updateTable)
 			info:update(dropdown)
 		end)
 	end
@@ -1308,7 +1311,7 @@ do
 				else
 					save.profiles[value] = save.profile
 					bdConfigLibProfiles.Selected = value
-					do_action("update_profiles")
+					bg_do_action("update_profiles")
 				end
 			end
 		end
@@ -1335,7 +1338,7 @@ do
 				else
 					save.profile = nil
 					bdConfigLibProfiles.Selected = nil
-					do_action("update_profiles")
+					bd_do_action("update_profiles")
 				end
 			end
 		end
@@ -1398,7 +1401,6 @@ do
 		type = "dropdown",
 		label = "Current Profile",
 		value = bdConfigLibProfiles.Selected,
-		override = true,
 		options = bdConfigLibProfiles.Profiles,
 		update = function(self, dropdown) bdConfigLib:UpdateProfiles(dropdown) end,
 		update_action = "update_profiles",
