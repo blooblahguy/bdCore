@@ -653,6 +653,7 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 
 	-- profile
 	c.profiles = c.profiles or {}
+	c.profiles[c.user.profile] = c.profiles[c.user.profile] or {}
 	c.profile = c.profiles[c.user.profile]
 	c.profile.positions = c.profile.positions or {}
 
@@ -740,10 +741,12 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 	end
 	
 	-- profile stuff
-	bdConfigLibProfiles.SavedVariables[savedVariable] = true
-	bdConfigLib.saves[settings.name] = c
-	module.save = c
-	do_action("update_profiles");
+	if (not bdConfigLib.ProfileSetup) then
+		bdConfigLibProfiles.SavedVariables[savedVariable] = true
+		bdConfigLib.saves[settings.name] = c
+		module.save = c
+		do_action("update_profiles");
+	end
 
 	-- return config
 	return c
@@ -757,7 +760,7 @@ end
 do
 	-- returns a list of modules currently loaded
 	function bdConfigLib:GetSave(name)
-		return bdConfigLib.saves[name]
+		return bdConfigLib.saves[name].profile or 
 	end
 	function bdConfigLib:Toggle()
 		if (not bdConfigLib.toggled) then
@@ -1331,12 +1334,13 @@ do
 	function bdConfigLib:UpdateProfiles(dropdown)
 		bdConfigLibProfiles.Profiles = {}
 		local profile_table = {}
+		--_G[savedVariable][settings.name].user.profile
 		for savedVariable, v in pairs(bdConfigLibProfiles.SavedVariables) do
-			for module, save in pairs(_G[savedVariable]) do
+			for module, c in pairs(_G[savedVariable]) do
 				if (not bdConfigLibProfiles.Selected) then
-					bdConfigLibProfiles.Selected = save.user.profile
+					bdConfigLibProfiles.Selected = c.user.profile
 				end
-				for profile, c in pairs(save.profiles) do
+				for profile, config in pairs(c.profiles) do
 					profile_table[profile] = true
 				end
 			end
@@ -1381,7 +1385,7 @@ do
 	-- select / delete profiles
 	profile_settings[#profile_settings+1] = {currentprofile = {
 		type = "dropdown",
-		label = "Current Profile"
+		label = "Current Profile",
 		value = bdConfigLibProfiles.Selected,
 		override = true,
 		options = bdConfigLibProfiles.Profiles,
@@ -1397,7 +1401,7 @@ do
 	}}
 	profile_settings[#profile_settings+1] = {clear = {
 		type = "clear"
-	}
+	}}
 	-- loop through and display spec dropdowns (@todo)
 	for i = 1, specs do
 		-- profile_settings[#profile_settings+1] = {["spec"..i] = {
@@ -1424,4 +1428,4 @@ end
 
 
 -- for testing, pops up config on reload for easy access :)
-bdConfigLig:Toggle()
+bdConfigLib:Toggle()

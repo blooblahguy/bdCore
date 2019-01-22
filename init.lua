@@ -73,6 +73,7 @@ SlashCmdList["BDCORE"] = function(msg, editbox)
 	elseif (msg == "reset") then
 		BD_user = nil
 		BD_profiles = nil
+		BD_persistent = nil
 
 		ReloadUI()
 	elseif (msg == "config" or msg == "conf") then
