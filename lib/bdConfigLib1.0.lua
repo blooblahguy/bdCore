@@ -40,6 +40,7 @@ end
 _G.bdConfigLib = {}
 _G.bdConfigLibProfiles = {}
 bdConfigLib = _G.bdConfigLib
+bdConfigLibProfiles = _G.bdConfigLibProfiles
 bdConfigLib.version = version
 
 --[[======================================================
@@ -785,11 +786,13 @@ end
 	profiles are common between SavedVariables
 ==========================================================]]
 
-
-	local profile_table = {}
-	for k, v in pairs(c.profiles) do
+function OnProfileAdded()
+	bdConfigLibProfiles = {}
+	-- foreach ()
+	for k, v in pairs(bdConfigLib.save.profiles) do
 		table.insert(profile_table, k)
 	end
+end
 
 	-- make new profile form
 	local name, realm = UnitName("player")
@@ -825,16 +828,15 @@ end
 		callback = function(self) deleteProfile() end
 	}}
 
-	-- bdCore:addModule("Profiles", defaults)
-	-- config = bdCore.config.profile['Profiles']
-
 	bdConfigLib:RegisterModule({
 		name = "Profiles"
 		, persistent = true
-	}, defaults, "bdConfigLibProfiles")
-local function SetProfiles()
+	}, profile_settings, "bdConfigLibProfiles")
 
-end
+		
+	local function SetProfiles()
+
+	end
 
 --[[========================================================
 	CONFIGURATION INPUT ELEMENT METHODS
