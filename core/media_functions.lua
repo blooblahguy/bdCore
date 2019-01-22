@@ -1,5 +1,5 @@
 local bdCore, c, f = select(2, ...):unpack()
-bdCore:hookEvent("loaded_bdcore", function() c = bdConfigLib:GetSave("bdAddons") end)
+-- bdCore:hookEvent("loaded_bdcore", function() c = bdConfigLib:GetSave("bdAddons") end)
 
 -- load oUF
 local engine = select(2, ...)
