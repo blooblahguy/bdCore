@@ -486,58 +486,57 @@ bdCore.auras.raid = {
 	["Dessication"] = true,
 	["Explosive Burst"] = true,
 	["Plague"] = true,
-	["Shattered Defenses"] = true
-
+	["Shattered Defenses"] = true,
 	
--- Battle for Dazar'alor
-	-- Grong
-	["Apetagonizer Core"] = 1
-	["Rending Bite"] = 1
-	["Bestial Throw Target"] = 2
+-- Battle for Dazar'alor,
+	-- Grong,
+	["Apetagonizer Core"] = 1,
+	["Rending Bite"] = 1,
+	["Bestial Throw Target"] = 2,
 
-	--Jadefire
-	["Searing Embers"] = 2
-	["Rising Flames"] = 1
+	--Jadefire,
+	["Searing Embers"] = 2,
+	["Rising Flames"] = 1,
 
-	--Opulence
-	["Liquid Gold"] = 1
-	["Thief's bane"] = 1
-	-- Your designated gem (de)buff
-	["Volatile Charge"] = 1
-	["Hex of Lethargy"] = 2
+	--Opulence,
+	["Liquid Gold"] = 1,
+	["Thief's bane"] = 1,
+	-- Your designated gem (de)buff,
+	["Volatile Charge"] = 1,
+	["Hex of Lethargy"] = 2,
 
-	--Conclave
-	["Bwomsamdi Curse"] = 1
-	["Kimbul Targeting Debuff"] = 1
-	["Mind Wipe"] = 2
-	["Crawling Hex"] = 1
-	["Lacerating Claws"] = 1
+	--Conclave,
+	["Bwomsamdi Curse"] = 1,
+	["Kimbul Targeting Debuff"] = 1,
+	["Mind Wipe"] = 2,
+	["Crawling Hex"] = 1,
+	["Lacerating Claws"] = 1,
 	
-	--Rastakhan
-	["Grievous Axe"] = 2
-	["Caress of Death"] = 1
-	["Scorching Detonation"] = 1
-	["Toad Toxin"] = 1
-	["Death's door"] = 1
+	--Rastakhan,
+	["Grievous Axe"] = 2,
+	["Caress of Death"] = 1,
+	["Scorching Detonation"] = 1,
+	["Toad Toxin"] = 1,
+	["Death's door"] = 1,
 
-	--Mekkatorque
-	["Discombobulation"] = 1
-	["Gigavolt Blast"] = 1
-	["Gigavolt Charge"] = 1
-	["Buster Cannon "] = 1
-	["Gigavolt Radiation"] = 1
-	["Sheep Shrapnel"] = 1
+	--Mekkatorque,
+	["Discombobulation"] = 1,
+	["Gigavolt Blast"] = 1,
+	["Gigavolt Charge"] = 1,
+	["Buster Cannon "] = 1,
+	["Gigavolt Radiation"] = 1,
+	["Sheep Shrapnel"] = 1,
 
-	--Blockade
-	["Tempting Song"] = 1
-	["Storm's Wail"] = 1
-	["Kelp-Wrapped"] = 1
+	--Blockade,
+	["Tempting Song"] = 1,
+	["Storm's Wail"] = 1,
+	["Kelp-Wrapped"] = 1,
 
-	--Jaina
-	["Grasp of Frost"] = 2
-	["Hand of Frost"] = 2
-	["Broadside"] = 1
-	["Siegebreaker Blast"] = 1
+	--Jaina,
+	["Grasp of Frost"] = 2,
+	["Hand of Frost"] = 2,
+	["Broadside"] = 1,
+	["Siegebreaker Blast"] = 1,
 }
 
 bdCore.auras.whitelist = {
