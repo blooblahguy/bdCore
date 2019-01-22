@@ -755,13 +755,13 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 	end
 
 	-- return config
-	if (not settings.return) then
+	if (not settings.returnType) then
 		return c.save
-	elseif (settings.return == "both") then
+	elseif (settings.returnType == "both") then
 		return c
-	elseif (settings.return == "profile") then
+	elseif (settings.returnType == "profile") then
 		return c.profile
-	elseif (settings.return == "persistent") then
+	elseif (settings.returnType == "persistent") then
 		return c.persistent
 	end
 end
@@ -774,7 +774,7 @@ end
 do
 	-- returns a list of modules currently loaded
 	function bdConfigLib:GetSave(name)
-		return bdConfigLib.saves[name].save or 
+		return bdConfigLib.saves[name].save
 	end
 	function bdConfigLib:Toggle()
 		if (not bdConfigLib.toggled) then

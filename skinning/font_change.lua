@@ -1,5 +1,4 @@
 local bdCore, c, f = select(2, ...):unpack()
-bdCore:hookEvent("loaded_bdcore", function() c = bdConfigLib:GetSave("bdAddons") end)
 
 local font = CreateFrame("Frame")
 

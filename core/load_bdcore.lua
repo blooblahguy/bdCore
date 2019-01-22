@@ -39,7 +39,7 @@ bdCore:SetScript("OnEvent", function(self, event, arg1, arg2, ...)
 		local saves = bdConfigLib:RegisterModule({
 			name = "bdAddons"
 			, persistent = true
-			, return = "both"
+			, returnType = "both"
 		}, bdCore.general, "BD_persistent")
 
 		-- create ref pointers
