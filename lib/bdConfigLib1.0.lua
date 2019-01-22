@@ -795,6 +795,15 @@ end
 	local name, realm = UnitName("player")
 	realm = GetRealmName()
 	local placeholder = name.."-"..realm
+
+	-- how many specs does this class have
+	local class = select(2, UnitClass("player"));
+	local specs = 3
+	if (class == "DRUID") then
+		specs = 4
+	elseif (class == "DEMONHUNTER") then
+		specs = 2
+	end
 	
 	local defaults = {}
 	defaults[#defaults+1] = {intro = {
