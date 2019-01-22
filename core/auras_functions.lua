@@ -3,9 +3,7 @@ local bdCore, c, f = select(2, ...):unpack()
 
 local persistentAuras 
 local blacklisted = function(self, name)
--- dump(BD_persistent["Auras"])
 	persistentAuras = bdConfigLib:GetSave("Auras")
-	-- dump(persistentAuras)
 	local blacklist = persistentAuras["blacklist"]
 
 	if (blacklist[name]) then	
@@ -50,3 +48,14 @@ local filterAura = function(self, name, castByPlayer, isRaidDebuff, nameplateSho
 end
 
 bdCore.filterAura = memoize(filterAura, bdCore.caches.auras)
+
+local isGlow = function(self, name)
+	persistentAuras = bdConfigLib:GetSave("Auras")
+	local raid = bdCore.auras.raid
+
+	if (raid[name] == 2) then	
+		return true	
+	end	
+	return false
+end
+bdCore.isGlow = memoize(isGlow, bdCore.caches.auras)
