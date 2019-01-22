@@ -75,8 +75,8 @@ SlashCmdList["BDCORE"] = function(msg, editbox)
 		BD_profiles = nil
 
 		ReloadUI()
-	elseif (msg == "config") then
-		bdCore:toggleConfig()
+	elseif (msg == "config" or msg == "conf") then
+		bdConfigLib:Toggle()
 	else
 		print(bdCore.colorString.." "..msg.." not recognized as a command.")
 	end
