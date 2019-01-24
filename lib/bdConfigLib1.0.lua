@@ -765,8 +765,6 @@ end
 do
 	-- returns a list of modules currently loaded
 	function bdConfigLib:GetSave(name)
-		-- print(name)
-		-- print(name.save)
 		if (self.saves[name]) then
 			return self.saves[name].save
 		else
