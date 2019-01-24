@@ -8,7 +8,7 @@ local InCombatLockdown = InCombatLockdown
 
 -- Because this is such a freaking bear on larger resolutions, reusing some of the ElvUI code here since they support so many situations
 function bdCore:pixelPerfection(event, loginFrame)
-	if (not c or not c.persistent.forcescale) then return end
+	if (not c or not c.persistent.forcescale) then print("won't scale ui") return end
 
 	local width, height = GetPhysicalScreenSize()
 	local scale, mult, spacing, border
