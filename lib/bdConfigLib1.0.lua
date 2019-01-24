@@ -117,6 +117,11 @@ local function debug(...)
 	print("|cffA02C2FbdConfigLib|r:", ...)
 end
 
+local function round(num, idp)
+	local mult = 10^(idp or 0)
+	return floor(num * mult + 0.5) / mult
+end
+
 -- dirty create shadow (no external textures)
 local function CreateShadow(frame, size)
 	if (frame.shadow) then return end
@@ -315,6 +320,7 @@ local function CreateFrames()
 		window:SetUserPlaced(true)
 		window:SetFrameStrata("DIALOG")
 		window:SetClampedToScreen(true)
+		window:Hide()
 		CreateShadow(window, 10)
 	end
 
@@ -426,6 +432,10 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 	end
 	if (bdConfigLib.modules[settings.name]) then
 		debug("There is already a module loaded with the name "..settings.name..". Please choose a unique name for the module")
+		return
+	end
+	if (type(savedVariable) ~= "string") then
+		debug(settings.name.." tried to include saved variable as a table reference. Saved variable must be a string. i.e savedVariable should be \"saveVariable\"")
 		return
 	end
 
@@ -631,54 +641,38 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 	========================================================]]
 	_G[savedVariable] = _G[savedVariable] or {}
 	_G[savedVariable][settings.name] = _G[savedVariable][settings.name] or {}
-	local c = _G[savedVariable][settings.name]
+	local svc = _G[savedVariable][settings.name]
+	
 
 	-- user
-	c.users = c.users or {}
-	c.users[UnitName("player")] = c.users[UnitName("player")] or {}
-	c.user = c.users[UnitName("player")] or {}
-	c.user.name = UnitName("player")
-	c.user.profile = c.user.profile or "default"
-	c.user.spec_profile = c.user.spec_profile or {}
-	c.user.spec_profile[1] = c.user.spec_profile[1] or {}
-	c.user.spec_profile[2] = c.user.spec_profile[2] or {}
-	c.user.spec_profile[3] = c.user.spec_profile[3] or {}
-	c.user.spec_profile[4] = c.user.spec_profile[4] or {}
+	svc.users = svc.users or {}
+	svc.users[UnitName("player")] = svc.users[UnitName("player")] or {}
+	svc.user = svc.users[UnitName("player")] or {}
+	svc.user.name = UnitName("player")
+	svc.user.profile = svc.user.profile or "default"
+	svc.user.spec_profile = svc.user.spec_profile or {}
+	svc.user.spec_profile[1] = svc.user.spec_profile[1] or {}
+	svc.user.spec_profile[2] = svc.user.spec_profile[2] or {}
+	svc.user.spec_profile[3] = svc.user.spec_profile[3] or {}
+	svc.user.spec_profile[4] = svc.user.spec_profile[4] or {}
 
 	-- persistent
-	c.persistent = c.persistent or {}
+	svc.persistent = svc.persistent or {}
 
 	-- profile
-	c.profiles = c.profiles or {}
-	c.profiles[c.user.profile] = c.profiles[c.user.profile] or {}
-	c.profile = c.profiles[c.user.profile]
-	c.profile.positions = c.profile.positions or {}
+	svc.profiles = svc.profiles or {}
+	svc.profiles[svc.user.profile] = svc.profiles[svc.user.profile] or {}
+	svc.profile = svc.profiles[svc.user.profile]
+	svc.profile.positions = svc.profile.positions or {}
 
 	-- shortcut to corrent save table
 	if (settings.persistent) then
-		c.save = c.persistent
+		svc.save = svc.persistent
 	else
-		c.save = c.profile
+		svc.save = svc.profile
 	end
 
-	-- persistent configuration
-	-- module.save.persistent.bd_config = module.save.persistent.bd_config or {} -- todo : let the user decide how the library looks and behaves
-
-	-- let's us access module inforomation quickly and easily
-	function module:Save(option, value)
-		if (settings.persistent) then
-			c.persistent[option] = value
-		else
-			c.profile[option] = value
-		end
-	end
-	function module:Get(option)
-		if (settings.persistent) then
-			return c.persistent[option]
-		else
-			return c.profile[option]
-		end
-	end
+	module.save = svc.save
 	
 	--[[======================================================
 		2: CREATE INPUTS AND DEFAULTS
@@ -692,21 +686,21 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 			if (settings.persistent) then
 				-- if variable is `persistent` its not associate with a profile
 				
-				if (c.persistent[option] == nil) then
+				if (svc.persistent[option] == nil) then
 					if (info.value == nil) then
 						info.value = {}
 					end
 
-					c.persistent[option] = info.value
+					svc.persistent[option] = info.value
 				end
 			else
 				-- this is a per-character configuration
-				if (c.profile[option] == nil) then
+				if (svc.profile[option] == nil) then
 					if (info.value == nil) then
 						info.value = {}
 					end
 
-					c.profile[option] = info.value
+					svc.profile[option] = info.value
 				end
 			end
 
@@ -747,19 +741,19 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 	-- profile stuff
 	if (not bdConfigLib.ProfileSetup) then
 		bdConfigLibProfiles.SavedVariables[savedVariable] = true
-		bdConfigLib.saves[settings.name] = c
+		bdConfigLib.saves[settings.name] = svc
 		bd_do_action("update_profiles");
 	end
 
 	-- return config
 	if (not settings.returnType) then
-		return c.save
+		return svc.save
 	elseif (settings.returnType == "both") then
-		return c
+		return svc
 	elseif (settings.returnType == "profile") then
-		return c.profile
+		return svc.profile
 	elseif (settings.returnType == "persistent") then
-		return c.persistent
+		return svc.persistent
 	end
 end
 
@@ -928,6 +922,9 @@ function bdConfigLib:ListElement(module, option, info)
 	title:SetPoint("TOPLEFT", container, "TOPLEFT", 0, 0)
 	title:SetText(info.label)
 
+	local button = CreateButton(container)
+	button:SetText("Add/Remove")
+
 	local insertbox = CreateFrame("EditBox", nil, container)
 	insertbox:SetFontObject("bdConfig_font")
 	insertbox:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -6)
@@ -942,7 +939,7 @@ function bdConfigLib:ListElement(module, option, info)
 
 	insertbox.alert = insertbox:CreateFontString(nil, "OVERLAY", "bdConfig_font")
 	insertbox.alert:SetPoint("TOPRIGHT",container,"TOPRIGHT", -2, 0)
-	insertbox.startFade = function()
+	function insertbox:startFade()
 		local total = 0
 		self.alert:Show()
 		self:SetScript("OnUpdate",function(self, elapsed)
@@ -958,20 +955,8 @@ function bdConfigLib:ListElement(module, option, info)
 		end)
 	end
 
-	local button = CreateButton(container)
 	button:SetPoint("TOPLEFT", insertbox, "TOPRIGHT", 0, 2)
-	button:SetText("Add/Remove")
 	insertbox:SetSize(container:GetWidth() - button:GetWidth() + 2, 24)
-	button.OnClick = function()
-		local value = insertbox:GetText()
-
-		if (strlen(value) > 0) then
-			list:addRemove(insertbox:GetText())
-		end
-
-		insertbox:SetText("")
-		insertbox:ClearFocus()
-	end
 
 	local list = CreateFrame("frame", nil, container)
 	list:SetPoint("TOPLEFT", insertbox, "BOTTOMLEFT", 0, -2)
@@ -994,7 +979,8 @@ function bdConfigLib:ListElement(module, option, info)
 		local string = "";
 		local height = 0;
 
-		for k, v in pairs(module:Get(option)) do
+		-- debug(module.save[option])
+		for k, v in pairs(module.save[option]) do
 			string = string..k.."\n";
 			height = height + 14
 		end
@@ -1015,12 +1001,13 @@ function bdConfigLib:ListElement(module, option, info)
 
 	-- remove or add something, then redraw the text
 	function list:addRemove(value)
-		if (module:Get(option)) then
+		if (module.save[option][value]) then
 			insertbox.alert:SetText(value.." removed")
+			module.save[option][value] = nil
 		else
 			insertbox.alert:SetText(value.." added")
+			module.save[option][value] = true
 		end
-		module:Save(option, value)
 		insertbox:startFade()
 		
 		self:populate()
@@ -1028,6 +1015,17 @@ function bdConfigLib:ListElement(module, option, info)
 
 		-- clear aura cache
 		bdCore.caches.auras = {}
+	end
+
+	button.OnClick = function()
+		local value = insertbox:GetText()
+
+		if (strlen(value) > 0) then
+			list:addRemove(insertbox:GetText())
+		end
+
+		insertbox:SetText("")
+		insertbox:ClearFocus()
 	end
 
 	list:populate()
@@ -1101,7 +1099,7 @@ function bdConfigLib:SliderElement(module, option, info)
 	slider:SetMinMaxValues(info.min, info.max)
 	slider:SetObeyStepOnDrag(true)
 	slider:SetValueStep(info.step)
-	slider:SetValue(info.value)
+	slider:SetValue(module.save[option])
 	slider.tooltipText = info.tooltip
 
 	local low = _G[slider:GetName() .. 'Low']
@@ -1122,21 +1120,20 @@ function bdConfigLib:SliderElement(module, option, info)
 	
 	slider.value = slider:CreateFontString(nil, "OVERLAY", "bdConfig_font")
 	slider.value:SetPoint("TOP", slider, "BOTTOM", 0, -2)
-	slider.value:SetText(module:Get(option))
+	slider.value:SetText(module.save[option])
 
 	slider:Show()
 	slider.lastValue = 0
 	slider:SetScript("OnValueChanged", function(self)
-		local newval = math.floor(slider:GetValue())
+		local newval = round(slider:GetValue(), 1)
 
 		if (slider.lastValue == newval) then return end
-		slider.lastValue = newval
-
-		if (module:Get(option) == newval) then -- throttle it changing on the same pixel
+		if (module.save[option] == newval) then -- throttle it changing on the same pixel
 			return false
 		end
 
-		module:Save(option, newval)
+		module.save[option] = newval
+		slider.lastValue = newval
 
 		slider:SetValue(newval)
 		slider.value:SetText(newval)
@@ -1164,10 +1161,10 @@ function bdConfigLib:CheckboxElement(module, option, info)
 	text:ClearAllPoints()
 	text:SetPoint("LEFT", check, "RIGHT", 2, 1)
 	check.tooltip = info.tooltip;
-	check:SetChecked(module:Get(option))
+	check:SetChecked(module.save[option])
 
 	check:SetScript("OnClick", function(self)
-		module:Save(option, self:GetChecked())
+		module.save[option] = self:GetChecked()
 
 		info:callback(check)
 	end)
@@ -1184,12 +1181,12 @@ function bdConfigLib:ColorElement(module, option, info)
 	local picker = CreateFrame("button", nil, container)
 	picker:SetSize(20, 20)
 	picker:SetBackdrop({bgFile = bdCore.media.flat, edgeFile = bdCore.media.flat, edgeSize = 2, insets = {top = 2, right = 2, bottom = 2, left = 2}})
-	picker:SetBackdropColor(unpack(module:Get(option)))
+	picker:SetBackdropColor(unpack(module.save[option]))
 	picker:SetBackdropBorderColor(0,0,0,1)
 	picker:SetPoint("LEFT", container, "LEFT", 0, 0)
 	
 	picker.callback = function(self, r, g, b, a)
-		module:Save(option, {r,g,b,a})
+		module.save[option] = {r,g,b,a}
 		picker:SetBackdropColor(r,g,b,a)
 
 		info:callback()
@@ -1199,7 +1196,7 @@ function bdConfigLib:ColorElement(module, option, info)
 	
 	picker:SetScript("OnClick",function()		
 		HideUIPanel(ColorPickerFrame)
-		local r, g, b, a = unpack(module:Get(option))
+		local r, g, b, a = unpack(module.save[option])
 
 		ColorPickerFrame:SetFrameStrata("FULLSCREEN_DIALOG")
 		ColorPickerFrame:SetClampedToScreen(true)
@@ -1207,7 +1204,7 @@ function bdConfigLib:ColorElement(module, option, info)
 		ColorPickerFrame.opacity = 1 - a
 		ColorPickerFrame.old = {r, g, b, a}
 		
-		ColorPickerFrame.colorChanged = function()
+		local function colorChanged()
 			local r, g, b = ColorPickerFrame:GetColorRGB()
 			local a = 1 - OpacitySliderFrame:GetValue()
 			picker:callback(r, g, b, a)
@@ -1268,13 +1265,13 @@ function bdConfigLib:DropdownElement(module, option, info)
 						UIDropDownMenu_SetSelectedID(dropdown, self:GetID())
 						CloseDropDownMenus()
 
-						module:Save(option, options[i])
+						module.save[option] = options[i]
 						info.value = options[i]
 
 						info:callback(options[i])
 					end
 
-					if (item == module:Get(option)) then selected = i end
+					if (item == module.save[option]) then selected = i end
 					if (info.override) then
 						if item == info.value then
 							selected = i

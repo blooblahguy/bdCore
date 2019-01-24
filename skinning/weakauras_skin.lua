@@ -68,7 +68,7 @@ wa_skin:SetScript("OnEvent", function(self, event,addon)
 
 	if (WeakAuras) then
 		for weakAura, v in pairs(WeakAuras.regions) do
-			if (c.persistent.General.skinwas) then
+			if (c.persistent.skinwas) then
 				if (WeakAuras.regions[weakAura].regionType == "icon" or WeakAuras.regions[weakAura].regionType == "aurabar") then
 					--print(WeakAuras.regions[weakAura].region)
 					Skin_WeakAuras(WeakAuras.regions[weakAura].region)
