@@ -705,7 +705,7 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 			end
 
 			-- force blank callbacks if not set
-			info.callback = info.callback or function() return false end
+			info.callback = info.callback or settings.callback or function() return end
 			
 			-- If the very first entry is not a tab, then create a general tab/page container
 			if (info.type ~= "tab" and #module.tabs == 0) then
