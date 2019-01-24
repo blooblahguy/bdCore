@@ -813,7 +813,7 @@ function bdConfigLib:ElementContainer(module, info)
 	local page = module.tabs[#module.tabs].page
 	local element = info.type
 	local container = CreateFrame("frame", nil, page)
-	local padding = 10
+	local padding = 15
 	local sizing = {
 		text = 1.0
 		, table = 1.0
@@ -1141,7 +1141,7 @@ function bdConfigLib:SliderElement(module, option, info)
 		info:callback()
 	end)
 
-	container:SetHeight(46)
+	container:SetHeight(56)
 
 	return container
 end
