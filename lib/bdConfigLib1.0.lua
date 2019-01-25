@@ -1121,7 +1121,12 @@ function bdConfigLib:SliderElement(module, option, info)
 	slider:Show()
 	slider.lastValue = 0
 	slider:SetScript("OnValueChanged", function(self)
-		local newval = round(slider:GetValue(), 1)
+		local newval
+		if (info.max > 1) then
+			newval = round(slider:GetValue())
+		else
+			newval = round(slider:GetValue(), 1)
+		end
 
 		if (slider.lastValue == newval) then return end
 		if (module.save[option] == newval) then -- throttle it changing on the same pixel
@@ -1310,7 +1315,7 @@ do
 				else
 					save.profiles[value] = save.profile
 					bdConfigLibProfiles.Selected = value
-					bg_do_action("update_profiles")
+					bd_do_action("update_profiles")
 				end
 			end
 		end

@@ -22,8 +22,8 @@ function bd_do_action(event,...)
 	end
 end
 
-bdCore.hookEvent = bd_add_action
-bdCore.triggerEvent = bd_do_action
+function bdCore:hookEvent(event, func) bd_add_action(event, func) end
+function bdCore:triggerEvent(event, ...) bd_do_action(event, ...) end
 
 
 

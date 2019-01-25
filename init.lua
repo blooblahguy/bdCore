@@ -17,6 +17,7 @@ bdCore:RegisterEvent("ADDON_LOADED")
 
 bdCore.class = string.lower(select(1, UnitClass('player')))
 bdCore.name = string.lower(UnitName('player'))
+bdCore.scale = 768 / string.match( GetCVar( "gxWindowedResolution" ), "%d+x(%d+)" );
 
 bdCore.media = {
 	flat = "Interface\\Buttons\\WHITE8x8",

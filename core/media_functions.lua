@@ -151,6 +151,9 @@ end
 function bdCore:setBackdrop(frame,resize)
 	if (frame.background) then return end
 
+	local height = select(2, GetPhysicalScreenSize())
+	local scale = 768 / height
+
 	frame.background = frame:CreateTexture(nil, "BACKGROUND", nil, -7)
 	frame.background:SetTexture(bdCore.media.flat)
 	frame.background:SetAllPoints(frame)
@@ -161,6 +164,7 @@ function bdCore:setBackdrop(frame,resize)
 	frame.border:SetTexture(bdCore.media.flat)
 	frame.border:SetPoint("TOPLEFT", frame, "TOPLEFT", -2, 2)
 	frame.border:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", 2, -2)
+	-- frame.border:SetScale(scale)
 	frame.border:SetVertexColor(unpack(bdCore.media.border))
 	frame.border.protected = true
 	

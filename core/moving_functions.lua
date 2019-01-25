@@ -221,7 +221,6 @@ function bdCore:makeMovable(frame, resize, rename)
 	local width = frame:GetWidth()
 	local point, relativeTo, relativePoint, xOfs, yOfs = frame:GetPoint()
 	relativeTo = relativeTo:GetName()
-
 	
 	Mover.text = Mover:CreateFontString(Mover:GetName().."_Text")
 	Mover.frame = frame
@@ -234,9 +233,9 @@ function bdCore:makeMovable(frame, resize, rename)
 		end)
 	end
 	Mover:SetSize(width+4, height+4)
-	Mover:SetBackdrop({bgFile = bdCore.media.flat, edgeFile = bdCore.media.flat, edgeSize = 1})
+	Mover:SetBackdrop({bgFile = bdCore.media.flat})
 	Mover:SetBackdropColor(0,0,0,.6)
-	Mover:SetBackdropBorderColor(unpack(bdCore.media.blue))
+	-- Mover:SetBackdropBorderColor(unpack(bdCore.media.blue))
 	Mover:SetFrameStrata("BACKGROUND")
 	Mover:SetClampedToScreen(true)
 	Mover:SetAlpha(0)
@@ -390,10 +389,11 @@ function bdCore:makeMovable(frame, resize, rename)
 				c.profile.positions[rename] = nil
 				Mover:position()
 			else
-				Mover:SetPoint(point, relativeTo, relativePoint, xOfs, yOfs)
+				-- print(xOfs, yOfs)
+				Mover:SetPoint(point, relativeTo, relativePoint, math.floor(xOfs), math.floor(yOfs))
 			end
 		else
-			Mover:SetPoint(point, relativeTo, relativePoint, xOfs, yOfs)
+			Mover:SetPoint(point, relativeTo, relativePoint, math.floor(xOfs), math.floor(yOfs))
 		end
 	end
 	Mover:position()
