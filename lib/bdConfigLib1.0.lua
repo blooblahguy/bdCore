@@ -638,6 +638,19 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 			Defaults
 	========================================================]]
 	_G[savedVariable] = _G[savedVariable] or {}
+	local svc = _G[savedVariable]
+
+	-- profiles
+	svc.profiles = svc.profiles or BD_profiles or {}
+
+	-- persistent
+	svc.persistent = svc.persistent or BD_persistent or {}
+
+	-- user
+	svc.user = svc.user or BD_user or {}
+
+
+
 	_G[savedVariable][settings.name] = _G[savedVariable][settings.name] or {}
 	local svc = _G[savedVariable][settings.name]
 	
