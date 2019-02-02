@@ -533,8 +533,6 @@ bdCore.auras.raid = {
 	["Kelp-Wrapped"] = 1,
 
 	--Jaina,
-	["Grasp of Frost"] = 2,
-	["Hand of Frost"] = 2,
 	["Broadside"] = 1,
 	["Siegebreaker Blast"] = 1,
 }
