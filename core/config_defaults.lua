@@ -859,17 +859,13 @@ shared:Register("border", "bdShadow", bdCore.media.shadow)
 	}}
 	bdCore.general[#bdCore.general+1] = {forcescale = {
 		type = "checkbox",
-		value = false,
+		value = true,
 		label = "Force UI scale for pixel perfect borders",
 	}}
 
 ----------------------------------------
 -- skinning
 ----------------------------------------
-	bdCore.general[#bdCore.general+1] = {tab = {
-		type = "tab",
-		value = "Skinning"
-	}}
 	bdCore.general[#bdCore.general+1] = {skingmotd = {
 		type = "checkbox",
 		value = true,
@@ -880,11 +876,11 @@ shared:Register("border", "bdShadow", bdCore.media.shadow)
 		value = false,
 		label = "Skin Weak Auras to bd Style",
 	}}
-	bdCore.general[#bdCore.general+1] = {fancymenu = {
-		type = "checkbox",
-		value = false,
-		label = "Replace Game Menu with Fancy Menu",
-	}}
+	-- bdCore.general[#bdCore.general+1] = {fancymenu = {
+	-- 	type = "checkbox",
+	-- 	value = false,
+	-- 	label = "Replace Game Menu with Fancy Menu",
+	-- }}
 
 ----------------------------------------
 -- viewports

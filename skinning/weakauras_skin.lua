@@ -15,14 +15,19 @@ wa_skin:SetScript("OnEvent", function(self, event,addon)
 			frame:SetBackdropBorderColor(0,0,0,1)
 		end--]]
 
+		-- print(frame)
+
+
 		if frame.icon then
 			frame.icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
 			frame.icon.SetTexCoord = function() return end
 			if frame.border and not frame.bar then
 				frame.border:Hide()
 			end
+			
 		end
 
+		bdCore:setBackdrop(frame)
 		--[[
 		if frame.bar then
 			if (frame.bar.fg:GetTexture()) then
@@ -66,13 +71,12 @@ wa_skin:SetScript("OnEvent", function(self, event,addon)
 		end
 	end
 
-	if (WeakAuras) then
+	if (WeakAurasFrame) then
+		if (not c.persistent.bdAddons.skinwas) then return end
 		for weakAura, v in pairs(WeakAuras.regions) do
-			if (c.persistent.skinwas) then
-				if (WeakAuras.regions[weakAura].regionType == "icon" or WeakAuras.regions[weakAura].regionType == "aurabar") then
-					--print(WeakAuras.regions[weakAura].region)
-					Skin_WeakAuras(WeakAuras.regions[weakAura].region)
-				end
+			if (WeakAuras.regions[weakAura].regionType == "icon" or WeakAuras.regions[weakAura].regionType == "aurabar") then
+				--print(WeakAuras.regions[weakAura].region)
+				Skin_WeakAuras(WeakAuras.regions[weakAura].region)
 			end
 		end
 	end

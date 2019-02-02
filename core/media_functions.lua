@@ -159,6 +159,7 @@ function bdCore:setBackdrop(frame,resize)
 	frame.background:SetAllPoints(frame)
 	frame.background:SetVertexColor(unpack(bdCore.media.backdrop))
 	frame.background.protected = true
+	frame.background.SetFrameLevel = bdCore.noop
 	
 	frame.border = frame:CreateTexture(nil, "BACKGROUND", nil, -8)
 	frame.border:SetTexture(bdCore.media.flat)
@@ -166,6 +167,7 @@ function bdCore:setBackdrop(frame,resize)
 	frame.border:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", 2, -2)
 	-- frame.border:SetScale(scale)
 	frame.border:SetVertexColor(unpack(bdCore.media.border))
+	frame.border.SetFrameLevel = bdCore.noop
 	frame.border.protected = true
 	
 	if (resize ~= false) then

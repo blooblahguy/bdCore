@@ -241,6 +241,7 @@ function bdCore:makeMovable(frame, resize, rename)
 
 	Mover.controls = CreateFrame("frame", nil, Mover)
 	local cont = Mover.controls
+	cont:SetFrameStrata("TOOLTIP")
 	cont:SetSize(150, 25)
 	cont:Hide()
 
