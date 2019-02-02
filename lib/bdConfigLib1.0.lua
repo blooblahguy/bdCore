@@ -1409,7 +1409,7 @@ do
 	local profile_settings = {}
 	profile_settings[#profile_settings+1] = {intro = {
 		type = "text",
-		value = "You can use profiles to store configuration per character and spec automatically, or save templates to use when needed."
+		value = "You can use profiles to store configuration per character and spec automatically, or save templates to use when needed. Changing profiles may require a UI reload."
 	}}
 	-- create new profile
 	profile_settings[#profile_settings+1] = {createprofile = {

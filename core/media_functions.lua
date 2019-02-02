@@ -147,7 +147,7 @@ function bdCore:RGBPercToHex(r, g, b)
 end
 
 -- make it purdy
-function bdCore:setBackdrop(frame,resize)
+function bdCore:setBackdrop(frame, resize)
 	if (frame.background) then return end
 	
 

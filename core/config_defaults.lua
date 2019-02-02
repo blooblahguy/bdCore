@@ -889,6 +889,10 @@ shared:Register("border", "bdShadow", bdCore.media.shadow)
 		type = "tab",
 		value = "Viewports"
 	}}
+	bdCore.general[#bdCore.general+1] = {text = {
+		type = "text",
+		value = "Personal recommendation: a 60px viewport at the top and bottom of your screen can mimic an extended camera zoom distance.",
+	}}
 	bdCore.general[#bdCore.general+1] = {topViewport = {
 		type = "slider",
 		value = 0,
@@ -901,7 +905,7 @@ shared:Register("border", "bdShadow", bdCore.media.shadow)
 	
 	bdCore.general[#bdCore.general+1] = {topViewportBGColor={
 		type="color",
-		value = {.11,.15,.18, 1},
+		value = {.09,.1,.13, 1},
 		name="Top Viewport Color",
 		callback = function() bdCore:triggerEvent("bdcore_redraw") end
 	}}
@@ -918,7 +922,7 @@ shared:Register("border", "bdShadow", bdCore.media.shadow)
 	
 	bdCore.general[#bdCore.general+1] = {bottomViewportBGColor={
 		type="color",
-		value = {.11,.15,.18, 1},
+		value = {.09,.1,.13, 1},
 		name="Bottom Viewport Color",
 		callback = function() bdCore:triggerEvent("bdcore_redraw") end
 	}}
