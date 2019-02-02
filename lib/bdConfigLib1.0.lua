@@ -995,10 +995,23 @@ function bdConfigLib:ListElement(module, option, info)
 		local string = "";
 		local height = 0;
 
-		-- debug(module.save[option])
+		-- maintained list
+		-- allows us to pass a list of variables that should be maintained inside of this listbox, but can be set to false and won't be added again
+		if (info.autoadd or info.autoAdd or info.maintained) then
+			local autoadd = info.autoadd or info.autoAdd or info.maintained -- alias
+			for k, v in pairs(autoadd) do
+				if (module.save[option][k] == nil) then
+					module.save[option][k] = v
+				end
+			end
+		end
+
+		-- populated the saved options
 		for k, v in pairs(module.save[option]) do
-			string = string..k.."\n";
-			height = height + 14
+			if (v ~= false) then
+				string = string..k.."\n";
+				height = height + 14
+			end
 		end
 
 		local scrollheight = (height - 200) 
@@ -1019,9 +1032,10 @@ function bdConfigLib:ListElement(module, option, info)
 	function list:addRemove(value)
 		if (module.save[option][value]) then
 			insertbox.alert:SetText(value.." removed")
-			module.save[option][value] = nil
+			module.save[option][value] = false
 		else
 			insertbox.alert:SetText(value.." added")
+			-- @todo pass in table or integer values here to alter display
 			module.save[option][value] = true
 		end
 		insertbox:startFade()

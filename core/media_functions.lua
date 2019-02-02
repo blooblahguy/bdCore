@@ -128,9 +128,7 @@ end
 -- xform r, g, b into rrggbb
 function bdCore:RGBToHex(r, g, b)
 	if type(r) ~= 'number' then
-		g = r.g
-		b = r.b
-		r = r.r
+		r, g, b = unpack(r)
 	end
 	
 	r = r <= 1 and r >= 0 and r or 0
