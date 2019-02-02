@@ -1,5 +1,4 @@
 local bdCore, c, f = select(2, ...):unpack()
--- bdCore:hookEvent("loaded_bdcore", function() c = bdConfigLib:GetSave("bdAddons") end)
 
 -----------------------------------------------
 -- Frame Faders
@@ -161,6 +160,7 @@ function bdCore:makeMovable(frame, resize, rename)
 	-- setting default variables
 	if resize == nil then resize = true end
 	if rename == nil then rename = frame:GetName() end
+	local border = c.persistent.bdAddons.border
 
 	local Mover = CreateFrame("frame", "bdCore_"..rename, UIParent)
 	function Mover:startMoving()
@@ -216,7 +216,6 @@ function bdCore:makeMovable(frame, resize, rename)
 		return button
 	end
 
-	local border = c.persistent.border
 	local height = frame:GetHeight()
 	local width = frame:GetWidth()
 	local point, relativeTo, relativePoint, xOfs, yOfs = frame:GetPoint()
@@ -348,7 +347,6 @@ function bdCore:makeMovable(frame, resize, rename)
 	end)
 
 	bdCore:hookEvent("frames_resized, bdcore_redraw", function()
-		local border = c.persistent['General'].border
 		local height = frame:GetHeight()
 		local width = frame:GetWidth()
 		Mover:SetSize(width+border, height+border)
@@ -389,7 +387,6 @@ function bdCore:makeMovable(frame, resize, rename)
 				c.profile.positions[rename] = nil
 				Mover:position()
 			else
-				-- print(xOfs, yOfs)
 				Mover:SetPoint(point, relativeTo, relativePoint, math.floor(xOfs), math.floor(yOfs))
 			end
 		else
@@ -397,7 +394,7 @@ function bdCore:makeMovable(frame, resize, rename)
 		end
 	end
 	Mover:position()
-	bdCore:hookEvent("bd_reconfig", Mover.position)
+	bdCore:hookEvent("profile_changed", Mover.position)
 
 	frame:ClearAllPoints()
 	frame:SetPoint("TOPRIGHT", Mover, "TOPRIGHT", -2, -2)

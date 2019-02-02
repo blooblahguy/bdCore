@@ -35,16 +35,19 @@ bdCore:SetScript("OnEvent", function(self, event, arg1, arg2, ...)
 		bdCore.general[2].font.options = font_table
 		bdCore.general[4].background.options = bg_table
 		
-		-- bdConfigLib.savedVariable = BD_persistent
-		local saves = bdConfigLib:RegisterModule({
+		-- init config
+		local saved = bdConfigLib:RegisterModule({
 			name = "bdAddons"
 			, persistent = true
 			, returnType = "both"
 		}, bdCore.general, "BD_persistent")
 
-		-- create ref pointers
-		c.persistent = saves.persistent
-		c.profile = saves.profile
+		c.persistent = saved.persistent
+		c.profile = saved.profile
+		bdCore:hookEvent("bd_reconfig", function()
+			c.persistent = saved.persistent
+			c.profile = saved.profile
+		end)		
 
 		print(bdCore.colorString.." loaded. Type /bd for configuration. We're on Discord! https://discord.gg/2SK3bEw")
 		

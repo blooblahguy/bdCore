@@ -446,6 +446,7 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 	local module = {}
 	module.settings = settings
 	module.name = settings.name
+	module.persistent = settings.persistent
 	-- module.configuration = configuration
 	-- module.savedVariable = savedVariable
 	do
@@ -640,25 +641,31 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 	_G[savedVariable] = _G[savedVariable] or {}
 	local svc = _G[savedVariable]
 
-	-- profiles
-	svc.profiles = svc.profiles or BD_profiles or {}
-
 	-- persistent
-	svc.persistent = svc.persistent or BD_persistent or {}
+	svc.persistent = svc.persistent or {}
+	svc.persistent[settings.name] = svc.persistent[settings.name] or {}
+	if (not svc.persistent.Auras and _G[savedVariable].Auras ~= nil) then
+		svc.persistent.Auras = {}
+		svc.persistent.Auras = Mixin(svc.persistent.Auras, _G[savedVariable].Auras)
+	end
 
-	-- user
-	svc.user = svc.user or BD_user or {}
-
-
-
-	_G[savedVariable][settings.name] = _G[savedVariable][settings.name] or {}
-	local svc = _G[savedVariable][settings.name]
-	
+	-- profiles
+	svc.profiles = svc.profiles or {}
+	if (BD_profiles ~= nil) then
+		svc.profiles = Mixin(svc.profiles, BD_profiles)
+		BD_profiles = nil
+	end
 
 	-- user
 	svc.users = svc.users or {}
 	svc.users[UnitName("player")] = svc.users[UnitName("player")] or {}
 	svc.user = svc.users[UnitName("player")] or {}
+	if (BD_user ~= nil) then
+		svc.user = Mixin(svc.user, BD_user)
+		BD_user = nil
+	end
+
+	-- user
 	svc.user.name = UnitName("player")
 	svc.user.profile = svc.user.profile or "default"
 	svc.user.spec_profile = svc.user.spec_profile or {}
@@ -667,24 +674,23 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 	svc.user.spec_profile[3] = svc.user.spec_profile[3] or {}
 	svc.user.spec_profile[4] = svc.user.spec_profile[4] or {}
 
-	-- persistent
-	svc.persistent = svc.persistent or {}
 
 	-- profile
 	svc.profiles = svc.profiles or {}
 	svc.profiles[svc.user.profile] = svc.profiles[svc.user.profile] or {}
+	svc.profiles[svc.user.profile][settings.name] = svc.profiles[svc.user.profile][settings.name] or {}
+
+	-- single profile target
 	svc.profile = svc.profiles[svc.user.profile]
 	svc.profile.positions = svc.profile.positions or {}
 
 	-- shortcut to corrent save table
 	if (settings.persistent) then
-		svc.save = svc.persistent
+		module.save = svc.persistent[settings.name]
 	else
-		svc.save = svc.profile
+		module.save = svc.profile[settings.name]
 	end
 
-	module.save = svc.save
-	
 	--[[======================================================
 		2: CREATE INPUTS AND DEFAULTS
 			This includes setting up profile support
@@ -697,21 +703,24 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 			if (settings.persistent) then
 				-- if variable is `persistent` its not associate with a profile
 				
-				if (svc.persistent[option] == nil) then
+				if (svc.persistent[settings.name][option] == nil) then
 					if (info.value == nil) then
 						info.value = {}
 					end
 
-					svc.persistent[option] = info.value
+					svc.persistent[settings.name][option] = info.value
 				end
 			else
 				-- this is a per-character configuration
-				if (svc.profile[option] == nil) then
+				-- print(settings.name, option)
+				-- print(svc.profile[settings.name])
+				svc.profile[settings.name] =  svc.profile[settings.name] or {}
+				if (svc.profile[settings.name][option] == nil) then
 					if (info.value == nil) then
 						info.value = {}
 					end
 
-					svc.profile[option] = info.value
+					svc.profile[settings.name][option] = info.value
 				end
 			end
 
@@ -752,19 +761,18 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 	-- profile stuff
 	if (not bdConfigLib.ProfileSetup) then
 		bdConfigLibProfiles.SavedVariables[savedVariable] = true
-		bdConfigLib.saves[settings.name] = svc
 		bd_do_action("update_profiles");
 	end
 
 	-- return config
 	if (not settings.returnType) then
-		return svc.save
+		return module.save
 	elseif (settings.returnType == "both") then
 		return svc
 	elseif (settings.returnType == "profile") then
 		return svc.profile
 	elseif (settings.returnType == "persistent") then
-		return svc.persistent
+		return svc.persistent[settings.name]
 	end
 end
 
@@ -776,8 +784,8 @@ end
 do
 	-- returns a list of modules currently loaded
 	function bdConfigLib:GetSave(name)
-		if (self.saves[name]) then
-			return self.saves[name].save
+		if (self.modules[name]) then
+			return self.modules[name].save
 		else
 			return false
 		end
@@ -794,7 +802,6 @@ do
 	-- create tables
 	bdConfigLib.modules = {}
 	bdConfigLib.modulesIndex = {}
-	bdConfigLib.saves = {}
 	bdConfigLib.lastLink = false
 	bdConfigLib.firstLink = false
 
@@ -1261,7 +1268,8 @@ function bdConfigLib:DropdownElement(module, option, info)
 	dropdown:SetPoint("TOPLEFT", label, "BOTTOMLEFT", -15, -2)
 	
 	-- recreate dropdown each time
-	function dropdown:populate(options)
+	function dropdown:populate(options, value)
+		if (not value) then value = info.value end
 		UIDropDownMenu_SetWidth(dropdown, container:GetWidth() - 20)
 		UIDropDownMenu_JustifyText(dropdown, "LEFT")
 
@@ -1272,24 +1280,25 @@ function bdConfigLib:DropdownElement(module, option, info)
 					opt = UIDropDownMenu_CreateInfo()
 					opt.text = item:gsub("^%l", string.upper)
 					opt.value = item
-					if (info.value == nil) then
-						info.value = item
+					if (value == nil) then
+						value = item
 					end
 					opt.func = function(self)
 						UIDropDownMenu_SetSelectedID(dropdown, self:GetID())
 						CloseDropDownMenus()
 
 						module.save[option] = options[i]
-						info.value = options[i]
+						value = options[i]
 
 						info:callback(options[i])
 					end
 
-					if (item == module.save[option]) then selected = i end
 					if (info.override) then
-						if item == info.value then
+						if item == value then
 							selected = i
 						end
+					else
+						if (item == module.save[option]) then selected = i end
 					end
 
 					UIDropDownMenu_AddButton(opt, level)
@@ -1321,15 +1330,14 @@ do
 	-- add a profile to every saved variable inside of bdConfigLib
 	function bdConfigLib:AddProfile(value)
 		for savedVariable, v in pairs(bdConfigLibProfiles.SavedVariables) do
-			for module, save in pairs(_G[savedVariable]) do
-				if (save.user.profile == value) then
-					print("Profile named "..value.." already exists. Profile names must be unique.")
-					return 
-				else
-					save.profiles[value] = save.profile
-					bdConfigLibProfiles.Selected = value
-					bd_do_action("update_profiles")
-				end
+			local save = _G[savedVariable]
+			if (save.user.profile == value) then
+				print("Profile named "..value.." already exists. Profile names must be unique.")
+				return 
+			else
+				save.profiles[value] = save.profile
+				bdConfigLibProfiles.Selected = value
+				bd_do_action("update_profiles")
 			end
 		end
 	end
@@ -1337,26 +1345,27 @@ do
 	-- the trick here is changing profiles for all saved variables stored inside bdConfigLib
 	function bdConfigLib:ChangeProfile(value)
 		for savedVariable, v in pairs(bdConfigLibProfiles.SavedVariables) do
-			for module, save in pairs(_G[savedVariable]) do
-				save.user.profile = value
-				save.profile = save.profiles[value]
-				bdConfigLibProfiles.Selected = value
-			end
+			local save = _G[savedVariable]
+			save.user.profile = value
+			save.profile = save.profiles[value]
+			-- print(save.profile)
+			bdConfigLibProfiles.Selected = value
+
+			bdCore:triggerEvent("profile_changed")
 		end
 	end
 
 	-- delete a profile inside of every saved variable in bdConfigLib
 	function bdConfigLib:DeleteProfile()
 		for savedVariable, v in pairs(bdConfigLibProfiles.SavedVariables) do
-			for module, save in pairs(_G[savedVariable]) do
-				if (save.user.profile == "default") then
-					print("You cannot delete the default profile, but you're free to modify it.")
-					return 
-				else
-					save.profile = nil
-					bdConfigLibProfiles.Selected = nil
-					bd_do_action("update_profiles")
-				end
+			local save = _G[savedVariable]
+			if (save.user.profile == "default") then
+				print("You cannot delete the default profile, but you're free to modify it.")
+				return 
+			else
+				save.profile = nil
+				bdConfigLibProfiles.Selected = nil
+				bd_do_action("update_profiles")
 			end
 		end
 	end
@@ -1365,23 +1374,22 @@ do
 	function bdConfigLib:UpdateProfiles(dropdown)
 		bdConfigLibProfiles.Profiles = {}
 		local profile_table = {}
-		--_G[savedVariable][settings.name].user.profile
+
 		for savedVariable, v in pairs(bdConfigLibProfiles.SavedVariables) do
-			for module, c in pairs(_G[savedVariable]) do
-				if (not bdConfigLibProfiles.Selected) then
-					bdConfigLibProfiles.Selected = c.user.profile
-				end
-				for profile, config in pairs(c.profiles) do
-					profile_table[profile] = true
-				end
+			local save = _G[savedVariable]
+
+			bdConfigLibProfiles.Selected = save.user.profile
+			for profile, config in pairs(save.profiles) do
+				profile_table[profile] = true
 			end
+
 		end
 
 		for k, v in pairs(profile_table) do
 			table.insert(bdConfigLibProfiles.Profiles, k)
 		end
 
-		dropdown:populate(bdConfigLibProfiles.Profiles)
+		dropdown:populate(bdConfigLibProfiles.Profiles, bdConfigLibProfiles.Selected)
 	end
 
 	-- make new profile form
@@ -1419,6 +1427,7 @@ do
 		label = "Current Profile",
 		value = bdConfigLibProfiles.Selected,
 		options = bdConfigLibProfiles.Profiles,
+		override = true,
 		update = function(self, dropdown) bdConfigLib:UpdateProfiles(dropdown) end,
 		update_action = "update_profiles",
 		tooltip = "Your currently selected profile.",

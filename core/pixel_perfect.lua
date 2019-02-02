@@ -12,7 +12,7 @@ bdCore.pixeler:RegisterEvent("LOADING_SCREEN_DISABLED")
 bdCore.pixeler:RegisterEvent("PLAYER_ENTERING_WORLD")
 bdCore.pixeler:RegisterEvent("PLAYER_REGEN_ENABLED")
 bdCore.pixeler:SetScript("OnEvent",function()
-	if (not c or not c.persistent.forcescale) then return end
+	if (not c.persistent or not c.persistent.bdAddons.forcescale) then return end
 	if (InCombatLockdown()) then return end
 
 	SetCVar('uiscale', bdCore.scale)
