@@ -1,5 +1,8 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
-	<!-- oUF -->
+	<!-- lists -->
+	<Include file="lists.lua"/>
+
+	<!-- Libs -->
 	<Include file="lib\memoize.lua"/>
 	<Include file="lib\oUF\oUF.xml"/>
 	<Include file="lib\bdConfigLib1.0.lua"/>
