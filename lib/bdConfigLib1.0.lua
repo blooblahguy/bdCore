@@ -1156,7 +1156,7 @@ function bdConfigLib:SliderElement(module, option, info)
 	slider.lastValue = 0
 	slider:SetScript("OnValueChanged", function(self)
 		local newval
-		if (info.max > 1) then
+		if (info.step >= 1) then
 			newval = round(slider:GetValue())
 		else
 			newval = round(slider:GetValue(), 1)
