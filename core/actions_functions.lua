@@ -3,15 +3,16 @@ local bdCore, c, f = select(2, ...):unpack()
 -- custom events/hooks
 bd_action_events = bd_action_events or {}
 function bd_add_action(event, func)
-	local events = strsplit(",", event) or {event}
-	events = type(events) == "table" and events or {event}
+	local events = {strsplit(",", event)} or {event}
+	-- print(#events)
+	-- events = type(events) == "table" and events or {event}
 
-	for i = 1, #events do
-		e = events[i]
+	for k, e in pairs(events) do
+		e = strtrim(e)
 		if (not bd_action_events[e]) then
 			bd_action_events[e] = {}
 		end
-		bd_action_events[e][#bd_action_events[e]+1] = func
+		table.insert(bd_action_events[e], func)
 	end
 end
 function bd_do_action(event,...)

@@ -857,7 +857,7 @@ shared:Register("border", "bdShadow", bdCore.media.shadow)
 	}}
 	bdCore.general[#bdCore.general+1] = {forcescale = {
 		type = "checkbox",
-		value = true,
+		value = false,
 		label = "Force UI scale for pixel perfect borders",
 	}}
 

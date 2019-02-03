@@ -125,7 +125,7 @@ local function CreateShadow(frame, size)
 	if (frame.shadow) then return end
 
 	frame.shadow = {}
-	local start = 0.088
+	local start = 0.092
 	for s = 1, size do
 		local shadow = frame:CreateTexture(nil, "BACKGROUND")
 		shadow:SetTexture(bdConfigLib.media.flat)
@@ -319,7 +319,7 @@ local function CreateFrames()
 		window:SetFrameStrata("DIALOG")
 		window:SetClampedToScreen(true)
 		window:Hide()
-		CreateShadow(window, 10)
+		CreateShadow(window, 14)
 	end
 
 	-- Header
@@ -839,7 +839,7 @@ function bdConfigLib:ElementContainer(module, info)
 		, dropdown = 0.5
 		, clear = 1.0
 		, button = 0.5
-		, list = 1.0
+		, list = 1
 		, textbox = 1.0
 	}
 
@@ -875,7 +875,7 @@ function bdConfigLib:ElementContainer(module, info)
 		page.lastRow = container
 		page.rows[#page.rows + 1] = container
 	else
-		container:SetPoint("LEFT", page.lastContainer, "RIGHT", padding, 0)
+		container:SetPoint("TOPLEFT", page.lastContainer, "TOPRIGHT", padding, 0)
 	end
 	
 	page.lastContainer = container

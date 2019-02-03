@@ -145,40 +145,37 @@ function bdCore:RGBPercToHex(r, g, b)
 end
 
 -- make it purdy
-function bdCore:setBackdrop(frame, resize)
+function bdCore:setBackdrop(frame, resize, padding)
 	if (frame.background) then return end
-	
-
-	local height = select(2, GetPhysicalScreenSize())
-	local scale = 768 / height
+	padding = padding or 0
+	local border = 2
 
 	frame.background = frame:CreateTexture(nil, "BACKGROUND", nil, -7)
 	frame.background:SetTexture(bdCore.media.flat)
-	frame.background:SetAllPoints(frame)
+	frame.background:SetPoint("TOPLEFT", frame, "TOPLEFT", -padding, padding)
+	frame.background:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", padding, -padding)
 	frame.background:SetVertexColor(unpack(bdCore.media.backdrop))
 	frame.background.protected = true
 	frame.background.SetFrameLevel = bdCore.noop
 	
 	frame.border = frame:CreateTexture(nil, "BACKGROUND", nil, -8)
 	frame.border:SetTexture(bdCore.media.flat)
-	frame.border:SetPoint("TOPLEFT", frame, "TOPLEFT", -2, 2)
-	frame.border:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", 2, -2)
-	-- frame.border:SetScale(scale)
+	frame.border:SetPoint("TOPLEFT", frame, "TOPLEFT", -(padding + border), (padding + border))
+	frame.border:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", (padding + border), -(padding + border))
 	frame.border:SetVertexColor(unpack(bdCore.media.border))
 	frame.border.SetFrameLevel = bdCore.noop
 	frame.border.protected = true
-	
-	if (resize ~= false) then
-		bdCore:hookEvent("bdcore_redraw",function()
-			local border = c.persistent.bdAddons.border
-			local background = bdCore:getMedia("background", c.persistent.bdAddons.background)
-			local font = bdCore:getMedia("font", c.persistent.bdAddons.font)
 
-			frame.background:SetTexture(background)			
-			frame.border:SetPoint("TOPLEFT", frame, "TOPLEFT", -border, border)
-			frame.border:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", border, -border)
-		end)
-	end
+	bd_add_action("bdcore_redraw,addon_loaded", function()
+		border = c.persistent.bdAddons.border
+		local background = bdCore:getMedia("background", c.persistent.bdAddons.background)
+		-- local font = bdCore:getMedia("font", c.persistent.bdAddons.font)
+
+		frame.background:SetTexture(background)
+		frame.border:ClearAllPoints()
+		frame.border:SetPoint("TOPLEFT", frame, "TOPLEFT", -(padding + border), (padding + border))
+		frame.border:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", (padding + border), -(padding + border))
+	end)
 end
 
 function bdCore:createShadow(f,offset)
