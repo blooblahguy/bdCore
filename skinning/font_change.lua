@@ -35,16 +35,16 @@ UIDROPDOWNMENU_DEFAULT_TEXT_HEIGHT = 12
 CHAT_FONT_HEIGHTS = {12, 13, 14, 15, 16, 17, 18, 19, 20}
 
 local function changeFonts()
-	if (not c.persistent.changefonts) then return end
+	if (not c.persistent.bdAddons.changefonts) then return end
 
-	local font = bdCore:getMedia("font", c.persistent.font )
+	local font = bdCore:getMedia("font", c.persistent.bdAddons.font )
 
 	local NORMAL = font
 	local COMBAT = font
 	local NUMBER = font
 	local MONOCHROME = "THIN"
 
-	local fontScale = c.persistent.fontScale;
+	local fontScale = c.persistent.bdAddons.fontScale;
 	
 	UNIT_NAME_FONT = NORMAL
 	DAMAGE_TEXT_FONT = COMBAT
