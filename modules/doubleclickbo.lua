@@ -17,7 +17,7 @@ function dcbo:ADDON_LOADED(event, addon)
 		local browseButtonOnClick = browseButton:GetScript("OnClick")
 
 		browseButton:SetScript("PostClick", function(self)
-			if (not c.persistent.doubleclickbo) then 
+			if (not c.persistent.bdAddons.doubleclickbo) then 
 				browseButtonOnClick(self)
 
 				lastBrowseClicked = browseClicked
