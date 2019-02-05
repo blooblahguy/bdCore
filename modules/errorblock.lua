@@ -39,10 +39,8 @@ UIErrorsFrame:SetScript("OnEvent", function(self, event, msg, ...)
 	if (event ~= "UI_ERROR_MESSAGE") then 
 		return orig(self, event, msg, ...)
 	end
-
-	local alert = c.errorblock
 	
-	if (alert and filter[msg]) then
+	if (c.persistent.bdAddons.errorblock and filter[msg]) then
 		return false
 	else
 		return orig(self, event, msg, ...)

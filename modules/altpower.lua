@@ -26,7 +26,7 @@ bdCore:hookEvent("loaded_bdcore", function()
 	-- powerbar:EnableMouse(false)
 	powerbar:SetScript("OnEvent", function(self, event, arg1)
 
-		if (not c.alteratepowerbar) then 
+		if (not c.persistent.bdAddons.alteratepowerbar) then 
 			PlayerPowerBarAlt:RegisterEvent("UNIT_POWER_BAR_SHOW")
 			PlayerPowerBarAlt:RegisterEvent("UNIT_POWER_BAR_HIDE")
 			PlayerPowerBarAlt:RegisterEvent("PLAYER_ENTERING_WORLD")

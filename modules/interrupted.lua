@@ -6,7 +6,7 @@ local UnitExists, UnitIsUnit, UnitIsUnit, GetSpellLink, SendChatMessage = UnitEx
 local interrupt = CreateFrame('frame')
 interrupt:RegisterEvent('COMBAT_LOG_EVENT_UNFILTERED')
 local function OnEvent(self, event)
-	if (not c.interrupt ) then return end
+	if (not c.persistent.bdAddons.interrupt ) then return end
 
 	local timestamp, subevent, hideCaster, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, spellID, spellName, spellSchool, extraSpellID, extraSpellName, school, resisted, blocked, absorbed, critial, glancing, crushing, isOffHand = CombatLogGetCurrentEventInfo()
 
