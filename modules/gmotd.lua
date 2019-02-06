@@ -45,6 +45,7 @@ bdCore:hookEvent('loaded_bdcore', function()
 			guild = select(1, GetGuildInfo("player"))
 		end
 		
+		c.persistent.bdAddons.gmotd = c.persistent.bdAddons.gmotd or {}
 		if (msg and guild and not c.persistent.bdAddons.gmotd[msg]) then
 			gmotd.msg = msg
 			gmotd.text:SetText(msg)
