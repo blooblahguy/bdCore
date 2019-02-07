@@ -877,7 +877,7 @@ function bdConfigLib:ElementContainer(module, info)
 		page.lastRow = container
 		page.rows[#page.rows + 1] = container
 	else
-		container:SetPoint("TOPLEFT", page.lastContainer, "TOPRIGHT", padding, 0)
+		container:SetPoint("LEFT", page.lastContainer, "RIGHT", padding, 0)
 	end
 	
 	page.lastContainer = container
@@ -922,7 +922,7 @@ end
 function bdConfigLib:ClearElement(module, option, info)
 	local container = bdConfigLib:ElementContainer(module, info)
 
-	container:SetHeight(5)
+	container:SetHeight(1)
 
 	return container
 end
@@ -1126,7 +1126,7 @@ function bdConfigLib:SliderElement(module, option, info)
 	local slider = CreateFrame("Slider", module.name.."_"..option, container, "OptionsSliderTemplate")
 	slider:SetWidth(container:GetWidth())
 	slider:SetHeight(14)
-	slider:SetPoint("TOPLEFT", container ,"TOPLEFT", 0, -16)
+	slider:SetPoint("TOPLEFT", container ,"TOPLEFT", 0, -10)
 	slider:SetOrientation('HORIZONTAL')
 	slider:SetMinMaxValues(info.min, info.max)
 	slider:SetObeyStepOnDrag(true)
@@ -1178,7 +1178,7 @@ function bdConfigLib:SliderElement(module, option, info)
 		info:callback()
 	end)
 
-	container:SetHeight(56)
+	container:SetHeight(52)
 
 	return container
 end
@@ -1188,7 +1188,7 @@ end
 ==========================================================]]
 function bdConfigLib:CheckboxElement(module, option, info)
 	local container = bdConfigLib:ElementContainer(module, info)
-	container:SetHeight(25)
+	container:SetHeight(35)
 
 	local check = CreateFrame("CheckButton", module.name.."_"..option, container, "ChatConfigCheckButtonTemplate")
 	check:SetPoint("TOPLEFT", container, "TOPLEFT", 0, 0)
