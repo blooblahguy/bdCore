@@ -16,7 +16,7 @@ local function createViewport()
 end
 bdCore:hookEvent("bdcore_redraw",function()
 	local config = c.persistent.bdAddons
-	-- dump(config)
+
 	local screenWidth, screenHeight = GetPhysicalScreenSize()
 	local scale = min(1.15, 768/screenHeight)
 

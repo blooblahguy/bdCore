@@ -16,8 +16,7 @@ bdCore.pixeler:SetScript("OnEvent",function()
 	if (InCombatLockdown()) then return end
 
 	SetCVar('uiscale', bdCore.scale)
-	SetCVar('uiScaleMultiplier', 2)
-	SetCVar('useUIScale', 0)
+	SetCVar('useUIScale', 1)
 
 	UIParent:SetScale(bdCore.scale)
 end)
