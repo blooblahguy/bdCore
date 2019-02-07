@@ -122,7 +122,7 @@ function split(str, del)
 end
 
 -- lua doesn't have a good function for round
-function round(num, idp)
+function bdCore:round(num, idp)
 	local mult = 10^(idp or 0)
 	return floor(num * mult + 0.5) / mult
 end
