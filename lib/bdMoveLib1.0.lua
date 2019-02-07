@@ -33,8 +33,10 @@ local function EnterLeaveHandle(self)
 
 	if IsMouseOverFrame(self) then
 		self:Show()
+		StartFadeIn(self)
 	else
 		self:Hide()
+		StartFadeOut(self)
 	end
 end
 
