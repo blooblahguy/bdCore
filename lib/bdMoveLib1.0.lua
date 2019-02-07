@@ -17,7 +17,7 @@ bdMoveLib.version = version
 --========================================================
 -- Helpers
 --========================================================
-local function IsMouseOverFrame(self)
+function IsMouseOverFrame(self)
 	if MouseIsOver(self) then return true end
 	if not SpellFlyout:IsShown() then return false end
 	if not SpellFlyout.__faderParent then return false end
@@ -92,8 +92,9 @@ end
 
 -- Allows us to mouseover show a frame, with animation
 function bdMoveLib:CreateFader(frame, children, inAlpha, outAlpha, duration, outDelay)
+	if (frame.fader) then return end
+
 	-- set variables
-	frame.__mouseover = true
 	frame.inAlpha = inAlpha or 1
 	frame.outAlpha = outAlpha or 0
 	frame.duration = duration or 0
