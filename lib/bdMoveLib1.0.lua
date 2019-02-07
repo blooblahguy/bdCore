@@ -102,7 +102,7 @@ function bdMoveLib:CreateFader(frame, children, inAlpha, outAlpha, duration, out
 	frame.enableFader = true
 
 	-- Create Animation Frame
-	CreateFaderAnimation()
+	CreateFaderAnimation(frame)
 
 	-- Hook Events / Listeners
 	frame:HookScript("OnEnter", EnterLeaveHandle)
