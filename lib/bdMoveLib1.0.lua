@@ -26,20 +26,6 @@ function IsMouseOverFrame(self)
 	return false
 end
 
-local function EnterLeaveHandle(self)
-	if (self.__faderParent) then
-		self = self.__faderParent
-	end
-
-	if IsMouseOverFrame(self) then
-		self:Show()
-		StartFadeIn(self)
-	else
-		self:Hide()
-		StartFadeOut(self)
-	end
-end
-
 --========================================================
 -- Mover
 --========================================================
@@ -92,6 +78,18 @@ local function StartFadeOut(frame)
 	frame.fader:Play()
 end
 
+local function EnterLeaveHandle(self)
+	if (self.__faderParent) then
+		self = self.__faderParent
+	end
+
+	if IsMouseOverFrame(self) then
+		StartFadeIn(self)
+	else
+		StartFadeOut(self)
+	end
+end
+
 -- Allows us to mouseover show a frame, with animation
 function bdMoveLib:CreateFader(frame, children, inAlpha, outAlpha, duration, outDelay)
 	if (frame.fader) then return end
@@ -99,14 +97,16 @@ function bdMoveLib:CreateFader(frame, children, inAlpha, outAlpha, duration, out
 	-- set variables
 	frame.inAlpha = inAlpha or 1
 	frame.outAlpha = outAlpha or 0
-	frame.duration = duration or 0
+	frame.duration = duration or 0.2
 	frame.outDelay = outDelay or 0
 	frame.enableFader = true
+	frame:SetAlpha(frame.outAlpha)
 
 	-- Create Animation Frame
 	CreateFaderAnimation(frame)
 
 	-- Hook Events / Listeners
+	frame:EnableMouse(true)
 	frame:HookScript("OnEnter", EnterLeaveHandle)
     frame:HookScript("OnLeave", EnterLeaveHandle)
 
@@ -132,8 +132,8 @@ local function SpellFlyoutHook(self)
 	-- toplevel
 	if (not self.__faderParent) then
 		self.__faderParent = topParent
-		SpellFlyout:HookScript("OnEnter", EnterLeaveHandle)
-    	SpellFlyout:HookScript("OnLeave", EnterLeaveHandle)
+		self:HookScript("OnEnter", EnterLeaveHandle)
+    	self:HookScript("OnLeave", EnterLeaveHandle)
 	end
 
 	-- children
