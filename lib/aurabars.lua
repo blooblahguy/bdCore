@@ -222,14 +222,14 @@ local function Update(self, event, unit)
 			lastAuraIndex = lastAuraIndex + 1
 			auras[lastAuraIndex] = {}
 			auras[lastAuraIndex].name = name
-			auras[lastAuraIndex].icon = icon
+			auras[lastAuraIndex].icon = texture
 			auras[lastAuraIndex].count = count
 			auras[lastAuraIndex].debuffType = debuffType
 			auras[lastAuraIndex].duration = duration
-			auras[lastAuraIndex].expirationTime = expirationTime
-			auras[lastAuraIndex].unitCaster = unitCaster
+			auras[lastAuraIndex].expirationTime = expiration
+			auras[lastAuraIndex].unitCaster = caster
 			auras[lastAuraIndex].isStealable = isStealable
-			auras[lastAuraIndex].noTime = (duration == 0 and expirationTime == 0)
+			auras[lastAuraIndex].noTime = (duration == 0 and expiration == 0)
 		end
 	end
 
