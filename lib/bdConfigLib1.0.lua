@@ -700,46 +700,44 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 	for k, conf in pairs(configuration) do
 		-- loop through the configuration table to setup, tabs, sliders, inputs, etc.
 		for option, info in pairs(conf) do
-			if (info.type) then
-				if (settings.persistent) then
-					-- if variable is `persistent` its not associate with a profile
-					
-					if (svc.persistent[settings.name][option] == nil) then
-						if (info.value == nil) then
-							info.value = {}
-						end
-
-						svc.persistent[settings.name][option] = info.value
-					end
-				else
-					-- this is a per-character configuration
-					-- print(settings.name, option)
-					-- print(svc.profile[settings.name])
-					svc.profile[settings.name] =  svc.profile[settings.name] or {}
-					if (svc.profile[settings.name][option] == nil) then
-						if (info.value == nil) then
-							info.value = {}
-						end
-
-						svc.profile[settings.name][option] = info.value
-					end
-				end
-
-				-- force blank callbacks if not set
-				info.callback = info.callback or settings.callback or function() return end
+			if (settings.persistent) then
+				-- if variable is `persistent` its not associate with a profile
 				
-				-- If the very first entry is not a tab, then create a general tab/page container
-				if (info.type ~= "tab" and #module.tabs == 0) then
-					module:CreateTab("General")
-				end
+				if (svc.persistent[settings.name][option] == nil) then
+					if (info.value == nil) then
+						info.value = {}
+					end
 
-				-- Master Call (slider = bdConfigLib.SliderElement(config, module, option, info))
-				local method = string.lower(info.type):gsub("^%l", string.upper).."Element"
-				if (bdConfigLib[method]) then
-					bdConfigLib[method](bdConfigLib, module, option, info)
-				else
-					debug("No module defined for "..method.." in "..settings.name)
+					svc.persistent[settings.name][option] = info.value
 				end
+			else
+				-- this is a per-character configuration
+				-- print(settings.name, option)
+				-- print(svc.profile[settings.name])
+				svc.profile[settings.name] =  svc.profile[settings.name] or {}
+				if (svc.profile[settings.name][option] == nil) then
+					if (info.value == nil) then
+						info.value = {}
+					end
+
+					svc.profile[settings.name][option] = info.value
+				end
+			end
+
+			-- force blank callbacks if not set
+			info.callback = info.callback or settings.callback or function() return end
+			
+			-- If the very first entry is not a tab, then create a general tab/page container
+			if (info.type ~= "tab" and #module.tabs == 0) then
+				module:CreateTab("General")
+			end
+
+			-- Master Call (slider = bdConfigLib.SliderElement(config, module, option, info))
+			local method = string.lower(info.type):gsub("^%l", string.upper).."Element"
+			if (bdConfigLib[method]) then
+				bdConfigLib[method](bdConfigLib, module, option, info)
+			else
+				debug("No module defined for "..method.." in "..settings.name)
 			end
 		end
 	end
@@ -877,7 +875,7 @@ function bdConfigLib:ElementContainer(module, info)
 		page.lastRow = container
 		page.rows[#page.rows + 1] = container
 	else
-		container:SetPoint("LEFT", page.lastContainer, "RIGHT", padding, 0)
+		container:SetPoint("TOPLEFT", page.lastContainer, "TOPRIGHT", padding, 0)
 	end
 	
 	page.lastContainer = container
@@ -922,7 +920,7 @@ end
 function bdConfigLib:ClearElement(module, option, info)
 	local container = bdConfigLib:ElementContainer(module, info)
 
-	container:SetHeight(1)
+	container:SetHeight(5)
 
 	return container
 end
@@ -1126,7 +1124,7 @@ function bdConfigLib:SliderElement(module, option, info)
 	local slider = CreateFrame("Slider", module.name.."_"..option, container, "OptionsSliderTemplate")
 	slider:SetWidth(container:GetWidth())
 	slider:SetHeight(14)
-	slider:SetPoint("TOPLEFT", container ,"TOPLEFT", 0, -10)
+	slider:SetPoint("TOPLEFT", container ,"TOPLEFT", 0, -16)
 	slider:SetOrientation('HORIZONTAL')
 	slider:SetMinMaxValues(info.min, info.max)
 	slider:SetObeyStepOnDrag(true)
@@ -1178,7 +1176,7 @@ function bdConfigLib:SliderElement(module, option, info)
 		info:callback()
 	end)
 
-	container:SetHeight(52)
+	container:SetHeight(56)
 
 	return container
 end
@@ -1188,7 +1186,7 @@ end
 ==========================================================]]
 function bdConfigLib:CheckboxElement(module, option, info)
 	local container = bdConfigLib:ElementContainer(module, info)
-	container:SetHeight(35)
+	container:SetHeight(25)
 
 	local check = CreateFrame("CheckButton", module.name.."_"..option, container, "ChatConfigCheckButtonTemplate")
 	check:SetPoint("TOPLEFT", container, "TOPLEFT", 0, 0)

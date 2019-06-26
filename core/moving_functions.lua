@@ -391,14 +391,19 @@ function bdCore:makeMovable(frame, resize, rename)
 				Mover:SetPoint(point, relativeTo, relativePoint, math.floor(xOfs), math.floor(yOfs))
 			end
 		else
-			Mover:SetPoint(point, relativeTo, relativePoint, math.floor(xOfs), math.floor(yOfs))
+			Mover:SetPoint(point, relativeTo, relativePoint, math.floor(xOfs) + 2, math.floor(yOfs) + 2)
 		end
 	end
 	Mover:position()
 	bdCore:hookEvent("profile_changed", Mover.position)
 
+	local border = 2
+	if (c and c.persistent and not c.persistent.bdAddons.forcescale) then
+		border = bdCore.pixel * border
+	end
+
 	frame:ClearAllPoints()
-	frame:SetPoint("TOPRIGHT", Mover, "TOPRIGHT", -2, -2)
+	frame:SetPoint("TOPRIGHT", Mover, "TOPRIGHT", border, -border)
 	
 	bdCore.moveFrames[#bdCore.moveFrames+1] = Mover
 

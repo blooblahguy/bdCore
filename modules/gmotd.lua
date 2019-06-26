@@ -46,7 +46,7 @@ bdCore:hookEvent('loaded_bdcore', function()
 		end
 		
 		c.persistent.bdAddons.gmotd = c.persistent.bdAddons.gmotd or {}
-		if (msg and guild and not c.persistent.bdAddons.gmotd[msg]) then
+		if (strlen(msg > 0) and guild and not c.persistent.bdAddons.gmotd[msg]) then
 			gmotd.msg = msg
 			gmotd.text:SetText(msg)
 			gmotd.header:SetText(guild.." - Message of the Day")

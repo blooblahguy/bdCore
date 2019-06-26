@@ -35,8 +35,6 @@ bdCore:SetScript("OnEvent", function(self, event, arg1, arg2, ...)
 		bdCore.general[2].font.options = font_table
 		bdCore.general[4].background.options = bg_table
 		
-		print(c)
-		
 		-- init config
 		local saved = bdConfigLib:RegisterModule({
 			name = "bdAddons"

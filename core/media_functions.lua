@@ -16,7 +16,7 @@ local function createViewport()
 end
 bdCore:hookEvent("bdcore_redraw",function()
 	local config = c.persistent.bdAddons
-
+	-- dump(config)
 	local screenWidth, screenHeight = GetPhysicalScreenSize()
 	local scale = min(1.15, 768/screenHeight)
 
@@ -149,6 +149,10 @@ function bdCore:setBackdrop(frame, resize, padding)
 	if (frame.background) then return end
 	padding = padding or 0
 	local border = 2
+	if (c and c.persistent and not c.persistent.bdAddons.forcescale) then
+		border = bdCore.pixel * border
+		-- print("useful border")
+	end
 
 	frame.background = frame:CreateTexture(nil, "BACKGROUND", nil, -7)
 	frame.background:SetTexture(bdCore.media.flat)
@@ -169,6 +173,9 @@ function bdCore:setBackdrop(frame, resize, padding)
 	bd_add_action("bdcore_redraw,addon_loaded", function()
 		border = c.persistent.bdAddons.border
 		local background = bdCore:getMedia("background", c.persistent.bdAddons.background)
+		if (c and c.persistent and not c.persistent.bdAddons.forcescale) then
+			border = bdCore.pixel * border
+		end
 		-- local font = bdCore:getMedia("font", c.persistent.bdAddons.font)
 
 		frame.background:SetTexture(background)
