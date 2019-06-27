@@ -2,6 +2,8 @@ local bdCore, c, f = select(2, ...):unpack()
 
 local UnitAura, IsItemInRange, CheckInteractDistance, UnitInRange, find, sub, gsub, floor, byte, tinsert, select = UnitAura, IsItemInRange, CheckInteractDistance, UnitInRange, string.find, string.sub, string.gsub, math.floor, string.byte, table.insert, select
 
+function noop() return false end
+
 function dump (tbl, indent)
 	if not indent then indent = 0 end
 	for k, v in pairs(tbl) do
