@@ -18,7 +18,8 @@ bdCore:RegisterEvent("ADDON_LOADED")
 bdCore.class = string.lower(select(1, UnitClass('player')))
 bdCore.name = string.lower(UnitName('player'))
 
-bdCore.scale = 768/string.match(({GetScreenResolutions()})[GetCurrentResolution()], "%d+x(%d+)")
+bdCore.scale = 768 / string.match( GetCVar( "gxWindowedResolution" ), "%d+x(%d+)" );
+
 bdCore.ui_scale = GetCVar("uiScale") or 1
 bdCore.pixel = bdCore.scale / bdCore.ui_scale
 bdCore.border = bdCore.pixel * 2
