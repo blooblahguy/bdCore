@@ -1154,7 +1154,7 @@ function bdConfigLib:SliderElement(module, option, info)
 
 	slider:Show()
 	slider.lastValue = 0
-	slider:SetScript("OnValueChanged", function(self)
+	slider.update = function(self)
 		local newval
 		if (info.step >= 1) then
 			newval = round(slider:GetValue())
@@ -1174,7 +1174,9 @@ function bdConfigLib:SliderElement(module, option, info)
 		slider.value:SetText(newval)
 		
 		info:callback()
-	end)
+	end
+	slider:SetScript("OnMouseUp", slider.update)
+	slider:SetScript("OnValueChanged", slider.update)
 
 	container:SetHeight(56)
 

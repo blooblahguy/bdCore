@@ -7,7 +7,7 @@ bdCore.oUF = engine.oUF
 
 -- viewports
 local function createViewport() 
-	local frame = CreateFrame("frame", "bdCore Top Viewport")
+	local frame = CreateFrame("frame", "bdCore Top Viewport", nil)
 	frame:SetBackdrop({bgFile = bdCore.media.flat})
 	frame:SetBackdropBorderColor(0,0,0,0)
 	frame:SetFrameStrata("BACKGROUND")
@@ -16,31 +16,35 @@ local function createViewport()
 end
 bdCore:hookEvent("bdcore_redraw",function()
 	local config = c.persistent.bdAddons
-	-- dump(config)
+
 	local screenWidth, screenHeight = GetPhysicalScreenSize()
 	local scale = min(1.15, 768/screenHeight)
 
 	local top = 0
 	local bottom = 0
 
-	if (config.topViewport and config.topViewport > 0) then
-		bdCore.topViewport = bdCore.topViewport or createViewport()
-		bdCore.topViewport:SetBackdropColor(unpack(config.topViewportBGColor))
-		bdCore.topViewport:SetPoint("TOPLEFT", UIParent, "TOPLEFT")
-		bdCore.topViewport:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT")
-		bdCore.topViewport:SetPoint("BOTTOM", WorldFrame, "TOP")
-
-		top = config.topViewport
+	bdCore.topViewport = bdCore.topViewport or createViewport()
+	bdCore.topViewport:SetBackdropColor(unpack(config.topViewportBGColor))
+	bdCore.topViewport:SetPoint("TOPLEFT", UIParent, "TOPLEFT")
+	bdCore.topViewport:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT")
+	bdCore.topViewport:SetHeight(config.topViewport)
+	if (config.topViewport <= 0) then
+		bdCore.topViewport:Hide()
 	end
-	if (config.bottomViewport and config.bottomViewport > 0) then
-		bdCore.bottomViewport = bdCore.bottomViewport or createViewport()
-		bdCore.bottomViewport:SetBackdropColor(unpack(config.bottomViewportBGColor))
-		bdCore.bottomViewport:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT")
-		bdCore.bottomViewport:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT")
-		bdCore.bottomViewport:SetPoint("TOP", WorldFrame, "BOTTOM")
 
-		bottom = config.bottomViewport
+	top = config.topViewport
+
+	bdCore.bottomViewport = bdCore.bottomViewport or createViewport()
+	bdCore.bottomViewport:SetBackdropColor(unpack(config.bottomViewportBGColor))
+	bdCore.bottomViewport:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT")
+	bdCore.bottomViewport:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT")
+	bdCore.bottomViewport:SetHeight(config.bottomViewport)
+	if (config.bottomViewport <= 0) then
+		bdCore.bottomViewport:Hide()
 	end
+
+	bottom = config.bottomViewport
+
 
 	WorldFrame:ClearAllPoints()
 	WorldFrame:SetPoint("TOPLEFT", 0, -( top * scale ) )
