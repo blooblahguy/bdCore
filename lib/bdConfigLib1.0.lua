@@ -604,7 +604,7 @@ local function RegisterModule(self, settings, configuration, savedVariable)
 			local height = 0
 			if (page.rows) then
 				for k, container in pairs(page.rows) do
-					height = height + container:GetHeight() + 10
+					height = height + container:GetHeight() + 16
 				end
 			end
 
@@ -1154,6 +1154,22 @@ function bdConfigLib:SliderElement(module, option, info)
 
 	slider:Show()
 	slider.lastValue = 0
+	slider.commit = function(self)
+		local newval
+		if (info.step >= 1) then
+			newval = round(slider:GetValue())
+		else
+			newval = round(slider:GetValue(), 1)
+		end
+		
+		module.save[option] = newval
+		slider.lastValue = newval
+
+		slider:SetValue(newval)
+		slider.value:SetText(newval)
+		
+		info:callback()
+	end
 	slider.update = function(self)
 		local newval
 		if (info.step >= 1) then
@@ -1167,18 +1183,12 @@ function bdConfigLib:SliderElement(module, option, info)
 			return false
 		end
 
-		module.save[option] = newval
-		slider.lastValue = newval
-
-		slider:SetValue(newval)
-		slider.value:SetText(newval)
-		
-		info:callback()
+		slider:commit()
 	end
-	slider:SetScript("OnMouseUp", slider.update)
+	slider:SetScript("OnMouseUp", slider.commit)
 	slider:SetScript("OnValueChanged", slider.update)
 
-	container:SetHeight(56)
+	container:SetHeight(50)
 
 	return container
 end
@@ -1188,7 +1198,7 @@ end
 ==========================================================]]
 function bdConfigLib:CheckboxElement(module, option, info)
 	local container = bdConfigLib:ElementContainer(module, info)
-	container:SetHeight(25)
+	container:SetHeight(35)
 
 	local check = CreateFrame("CheckButton", module.name.."_"..option, container, "ChatConfigCheckButtonTemplate")
 	check:SetPoint("TOPLEFT", container, "TOPLEFT", 0, 0)
