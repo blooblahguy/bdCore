@@ -403,7 +403,7 @@ function bdCore:makeMovable(frame, resize, rename)
 	end
 
 	frame:ClearAllPoints()
-	frame:SetPoint("TOPRIGHT", Mover, "TOPRIGHT", border, -border)
+	frame:SetPoint("TOPRIGHT", Mover, "TOPRIGHT", -border, -border)
 	
 	bdCore.moveFrames[#bdCore.moveFrames+1] = Mover
 

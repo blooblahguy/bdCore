@@ -18,11 +18,16 @@ bdCore:RegisterEvent("ADDON_LOADED")
 bdCore.class = string.lower(select(1, UnitClass('player')))
 bdCore.name = string.lower(UnitName('player'))
 
-bdCore.scale = 768 / string.match( GetCVar( "gxWindowedResolution" ), "%d+x(%d+)" );
+function bdCore:calculate_scale()
+	bdCore.screenheight = select(2, GetPhysicalScreenSize())
+	bdCore.scale = 768 / bdCore.screenheight
+	bdCore.ui_scale = GetCVar("uiScale") or 1
+	bdCore.pixel = bdCore.scale / bdCore.ui_scale
+	bdCore.border = bdCore.pixel * 2
+end
 
-bdCore.ui_scale = GetCVar("uiScale") or 1
-bdCore.pixel = bdCore.scale / bdCore.ui_scale
-bdCore.border = bdCore.pixel * 2
+bdCore:calculate_scale()
+
 
 bdCore.media = {
 	flat = "Interface\\Buttons\\WHITE8x8",
