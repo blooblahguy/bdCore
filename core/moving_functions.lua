@@ -403,7 +403,7 @@ function bdCore:makeMovable(frame, resize, rename)
 	end
 
 	frame:ClearAllPoints()
-	frame:SetPoint("TOPRIGHT", Mover, "TOPRIGHT", -border, -border)
+	frame:SetPoint("CENTER", Mover, "CENTER", 0, 0)
 	
 	bdCore.moveFrames[#bdCore.moveFrames+1] = Mover
 
@@ -436,8 +436,9 @@ function bdCore:toggleLock()
 			frame:EnableMouse(true)
 			frame:SetMovable(true)
 			frame:SetUserPlaced(false)
-			frame:RegisterForDrag("LeftButton","RightButton")
-			frame:SetScript("OnDragStart", function(self) self:StartMoving(); if (self.controls) then self.controls:Hide() end end)
+			frame:RegisterForDrag("LeftButton")
+			-- frame:SetScript("OnDragStart", function(self) self:StartMoving(); if (self.controls) then self.controls:Hide() end end)
+			frame:SetScript("OnDragStart", function(self) self:StartMoving() end)
 			frame:SetScript("OnDragStop", function(self) self:dragStop(self) end)
 			frame:SetFrameStrata("TOOLTIP")
 

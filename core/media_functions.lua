@@ -148,6 +148,38 @@ function bdCore:RGBPercToHex(r, g, b)
 	return string.format("%02x%02x%02x", r*255, g*255, b*255)
 end
 
+-- borders / spacing
+function bdCore:get_border(frame)
+	local borderSize = c.persistent.bdAddons.border
+	local screenheight = select(2, GetPhysicalScreenSize())
+	local scale = 768 / screenheight
+	local frame_scale = frame:GetEffectiveScale()
+	local pixel = scale / frame_scale
+	local border = pixel * borderSize
+
+	return border
+end
+
+function bdCore:set_border(frame, type)
+	local border = bdNameplates:get_border(frame)
+
+	if (not frame.background) then
+		frame.background = frame:CreateTexture(nil, "BACKGROUND", nil, -7)
+		frame.background:SetTexture(bdCore.media.flat)
+		frame.background:SetVertexColor(unpack(bdCore.media.backdrop))
+		frame.background.SetFrameLevel = bdCore.noop
+		frame.border = frame:CreateTexture(nil, "BACKGROUND", nil, -8)
+		frame.border:SetTexture(bdCore.media.flat)
+		frame.border:SetVertexColor(unpack(bdCore.media.border))
+		frame.border.SetFrameLevel = bdCore.noop
+	end
+
+	frame.border:SetPoint("TOPLEFT", frame, "TOPLEFT", -border, border)
+	frame.border:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", border, -border)
+	frame.background:SetPoint("TOPLEFT", frame, "TOPLEFT", 0, 0)
+	frame.background:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", 0, 0)
+end
+
 -- make it purdy
 function bdCore:setBackdrop(frame, resize, padding)
 	if (frame.background) then return end
