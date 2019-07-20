@@ -1,5 +1,5 @@
 --[[
-	Modified version of the following lib:
+	Big Dumb Modified version of the following lib:
 
 Copyright (c) 2015-2017, Hendrik "nevcairiel" Leppkes <h.leppkes@gmail.com>
 
@@ -35,6 +35,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 --if not LibStub then error(MAJOR_VERSION .. " requires LibStub.") end
 --local lib, oldversion = LibStub:NewLibrary(MAJOR_VERSION, MINOR_VERSION)
 --if not lib then return end
+
 local Masque = LibStub("Masque", true)
 bdButtonGlow = {}
 local lib = bdButtonGlow
