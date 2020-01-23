@@ -1,4 +1,4 @@
-## Interface: 80200
+## Interface: 80300
 ## Title: |cffA02C2Fbd|rCore
 ## Version: 1
 ## DefaultState: Enabled
