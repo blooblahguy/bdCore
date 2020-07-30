@@ -93,3 +93,4 @@ SlashCmdList["BDCORE"] = function(msg, editbox)
 		print(bdCore.colorString.." "..msg.." not recognized as a command.")
 	end
 end
+

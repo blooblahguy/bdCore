@@ -58,6 +58,37 @@ bdCore:SetScript("OnEvent", function(self, event, arg1, arg2, ...)
 		
 		-- a lot of addons do this when they shouldn't it should really only be done when addons finish loading
 		collectgarbage("collect")
+
+		print(bdCore.colorString.." - All bd addons have been replaced by a single suite, called bdUI. Download on the twitch client or at https://www.curseforge.com/wow/addons/bdui . All support for the individual addons are going away, but the suite is entirely modular!");
+
+		MOD_TextFrame = CreateFrame("Frame");
+		MOD_TextFrame:ClearAllPoints();
+		MOD_TextFrame:SetHeight(300);
+		MOD_TextFrame:SetWidth(300);
+		MOD_TextFrame:SetScript("OnUpdate", MOD_TextFrame_OnUpdate);
+		MOD_TextFrame:Hide();
+		MOD_TextFrame.text = MOD_TextFrame:CreateFontString(nil, "BACKGROUND", "PVPInfoTextFont");
+		MOD_TextFrame.text:SetAllPoints();
+		MOD_TextFrame:SetPoint("CENTER", 0, 200);
+		MOD_TextFrameTime = 0;
+
+		function MOD_TextFrame_OnUpdate()
+		if (MOD_TextFrameTime < GetTime() - 3) then
+			local alpha = MOD_TextFrame:GetAlpha();
+			if (alpha ~= 0) then MOD_TextFrame:SetAlpha(alpha - .05); end
+			if (alpha == 0) then MOD_TextFrame:Hide(); end
+		end
+		end
+
+		function MOD_TextMessage(message)
+			MOD_TextFrame.text:SetText(message);
+			MOD_TextFrame:SetAlpha(1);
+			MOD_TextFrame:Show();
+			MOD_TextFrameTime = GetTime();
+		end
+
+		MOD_TextMessage("All "..bdCore.colorString.." addons have been replaced by a single suite, called bdUI. Download on the twitch client or at https://www.curseforge.com/wow/addons/bdui . All support for the individual addons are going away, but the suite is entirely modular!")
+
 	elseif (event == "ADDON_LOADED" and bdCore.loaded) then
 		bd_do_action("addon_loaded")
 	elseif (event == "LOADING_SCREEN_DISABLED") then
